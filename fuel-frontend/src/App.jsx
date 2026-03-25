@@ -1,121 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import useAuthStore from './store/authStore';
 
-function App() {
-  const [count, setCount] = useState(0)
+import AppLayout from './components/AppLayout';
+import LoginPage from './pages/LoginPage';
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+const DashboardPage = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Dashboard (Belum Dibuat)</div>;
+const DeliveriesPage = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Deliveries (Belum Dibuat)</div>;
+const DeliveryCreate = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Buat Delivery (Belum Dibuat)</div>;
+const DeliveryDetail = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Detail Delivery (Belum Dibuat)</div>;
+const TrackingPage = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Tracking (Belum Dibuat)</div>;
+const DriverPage = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Driver (Belum Dibuat)</div>;
+const CustomerTrackPage = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Customer Track (Belum Dibuat)</div>;
+const ProfilePage = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Profil (Belum Dibuat)</div>;
+const UsersPage = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Users (Belum Dibuat)</div>;
 
-      <div className="ticks"></div>
+// import DashboardPage from './pages/DashboardPage';
+// import DeliveriesPage from './pages/DeliveriesPage';
+// import DeliveryCreate from './pages/DeliveryCreate';
+// import DeliveryDetail from './pages/DeliveryDetail';
+// import TrackingPage from './pages/TrackingPage';
+// import DriverPage from './pages/DriverPage';
+// import CustomerTrackPage from './pages/CustomerTrackPage';
+// import ProfilePage from './pages/ProfilePage';
+// import UsersPage from './pages/UsersPage';
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+function AuthGuard({ children }) {
+  const token = useAuthStore(s => s.token);
+  return token ? children : <Navigate to="/login" replace />;
 }
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            background: '#1e293b',
+            color: '#f1f5f9',
+            border: '1px solid rgba(255,107,53,0.3)',
+            borderRadius: '12px',
+          },
+        }}
+      />
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/track" element={<CustomerTrackPage />} />
+        <Route element={<AuthGuard><AppLayout /></AuthGuard>}>
+          <Route index element={<DashboardPage />} />
+          <Route path="/deliveries" element={<DeliveriesPage />} />
+          <Route path="/deliveries/new" element={<DeliveryCreate />} />
+          <Route path="/deliveries/:id" element={<DeliveryDetail />} />
+          <Route path="/tracking" element={<TrackingPage />} />
+          <Route path="/driver" element={<DriverPage />} />
+          <Route path="/users" element={<UsersPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
