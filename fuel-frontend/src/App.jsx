@@ -6,7 +6,6 @@ import useAuthStore from './store/authStore';
 import AppLayout from './components/AppLayout';
 import LoginPage from './pages/LoginPage';
 
-const DashboardPage = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Dashboard (Belum Dibuat)</div>;
 const DeliveriesPage = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Deliveries (Belum Dibuat)</div>;
 const DeliveryCreate = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Buat Delivery (Belum Dibuat)</div>;
 const DeliveryDetail = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Detail Delivery (Belum Dibuat)</div>;
@@ -16,7 +15,7 @@ const CustomerTrackPage = () => <div className="text-white text-2xl font-bold gl
 const ProfilePage = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Profil (Belum Dibuat)</div>;
 const UsersPage = () => <div className="text-white text-2xl font-bold glass p-6 rounded-2xl">🚧 Halaman Users (Belum Dibuat)</div>;
 
-// import DashboardPage from './pages/DashboardPage';
+import DashboardPage from './pages/DashboardPage';
 // import DeliveriesPage from './pages/DeliveriesPage';
 // import DeliveryCreate from './pages/DeliveryCreate';
 // import DeliveryDetail from './pages/DeliveryDetail';
