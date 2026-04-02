@@ -5,37 +5,55 @@
 @tailwind utilities;
 
 @layer base {
-  * { box-sizing: border-box; }
+  * { 
+    box-sizing: border-box; 
+  }
+
   body {
     @apply bg-slate-950 text-slate-100 font-sans antialiased;
     -webkit-tap-highlight-color: transparent;
   }
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { @apply bg-slate-900; }
-  ::-webkit-scrollbar-thumb { @apply bg-slate-600 rounded-full; }
+
+  ::-webkit-scrollbar { 
+    width: 6px; 
+    height: 6px; 
+  }
+
+  ::-webkit-scrollbar-track { 
+    @apply bg-slate-900; 
+  }
+
+  ::-webkit-scrollbar-thumb { 
+    @apply bg-slate-600 rounded-full; 
+  }
 }
 
 @layer components {
   .glass {
     @apply bg-slate-800/60 backdrop-blur-xl border border-slate-700/50;
   }
+
   .btn-primary {
     @apply bg-flame hover:bg-flame-600 text-white font-medium px-4 py-2.5 rounded-xl
            transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
            flex items-center gap-2 justify-center;
   }
+
   .btn-ghost {
     @apply text-slate-400 hover:text-slate-100 hover:bg-slate-800 px-4 py-2.5 rounded-xl
            transition-all duration-200 flex items-center gap-2;
   }
+
   .card {
     @apply glass rounded-2xl p-5 shadow-xl shadow-black/20;
   }
+
   .input {
     @apply w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-100
            placeholder-slate-500 focus:outline-none focus:border-flame/60 focus:ring-1 focus:ring-flame/30
            transition-all duration-200;
   }
+  
   .status-badge {
     @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold;
   }
