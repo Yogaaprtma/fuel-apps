@@ -1,13 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
-    ArrowRight,
-    CheckCircle,
-    Clock,
-    Package,
-    Plus,
-    Truck,
-} from 'lucide-react';
+import { ArrowRight, CheckCircle, Clock, Package, Plus, Truck, } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 import useDeliveryStore from '../store/deliveryStore';
 
@@ -33,9 +26,7 @@ const StatCard = ({ label, value, icon: Icon, color, sub }) => (
                 {sub ? <p className="mt-1 text-xs text-slate-600">{sub}</p> : null}
             </div>
 
-            <div
-                className={`flex h-12 w-12 items-center justify-center rounded-xl ${color}`}
-            >
+            <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${color}`}>
                 <Icon size={22} className="text-white" />
             </div>
         </div>
@@ -83,6 +74,7 @@ export default function DashboardPage() {
                     icon={Package}
                     color="bg-flame"
                 />
+
                 <StatCard
                     label="Hari Ini"
                     value={stats?.today}
@@ -90,12 +82,14 @@ export default function DashboardPage() {
                     color="bg-blue-600"
                     sub="delivery baru"
                 />
+
                 <StatCard
                     label="Dalam Perjalanan"
                     value={stats?.in_transit}
                     icon={Truck}
                     color="bg-amber-600"
                 />
+
                 <StatCard
                     label="Selesai Hari Ini"
                     value={stats?.completed_today}
@@ -109,8 +103,7 @@ export default function DashboardPage() {
                     <h2 className="font-semibold text-white">Delivery Terbaru</h2>
                     <Link
                         to="/deliveries"
-                        className="flex items-center gap-1 text-sm text-flame hover:text-flame-400"
-                    >
+                        className="flex items-center gap-1 text-sm text-flame hover:text-flame-400">
                         Lihat semua
                         <ArrowRight size={14} />
                     </Link>
@@ -126,8 +119,7 @@ export default function DashboardPage() {
                             <Link
                                 key={delivery.id}
                                 to={`/deliveries/${delivery.id}`}
-                                className="group flex items-center gap-3 rounded-xl p-3 transition-all hover:bg-slate-800/50"
-                            >
+                                className="group flex items-center gap-3 rounded-xl p-3 transition-all hover:bg-slate-800/50">
                                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-slate-900">
                                     <Package size={18} className="text-flame" />
                                 </div>
@@ -144,8 +136,7 @@ export default function DashboardPage() {
                                 <span
                                     className={`status-badge text-white ${
                                         STATUS_COLORS[delivery.status] ?? 'bg-slate-700'
-                                    }`}
-                                >
+                                    }`}>
                                     {getStatusLabel(delivery.status)}
                                 </span>
 
