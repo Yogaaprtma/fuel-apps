@@ -8,16 +8,26 @@ const useAuthStore = create((set) => ({
     error: null,
 
     login: async (email, password) => {
-        set({ loading: true, error: null });
+        set({ 
+            loading: true, 
+            error: null 
+        });
         try {
             const { data } = await authApi.login({ email, password });
             localStorage.setItem('fds_token', data.token);
             localStorage.setItem('fds_user', JSON.stringify(data.user));
-            set({ user: data.user, token: data.token, loading: false });
+            set({ 
+                user: data.user, 
+                token: data.token, 
+                loading: false 
+            });
             return data.user;
         } catch (err) {
             const msg = err.response?.data?.message || 'Login gagal';
-            set({ error: msg, loading: false });
+            set({ 
+                error: msg, 
+                loading: false 
+            });
             throw new Error(msg);
         }
     },
@@ -30,7 +40,10 @@ const useAuthStore = create((set) => ({
         }
         localStorage.removeItem('fds_token');
         localStorage.removeItem('fds_user');
-        set({ user: null, token: null });
+        set({ 
+            user: null, 
+            token: null 
+        });
     },
 
     hasRole: (role) => {
