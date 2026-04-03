@@ -4,7 +4,16 @@ import { deliveryApi } from '../services/api';
 import DeliveryMap from '../components/DeliveryMap';
 
 const STATUSES = ['CREATED','PACKED','IN_TRANSIT','NEAR_DESTINATION','DELIVERED','COMPLETED'];
-const STATUS_ICONS = { CREATED: Clock, PACKED: Package, IN_TRANSIT: Truck, NEAR_DESTINATION: MapPin, DELIVERED: CheckCircle, COMPLETED: CheckCircle };
+
+const STATUS_ICONS = { 
+    CREATED: Clock, 
+    PACKED: Package, 
+    IN_TRANSIT: Truck, 
+    NEAR_DESTINATION: MapPin, 
+    DELIVERED: CheckCircle, 
+    COMPLETED: CheckCircle 
+};
+
 const STATUS_LABELS = {
     CREATED: 'Dibuat', 
     PACKED: 'Dikemas', 
