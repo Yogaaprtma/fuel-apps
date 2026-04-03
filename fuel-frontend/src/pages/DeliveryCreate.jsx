@@ -101,8 +101,7 @@ export default function DeliveryCreate() {
             <div className="flex items-center gap-3">
                 <button
                     onClick={() => navigate(-1)}
-                    className="btn-ghost p-2"
-                >
+                    className="btn-ghost p-2">
                     <ArrowLeft size={20} />
                 </button>
                 <h1 className="font-display text-2xl font-bold text-white">
@@ -120,8 +119,7 @@ export default function DeliveryCreate() {
                             className="input"
                             value={form.driver_id}
                             onChange={handleChange}
-                            required
-                        >
+                            required>
                             <option value="">-- Pilih Driver --</option>
                             {drivers.map((driver) => (
                                 <option key={driver.id} value={driver.id}>
@@ -201,8 +199,7 @@ export default function DeliveryCreate() {
                     <button
                         type="button"
                         onClick={getGPS}
-                        className="btn-ghost text-sm"
-                    >
+                        className="btn-ghost text-sm">
                         <MapPin size={16} className="text-flame" />
                         Gunakan Lokasi GPS Saat Ini
                     </button>
@@ -229,8 +226,7 @@ export default function DeliveryCreate() {
                                 name="fuel_type"
                                 className="input"
                                 value={form.fuel_type}
-                                onChange={handleChange}
-                            >
+                                onChange={handleChange}>
                                 {FUEL_TYPES.map((fuelType) => (
                                     <option key={fuelType} value={fuelType}>
                                         {getFuelLabel(fuelType)}
@@ -284,16 +280,14 @@ export default function DeliveryCreate() {
                     <button
                         type="button"
                         onClick={() => navigate(-1)}
-                        className="btn-ghost flex-1"
-                    >
+                        className="btn-ghost flex-1">
                         Batal
                     </button>
 
                     <button
                         type="submit"
                         className="btn-primary flex-1"
-                        disabled={loading}
-                    >
+                        disabled={loading}>
                         {loading ? (
                             <Loader2 size={18} className="animate-spin" />
                         ) : null}
