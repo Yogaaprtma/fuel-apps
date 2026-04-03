@@ -54,6 +54,7 @@ export default function CustomerTrackPage() {
                     <div className="inline-flex w-14 h-14 bg-flame rounded-2xl items-center justify-center mb-3">
                         <Fuel size={28} className="text-white" />
                     </div>
+                    
                     <h1 className="font-display text-2xl font-bold text-white">Lacak Pengiriman</h1>
                     <p className="text-slate-500 text-sm mt-1">Masukkan kode pengiriman Anda</p>
                 </div>
@@ -65,6 +66,7 @@ export default function CustomerTrackPage() {
                         placeholder="FDS-20240101-001"
                         value={code} onChange={e => setCode(e.target.value.toUpperCase())}
                     />
+
                     <button type="submit" className="btn-primary px-5" disabled={loading || !code}>
                         {loading ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}
                     </button>
@@ -85,6 +87,7 @@ export default function CustomerTrackPage() {
                                     <p className="font-mono font-bold text-white text-lg">{delivery.delivery_code}</p>
                                     <p className="text-slate-500 text-sm">{delivery.customer_name}</p>
                                 </div>
+
                                 <span className={`status-badge ${currentIdx >= 4 ? 'bg-emerald-900 text-emerald-300' : 'bg-flame/20 text-flame'}`}>
                                     {STATUS_LABELS[delivery.status]}
                                 </span>
@@ -103,6 +106,7 @@ export default function CustomerTrackPage() {
                                             }`}>
                                                 <Icon size={16} className="text-white" />
                                             </div>
+
                                             <div className="flex-1">
                                                 <p className={`text-sm font-medium ${done ? 'text-white' : 'text-slate-600'}`}>
                                                     {STATUS_LABELS[s]}
@@ -121,14 +125,17 @@ export default function CustomerTrackPage() {
                                 <span className="text-slate-500">Jenis BBM</span>
                                 <span className="text-white font-medium">{delivery.fuel_type?.replace('_', ' ')}</span>
                             </div>
+
                             <div className="flex justify-between">
                                 <span className="text-slate-500">Volume</span>
                                 <span className="text-white font-mono">{delivery.volume_liters} L</span>
                             </div>
+
                             <div className="flex justify-between">
                                 <span className="text-slate-500">Driver</span>
                                 <span className="text-white">{delivery.driver?.name ?? '-'}</span>
                             </div>
+
                             <div className="pt-2 border-t border-slate-700/50">
                                 <p className="text-slate-500 mb-1">Tujuan</p>
                                 <p className="text-white">{delivery.destination_address}</p>
