@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-    ArrowRight,
-    Loader2,
-    Package,
-    Plus,
-    Search,
-} from 'lucide-react';
+import { ArrowRight, Loader2, Package, Plus, Search,} from 'lucide-react';
 import useDeliveryStore from '../store/deliveryStore';
 import useAuthStore from '../store/authStore';
 
@@ -76,8 +70,7 @@ export default function DeliveriesPage() {
                 <select
                     className="input w-auto"
                     value={status}
-                    onChange={(event) => setStatus(event.target.value)}
-                >
+                    onChange={(event) => setStatus(event.target.value)}>
                     <option value="">Semua Status</option>
                     {STATUS_OPTIONS.map((statusOption) => (
                         <option key={statusOption} value={statusOption}>
@@ -102,8 +95,7 @@ export default function DeliveriesPage() {
                         <Link
                             key={delivery.id}
                             to={`/deliveries/${delivery.id}`}
-                            className="card group flex cursor-pointer items-center gap-4 transition-all hover:border-slate-600/50 hover:bg-slate-800/80"
-                        >
+                            className="card group flex cursor-pointer items-center gap-4 transition-all hover:border-slate-600/50 hover:bg-slate-800/80">
                             <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-flame/10">
                                 <Package size={22} className="text-flame" />
                             </div>
@@ -116,8 +108,7 @@ export default function DeliveriesPage() {
                                     <span
                                         className={`status-badge ${
                                             STATUS_COLORS[delivery.status]
-                                        }`}
-                                    >
+                                        }`}>
                                         {getStatusLabel(delivery.status)}
                                     </span>
                                 </div>
