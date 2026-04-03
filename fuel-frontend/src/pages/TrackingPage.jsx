@@ -50,6 +50,7 @@ export default function TrackingPage() {
                                 <span className="font-mono text-sm font-semibold text-white">{d.delivery_code}</span>
                                 <StatusBadge status={d.status} />
                             </div>
+                            
                             <p className="text-xs text-slate-500 truncate">{d.customer_name}</p>
                             <p className="text-xs text-slate-600 truncate mt-0.5">{d.destination_address}</p>
                         </button>
