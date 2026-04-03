@@ -63,8 +63,7 @@ export default function DeliveryDetail() {
                         onClick={() => setTab(t.id)}
                         className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-medium transition-all ${
                         tab === t.id ? 'bg-flame text-white' : 'text-slate-500 hover:text-white'
-                        }`}
-                    >
+                        }`}>
                         <t.icon size={16} />
                         <span className="hidden sm:block">{t.label}</span>
                     </button>
@@ -106,18 +105,21 @@ export default function DeliveryDetail() {
                                 <p className="text-slate-500">Driver</p>
                                 <p className="text-white">{current.driver?.name ?? '-'}</p>
                             </div>
+
                             <div>
                                 <p className="text-slate-500">Jenis BBM</p>
                                 <p className="text-white">{current.fuel_type?.replace('_', ' ')}</p>
                             </div>
+
                             <div>
                                 <p className="text-slate-500">Volume</p>
                                 <p className="font-mono text-white">{current.volume_liters} L</p>
                             </div>
+
                             <div>
                                 <p className="text-slate-500">Total Harga</p>
                                 <p className="font-mono text-white">
-                                Rp {Number(current.total_price).toLocaleString('id-ID')}
+                                    Rp {Number(current.total_price).toLocaleString('id-ID')}
                                 </p>
                             </div>
                         </div>
@@ -140,8 +142,7 @@ export default function DeliveryDetail() {
                                     <p
                                         className={
                                         current.proof.geofence_valid ? 'text-emerald-400' : 'text-red-400'
-                                        }
-                                    >
+                                        }>
                                         {current.proof.geofence_valid ? '✅ Valid' : '❌ Di luar zona'}
                                     </p>
                                 </div>
