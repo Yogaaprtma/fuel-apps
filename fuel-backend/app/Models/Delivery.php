@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-use function Symfony\Component\Clock\now;
-
 class Delivery extends Model
 {
     use HasFactory, SoftDeletes;
