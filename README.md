@@ -30,3 +30,15 @@
 - [Screenshot](#-screenshot)
  
 ---
+
+## 🚀 Tentang Proyek
+ 
+**Fuel Delivery System (FDS)** adalah aplikasi web full-stack untuk memantau distribusi bahan bakar secara transparan dan real-time. Sistem ini dirancang untuk mengelola seluruh siklus pengiriman — dari pembuatan order hingga konfirmasi penerimaan — dengan validasi anti-fraud berbasis GPS.
+ 
+### Masalah yang Diselesaikan
+- Ketidaktransparanan status pengiriman bahan bakar
+- Tidak ada validasi lokasi saat konfirmasi pengiriman
+- Tidak ada bukti digital yang bisa diverifikasi
+- Sulit memantau posisi driver secara real-time
+ 
+---
