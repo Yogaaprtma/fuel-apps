@@ -82,3 +82,29 @@
 - Stepper progress visual
  
 ---
+
+## 🛠 Tech Stack
+ 
+### Backend
+| Teknologi | Versi | Keterangan |
+|-----------|-------|------------|
+| PHP | 8.2+ | Runtime |
+| Laravel | 12.x | Framework |
+| Laravel Sanctum | 4.x | API Authentication |
+| Spatie Permission | 6.x | Role & Permission |
+| MySQL | 8.x | Database |
+ 
+### Frontend
+| Teknologi | Versi | Keterangan |
+|-----------|-------|------------|
+| React | 19.x | UI Library |
+| Vite | 8.x | Build Tool |
+| Tailwind CSS | 3.x | Styling |
+| Zustand | 5.x | State Management |
+| Axios | 1.x | HTTP Client |
+| React Router DOM | 7.x | Routing |
+| Leaflet.js | 1.9.x | Peta Interaktif |
+| Lucide React | 1.x | Icon Library |
+| React Hot Toast | 2.x | Notifikasi |
+ 
+---
