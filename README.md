@@ -108,3 +108,68 @@
 | React Hot Toast | 2.x | Notifikasi |
  
 ---
+
+## 📁 Struktur Proyek
+ 
+```
+fuel-apps/
+├── fuel-backend/                   # Laravel API
+│   ├── app/
+│   │   ├── Http/
+│   │   │   └── Controllers/
+│   │   │       ├── AuthController.php
+│   │   │       ├── DeliveryController.php
+│   │   │       ├── DeliveryStatusController.php
+│   │   │       ├── TrackingController.php
+│   │   │       ├── PhotoController.php
+│   │   │       ├── ProofOfDeliveryController.php
+│   │   │       └── UserController.php
+│   │   └── Models/
+│   │       ├── User.php
+│   │       ├── Delivery.php
+│   │       ├── DeliveryLocation.php
+│   │       ├── DeliveryPhoto.php
+│   │       ├── DeliveryStatusLog.php
+│   │       └── ProofOfDelivery.php
+│   ├── database/
+│   │   ├── migrations/             # 6 migration files
+│   │   └── seeders/
+│   │       └── DatabaseSeeder.php
+│   ├── routes/
+│   │   └── api.php
+│   ├── config/
+│   │   └── cors.php
+│   └── bootstrap/
+│       └── app.php
+│
+└── fuel-frontend/                  # React + Vite
+    ├── src/
+    │   ├── services/
+    │   │   └── api.js              # Axios instance + semua API calls
+    │   ├── store/
+    │   │   ├── authStore.js        # Zustand auth state
+    │   │   └── deliveryStore.js    # Zustand delivery state
+    │   ├── components/
+    │   │   ├── AppLayout.jsx       # Layout + sidebar + bottom nav
+    │   │   ├── StatusBadge.jsx
+    │   │   ├── StatusTimeline.jsx
+    │   │   ├── DeliveryMap.jsx     # Leaflet map component
+    │   │   ├── PhotoUpload.jsx
+    │   │   └── StatusUpdatePanel.jsx
+    │   └── pages/
+    │       ├── LoginPage.jsx
+    │       ├── DashboardPage.jsx
+    │       ├── DeliveriesPage.jsx
+    │       ├── DeliveryCreate.jsx
+    │       ├── DeliveryDetail.jsx
+    │       ├── TrackingPage.jsx
+    │       ├── DriverPage.jsx
+    │       ├── CustomerTrackPage.jsx
+    │       ├── ProfilePage.jsx
+    │       └── UsersPage.jsx
+    ├── tailwind.config.js
+    ├── .env
+    └── package.json
+```
+ 
+---
