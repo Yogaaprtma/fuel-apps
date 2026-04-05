@@ -42,3 +42,43 @@
 - Sulit memantau posisi driver secara real-time
  
 ---
+
+## ✨ Fitur Utama
+ 
+### 🔐 Autentikasi & Otorisasi
+- Login/logout dengan Laravel Sanctum (Bearer Token)
+- Role-based access control via Spatie Permission
+- 4 peran: Super Admin, Admin Operasional, Driver, Customer
+ 
+### 📦 Manajemen Pengiriman
+- CRUD delivery dengan kode unik otomatis (`FDS-YYYYMMDD-NNN`)
+- Assign driver ke delivery
+- Filter & pencarian delivery
+- Statistik dashboard real-time
+ 
+### 🔄 Alur Status (Anti-Skip)
+- 6 tahap status yang ketat: `CREATED → PACKED → IN_TRANSIT → NEAR_DESTINATION → DELIVERED → COMPLETED`
+- Status tidak bisa dilewati (anti-skip validation)
+- Auto-transisi ke `NEAR_DESTINATION` saat driver dalam radius 500m
+ 
+### 📍 GPS Tracking
+- Tracking posisi driver secara real-time via `navigator.geolocation`
+- Riwayat perjalanan tersimpan sebagai polyline di peta
+- Peta interaktif dengan Leaflet.js + OpenStreetMap
+ 
+### 🔒 Anti-Fraud Geofencing
+- Validasi radius geofence saat konfirmasi `DELIVERED`
+- Status `DELIVERED` hanya bisa diset jika driver dalam radius yang ditentukan
+- Jarak dan validasi geofence tersimpan di bukti pengiriman
+ 
+### 📸 Bukti Pengiriman
+- Upload foto dengan GPS tagging otomatis
+- Tanda tangan digital (base64)
+- Proof of Delivery dengan validasi geofence
+ 
+### 🌐 Public Tracking
+- Halaman tracking publik tanpa perlu login
+- Customer bisa cek status via kode pengiriman
+- Stepper progress visual
+ 
+---
