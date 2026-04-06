@@ -344,3 +344,18 @@ npm run dev
 | `http://localhost:8000/api` | Base URL API |
  
 ---
+
+## 👤 Akun Demo
+ 
+Semua akun menggunakan password: **`password`**
+ 
+| Role | Email | Akses |
+|------|-------|-------|
+| Super Admin | `superadmin@fds.com` | Full akses semua fitur |
+| Admin Operasional | `admin@fds.com` | CRUD delivery, kelola user |
+| Driver 1 | `driver1@fds.com` | Update status, GPS, foto |
+| Driver 2 | `driver2@fds.com` | Update status, GPS, foto |
+| Driver 3 | `driver3@fds.com` | Update status, GPS, foto |
+| Customer | `customer@fds.com` | Lihat delivery milik sendiri |
+ 
+---
