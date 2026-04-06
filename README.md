@@ -465,3 +465,22 @@ CREATED ──► PACKED ──► IN_TRANSIT ──► NEAR_DESTINATION ──�
 - **Auto-transisi**: Sistem otomatis pindah ke `NEAR_DESTINATION` saat driver mengirim GPS dalam radius 500m
  
 ---
+
+## 👥 Role & Hak Akses
+ 
+| Fitur | Super Admin | Admin Ops | Driver | Customer |
+|-------|:-----------:|:---------:|:------:|:--------:|
+| Dashboard | ✅ | ✅ | ✅ | ✅ |
+| Lihat semua delivery | ✅ | ✅ | ✅ (milik sendiri) | ✅ (milik sendiri) |
+| Buat delivery | ✅ | ✅ | ❌ | ❌ |
+| Update delivery | ✅ | ✅ | ❌ | ❌ |
+| Hapus delivery | ✅ | ✅ | ❌ | ❌ |
+| Update status | ✅ | ✅ | ✅ | ❌ |
+| GPS Tracking | ✅ | ✅ (lihat) | ✅ (kirim) | ❌ |
+| Upload foto | ✅ | ✅ | ✅ | ❌ |
+| Submit proof | ✅ | ✅ | ✅ | ❌ |
+| Kelola user | ✅ | ✅ | ❌ | ❌ |
+| Menu Driver Panel | ❌ | ❌ | ✅ | ❌ |
+| Public tracking | ✅ | ✅ | ✅ | ✅ |
+ 
+---
