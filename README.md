@@ -237,3 +237,59 @@ cp .env.example .env
 ```
  
 ---
+
+## ⚙️ Konfigurasi
+ 
+### Backend — `fuel-backend/.env`
+ 
+```env
+APP_NAME="Fuel Delivery System"
+APP_ENV=local
+APP_KEY=           # auto-generated via php artisan key:generate
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+ 
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=fuel_tracking_db   # buat database ini terlebih dahulu
+DB_USERNAME=root
+DB_PASSWORD=                    # sesuaikan dengan password MySQL Anda
+ 
+SESSION_DRIVER=array
+FILESYSTEM_DISK=public
+CACHE_STORE=file
+```
+ 
+### Frontend — `fuel-frontend/.env`
+ 
+```env
+VITE_API_URL=http://localhost:8000/api
+```
+ 
+### Backend — `config/cors.php`
+ 
+```php
+return [
+    'paths'                => ['api/*'],
+    'allowed_methods'      => ['*'],
+    'allowed_origins'      => ['http://localhost:5173'],
+    'allowed_headers'      => ['*'],
+    'supports_credentials' => false,
+];
+```
+ 
+### Backend — `bootstrap/app.php`
+ 
+> **Penting:** Jangan tambahkan `EnsureFrontendRequestsAreStateful` di middleware API. Sistem ini menggunakan Bearer Token, bukan cookie/session.
+ 
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->alias([
+        'role'       => \Spatie\Permission\Middleware\RoleMiddleware::class,
+        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+    ]);
+})
+```
+ 
+---
