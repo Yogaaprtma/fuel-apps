@@ -293,3 +293,54 @@ return [
 ```
  
 ---
+
+## ▶️ Menjalankan Aplikasi
+ 
+### Langkah 1 — Buat Database
+ 
+```sql
+CREATE DATABASE fuel_tracking_db;
+```
+ 
+### Langkah 2 — Migrasi & Seeder
+ 
+```bash
+cd fuel-backend
+ 
+# Jalankan migrasi + seeder
+php artisan migrate --seed
+ 
+# Buat symlink storage
+php artisan storage:link
+ 
+# Bersihkan cache
+php artisan config:clear
+php artisan cache:clear
+```
+ 
+### Langkah 3 — Jalankan Backend
+ 
+```bash
+cd fuel-backend
+php artisan serve
+# Berjalan di: http://localhost:8000
+```
+ 
+### Langkah 4 — Jalankan Frontend
+ 
+```bash
+cd fuel-frontend
+npm run dev
+# Berjalan di: http://localhost:5173
+```
+ 
+### Akses Aplikasi
+ 
+| URL | Keterangan |
+|-----|------------|
+| `http://localhost:5173` | Aplikasi utama |
+| `http://localhost:5173/login` | Halaman login |
+| `http://localhost:5173/track` | Public tracking (tanpa login) |
+| `http://localhost:8000/api` | Base URL API |
+ 
+---
