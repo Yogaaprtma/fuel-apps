@@ -584,3 +584,14 @@ php artisan migrate:fresh --seed
 | Upload foto gagal | `storage:link` belum dibuat | `php artisan storage:link` |
  
 ---
+
+## 📄 License
+ 
+Proyek ini menggunakan lisensi [MIT](LICENSE).
+ 
+---
+ 
+<div align="center">
+  <p>Dibuat dengan ❤️ menggunakan Laravel + React</p>
+  <p><strong>Fuel Delivery System © 2025</strong></p>
+</div>
