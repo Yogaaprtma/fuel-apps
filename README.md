@@ -359,3 +359,86 @@ Semua akun menggunakan password: **`password`**
 | Customer | `customer@fds.com` | Lihat delivery milik sendiri |
  
 ---
+
+## 🔌 API Endpoints
+ 
+Base URL: `http://localhost:8000/api`
+ 
+### Authentication
+ 
+| Method | Endpoint | Auth | Deskripsi |
+|--------|----------|------|-----------|
+| `POST` | `/auth/login` | ❌ | Login, mendapat Bearer token |
+| `GET` | `/auth/me` | ✅ | Data user yang sedang login |
+| `POST` | `/auth/logout` | ✅ | Logout, hapus token |
+| `POST` | `/auth/profile` | ✅ | Update profil & password |
+| `GET` | `/track?code=FDS-xxx` | ❌ | Public tracking by kode |
+ 
+### Deliveries
+ 
+| Method | Endpoint | Auth | Deskripsi |
+|--------|----------|------|-----------|
+| `GET` | `/deliveries` | ✅ | List delivery (filter: status, search) |
+| `POST` | `/deliveries` | ✅ | Buat delivery baru |
+| `GET` | `/deliveries/{id}` | ✅ | Detail delivery + relasi |
+| `PUT` | `/deliveries/{id}` | ✅ | Update delivery |
+| `DELETE` | `/deliveries/{id}` | ✅ | Hapus delivery |
+| `PATCH` | `/deliveries/{id}/status` | ✅ | Update status pengiriman |
+| `GET` | `/statistics` | ✅ | Statistik dashboard |
+ 
+### GPS Tracking
+ 
+| Method | Endpoint | Auth | Deskripsi |
+|--------|----------|------|-----------|
+| `POST` | `/deliveries/{id}/track` | ✅ | Kirim posisi GPS driver |
+| `GET` | `/deliveries/{id}/track` | ✅ | Riwayat tracking |
+ 
+### Photos & Proof
+ 
+| Method | Endpoint | Auth | Deskripsi |
+|--------|----------|------|-----------|
+| `POST` | `/deliveries/{id}/photos` | ✅ | Upload foto (multipart) |
+| `DELETE` | `/deliveries/{id}/photos/{photoId}` | ✅ | Hapus foto |
+| `POST` | `/deliveries/{id}/proof` | ✅ | Submit bukti pengiriman |
+| `GET` | `/deliveries/{id}/proof` | ✅ | Get bukti pengiriman |
+ 
+### Users
+ 
+| Method | Endpoint | Auth | Role |
+|--------|----------|------|------|
+| `GET` | `/users` | ✅ | Admin only |
+| `POST` | `/users` | ✅ | Admin only |
+| `PUT` | `/users/{id}` | ✅ | Admin only |
+| `DELETE` | `/users/{id}` | ✅ | Admin only |
+| `GET` | `/drivers` | ✅ | Semua role |
+ 
+### Contoh Request — Login
+ 
+```bash
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"email":"superadmin@fds.com","password":"password"}'
+```
+ 
+### Contoh Request — Buat Delivery
+ 
+```bash
+curl -X POST http://localhost:8000/api/deliveries \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "driver_id": 3,
+    "customer_name": "Budi Santoso",
+    "customer_phone": "081234567890",
+    "destination_address": "Jl. Merdeka No. 45, Jakarta",
+    "destination_lat": -6.2088,
+    "destination_lng": 106.8456,
+    "geofence_radius": 200,
+    "fuel_type": "PERTAMAX",
+    "volume_liters": 50,
+    "price_per_liter": 13500
+  }'
+```
+ 
+---
