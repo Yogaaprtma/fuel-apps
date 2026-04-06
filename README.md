@@ -531,3 +531,41 @@ delivery_status_logs
 ```
  
 ---
+
+## 🧪 Testing
+ 
+### Postman
+ 
+Import file `FDS_Postman_Collection.json` ke Postman. Collection berisi:
+ 
+- 🔐 Authentication (Login, Me, Logout)
+- 📦 Deliveries (CRUD + filter + statistik)
+- 🔄 Status Flow (6 step + 2 anti-fraud test)
+- 📍 GPS Tracking (kirim + auto-transisi + history)
+- 📸 Photo Upload (upload + hapus)
+- ✅ Proof of Delivery (submit + get)
+- 🌐 Public Tracking
+- 👥 User Management (CRUD + role guard)
+ 
+### Urutan Testing Postman
+ 
+```
+1. Login Super Admin          → token tersimpan otomatis
+2. Get Drivers List           → driverId tersimpan otomatis
+3. Create Delivery            → deliveryId tersimpan otomatis
+4. Update Status: PACKED
+5. Update Status: IN_TRANSIT
+6. Update Status: NEAR_DESTINATION
+7. Test geofence (luar area)  → harus 422
+8. Update Status: DELIVERED   → koordinat tujuan
+9. Update Status: COMPLETED
+10. Submit Proof of Delivery
+```
+ 
+### Reset Database untuk Testing Ulang
+ 
+```bash
+php artisan migrate:fresh --seed
+```
+ 
+---
