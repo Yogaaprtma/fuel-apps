@@ -173,3 +173,16 @@ fuel-apps/
 ```
  
 ---
+
+## 💻 Persyaratan Sistem
+ 
+Pastikan sudah terinstall:
+ 
+- **PHP** >= 8.2
+- **Composer** >= 2.x
+- **Node.js** >= 18.x
+- **npm** >= 9.x
+- **MySQL** >= 8.x
+- **Git**
+ 
+---
