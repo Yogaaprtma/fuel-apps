@@ -484,3 +484,50 @@ CREATED ──► PACKED ──► IN_TRANSIT ──► NEAR_DESTINATION ──�
 | Public tracking | ✅ | ✅ | ✅ | ✅ |
  
 ---
+
+## 🗄️ Skema Database
+ 
+### Tabel Utama
+ 
+```
+users
+├── id, name, email, phone, password
+├── avatar, is_active
+└── timestamps, soft_deletes
+ 
+deliveries
+├── id, delivery_code (unique)
+├── admin_id → users, driver_id → users, customer_id → users
+├── customer_name, customer_phone, destination_address
+├── destination_lat, destination_lng, geofence_radius
+├── fuel_type (enum), volume_liters, price_per_liter, total_price
+├── status (enum: 6 nilai)
+└── notes, scheduled_at, timestamps, soft_deletes
+ 
+delivery_locations
+├── id, delivery_id → deliveries, driver_id → users
+├── latitude, longitude, accuracy, speed, heading
+├── status_at_time, recorded_at
+└── timestamps
+ 
+delivery_photos
+├── id, delivery_id → deliveries, uploaded_by → users
+├── photo_path, photo_type (enum)
+├── latitude, longitude, caption, taken_at
+└── timestamps
+ 
+proof_of_deliveries
+├── id, delivery_id → deliveries (unique)
+├── recipient_name, signature_path, photo_path
+├── latitude, longitude, distance_from_destination
+├── geofence_valid (boolean), signed_at
+└── timestamps
+ 
+delivery_status_logs
+├── id, delivery_id → deliveries, changed_by → users
+├── from_status, to_status, notes
+├── latitude, longitude
+└── timestamps
+```
+ 
+---
