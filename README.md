@@ -186,3 +186,54 @@ Pastikan sudah terinstall:
 - **Git**
  
 ---
+
+## 📦 Instalasi
+ 
+### 1. Clone Repository
+ 
+```bash
+git clone https://github.com/username/fuel-delivery-system.git
+cd fuel-delivery-system
+```
+ 
+### 2. Setup Backend (Laravel)
+ 
+```bash
+# Masuk ke folder backend
+cd fuel-backend
+ 
+# Install PHP dependencies
+composer install
+ 
+# Copy file environment
+cp .env.example .env
+ 
+# Generate application key
+php artisan key:generate
+ 
+# Publish Sanctum config
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+ 
+# Publish Spatie Permission config
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+```
+ 
+### 3. Setup Frontend (React)
+ 
+```bash
+# Masuk ke folder frontend
+cd fuel-frontend
+ 
+# Install Node dependencies
+npm install
+ 
+# Install Tailwind CSS v3
+npm uninstall tailwindcss
+npm install -D tailwindcss@3 postcss autoprefixer
+npx tailwindcss init -p
+ 
+# Copy file environment
+cp .env.example .env
+```
+ 
+---
