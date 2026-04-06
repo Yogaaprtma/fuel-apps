@@ -442,3 +442,26 @@ curl -X POST http://localhost:8000/api/deliveries \
 ```
  
 ---
+
+## 🔄 Alur Status Pengiriman
+ 
+```
+CREATED ──► PACKED ──► IN_TRANSIT ──► NEAR_DESTINATION ──► DELIVERED ──► COMPLETED
+```
+ 
+| Status | Deskripsi | Trigger |
+|--------|-----------|---------|
+| `CREATED` | Delivery baru dibuat | Admin membuat order |
+| `PACKED` | BBM sudah dikemas | Admin/Driver konfirmasi |
+| `IN_TRANSIT` | Driver sedang dalam perjalanan | Driver mulai perjalanan |
+| `NEAR_DESTINATION` | Driver dekat tujuan | Auto (dalam 500m) atau manual |
+| `DELIVERED` | BBM sudah diterima | Driver konfirmasi + validasi geofence |
+| `COMPLETED` | Pengiriman selesai | Admin konfirmasi |
+ 
+### Aturan Anti-Fraud
+ 
+- **Anti-skip**: Status hanya bisa maju satu langkah, tidak bisa melompat
+- **Geofence DELIVERED**: Status `DELIVERED` hanya bisa diset jika driver dalam radius geofence (default 200m) dari tujuan
+- **Auto-transisi**: Sistem otomatis pindah ke `NEAR_DESTINATION` saat driver mengirim GPS dalam radius 500m
+ 
+---
