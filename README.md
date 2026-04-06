@@ -569,3 +569,18 @@ php artisan migrate:fresh --seed
 ```
  
 ---
+
+## 🐛 Troubleshooting
+ 
+| Error | Penyebab | Solusi |
+|-------|----------|--------|
+| `419 CSRF` | `EnsureFrontendRequestsAreStateful` aktif | Hapus dari `bootstrap/app.php` |
+| `401 Unauthenticated` | Token tidak valid/expired | Login ulang |
+| `403 Forbidden` | Role tidak memiliki akses | Gunakan akun dengan role yang sesuai |
+| `422 Geofence error` | Koordinat di luar radius | Gunakan koordinat tujuan yang sama |
+| `500 Server Error` | Error PHP | `tail -f storage/logs/laravel.log` |
+| Driver tidak muncul | Typo `auth::sanctum` | Pastikan `auth:sanctum` (satu titik dua) |
+| Map tidak muncul | CDN Leaflet tidak load | Cek koneksi internet, reload halaman |
+| Upload foto gagal | `storage:link` belum dibuat | `php artisan storage:link` |
+ 
+---
