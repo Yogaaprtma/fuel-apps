@@ -21,6 +21,13 @@ class ProofOfDeliveryController extends Controller
             return response()->json(['message' => 'Bukti pengiriman sudah ada'], 422);
         }
 
+        // Bug #6 Fix: POD hanya bisa disubmit ketika status DELIVERED
+        if ($delivery->status !== 'DELIVERED') {
+            return response()->json([
+                'message' => 'Bukti pengiriman hanya bisa disubmit ketika status delivery adalah DELIVERED. Status saat ini: ' . $delivery->status
+            ], 422);
+        }
+
         $distance = $delivery->calculateDistance($request->latitude, $request->longitude);
         $geofenceValid = $delivery->isWithinGeofence($request->latitude, $request->longitude);
 
