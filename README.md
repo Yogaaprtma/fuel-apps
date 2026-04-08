@@ -1,4 +1,4 @@
-# 🛢️ Fuel Delivery System (FDS) - Test
+# 🛢️ Fuel Delivery System (FDS)
  
 > Sistem pelacakan distribusi bahan bakar berbasis web — real-time GPS tracking, anti-fraud geofencing, dan bukti pengiriman digital.
  
@@ -11,7 +11,7 @@
  
 ---
 
-## 📋 Daftar Isi - Test
+## 📋 Daftar Isi
  
 - [Tentang Proyek](#-tentang-proyek)
 - [Fitur Utama](#-fitur-utama)
