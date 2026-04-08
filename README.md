@@ -1,4 +1,4 @@
-# 🛢️ Fuel Delivery System (FDS) - Yoga Adi Pratama
+# 🛢️ Fuel Delivery System (FDS)
  
 > Sistem pelacakan distribusi bahan bakar berbasis web — real-time GPS tracking, anti-fraud geofencing, dan bukti pengiriman digital.
  
