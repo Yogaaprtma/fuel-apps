@@ -50,6 +50,12 @@ class DeliveryController extends Controller
             'scheduled_at'        => 'sometimes|date', 
         ]);
 
+        // Bug #4 Fix: Validasi bahwa driver_id harus punya role 'driver'
+        $driver = \App\Models\User::find($request->driver_id);
+        if (!$driver || !$driver->hasRole('driver')) {
+            return response()->json(['message' => 'User yang dipilih bukan driver'], 422);
+        }
+
         $delivery = Delivery::create([
             ...$request->validated(),
             'admin_id'      => $request->user()->id,
@@ -109,7 +115,11 @@ class DeliveryController extends Controller
             ]);
         }
 
-        $delivery->update($request->all());
+        // Bug #3 Fix: Gunakan validated() bukan all() untuk mencegah mass assignment berbahaya
+        $delivery->update(array_merge(
+            $request->validated(),
+            $request->has('total_price') ? ['total_price' => $request->total_price] : []
+        ));
         return response()->json($delivery->fresh()->load(['admin', 'driver']));
     }
 
