@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import useAuthStore from './store/authStore';
@@ -26,12 +26,34 @@ export default function App() {
     <BrowserRouter>
       <Toaster
         position="top-center"
+        gutter={8}
         toastOptions={{
+          duration: 3500,
           style: {
-            background: '#1e293b',
-            color: '#f1f5f9',
-            border: '1px solid rgba(255,107,53,0.3)',
-            borderRadius: '12px',
+            background: 'rgba(13, 20, 36, 0.95)',
+            color: '#f0f4f8',
+            border: '1px solid rgba(30, 45, 66, 0.9)',
+            borderRadius: '14px',
+            fontSize: '13px',
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: '500',
+            backdropFilter: 'blur(20px)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+            padding: '12px 16px',
+          },
+          success: {
+            iconTheme: { primary: '#4ade80', secondary: 'rgba(13,20,36,1)' },
+            style: {
+              background: 'rgba(13, 20, 36, 0.95)',
+              border: '1px solid rgba(74, 222, 128, 0.25)',
+            },
+          },
+          error: {
+            iconTheme: { primary: '#f87171', secondary: 'rgba(13,20,36,1)' },
+            style: {
+              background: 'rgba(13, 20, 36, 0.95)',
+              border: '1px solid rgba(248, 113, 113, 0.25)',
+            },
           },
         }}
       />
