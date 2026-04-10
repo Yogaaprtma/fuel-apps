@@ -64,7 +64,8 @@ class TrackingController extends Controller
             'locations' => $delivery->locations()->select(
                 'id', 'latitude', 'longitude', 'speed', 'heading', 'status_at_time', 'recorded_at'
             )->get(),
-            'latest' => $delivery->latestLocation(),
+            // Bug #5 Fix: latestLocation adalah property (eager/lazy load), bukan method call
+            'latest' => $delivery->latestLocation,
         ]);
     }
 }
