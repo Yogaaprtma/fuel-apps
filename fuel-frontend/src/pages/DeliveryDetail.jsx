@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Package, User, Truck, MapPin, Camera, FileText, Clock } from 'lucide-react';
+import {
+  ArrowLeft, Package, User, Truck, MapPin, Camera,
+  FileText, Clock, Phone, Fuel, AlertCircle, CheckCircle, DollarSign
+} from 'lucide-react';
 import useDeliveryStore from '../store/deliveryStore';
 import useAuthStore from '../store/authStore';
 import StatusBadge from '../components/StatusBadge';
@@ -9,203 +12,222 @@ import DeliveryMap from '../components/DeliveryMap';
 import PhotoUpload from '../components/PhotoUpload';
 import StatusUpdatePanel from '../components/StatusUpdatePanel';
 
+const TABS = [
+  { id: 'detail',   label: 'Detail',   icon: Package },
+  { id: 'map',      label: 'Map',      icon: MapPin },
+  { id: 'photos',   label: 'Foto',     icon: Camera },
+  { id: 'timeline', label: 'Timeline', icon: Clock },
+];
+
+function InfoRow({ label, value, mono = false, accent }) {
+  return (
+    <div>
+      <p className="text-[11px] font-semibold uppercase tracking-widest mb-0.5" style={{ color: '#4a6080' }}>{label}</p>
+      <p className={`text-sm font-medium ${mono ? 'font-mono' : ''}`}
+        style={{ color: accent ?? '#f0f4f8' }}>{value ?? '—'}</p>
+    </div>
+  );
+}
+
 export default function DeliveryDetail() {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const { current, fetchDelivery } = useDeliveryStore();
-    const { hasRole } = useAuthStore();
-    const [tab, setTab] = useState('detail');
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { current, fetchDelivery } = useDeliveryStore();
+  const { hasRole } = useAuthStore();
+  const [tab, setTab] = useState('detail');
 
-    useEffect(() => {
-        fetchDelivery(id);
-    }, [id]);
+  useEffect(() => { fetchDelivery(id); }, [id]);
 
-    if (!current) {
-        return (
-        <div className="flex h-64 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-flame border-t-transparent" />
-        </div>
-        );
-    }
-
-    const tabs = [
-        { id: 'detail', label: 'Detail', icon: Package },
-        { id: 'map', label: 'Map', icon: MapPin },
-        { id: 'photos', label: 'Foto', icon: Camera },
-        { id: 'timeline', label: 'Timeline', icon: Clock },
-    ];
-
+  if (!current) {
     return (
-        <div className="max-w-2xl space-y-5">
-            <div className="flex items-center gap-3">
-                <button className="btn-ghost p-2" onClick={() => navigate(-1)}>
-                    <ArrowLeft size={20} />
-                </button>
-                <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                        <h1 className="font-mono text-xl font-bold text-white">{current.delivery_code}</h1>
-                        <StatusBadge status={current.status} />
-                    </div>
-                    <p className="mt-0.5 text-sm text-slate-500">
-                        {current.customer_name} · {current.fuel_type}
-                    </p>
-                </div>
-            </div>
-
-            {hasRole('driver') && !['DELIVERED', 'COMPLETED'].includes(current.status) && (
-                <StatusUpdatePanel delivery={current} onUpdated={() => fetchDelivery(id)} />
-            )}
-
-            <div className="glass flex gap-1 rounded-xl p-1">
-                {tabs.map((t) => (
-                    <button
-                        key={t.id}
-                        onClick={() => setTab(t.id)}
-                        className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-medium transition-all ${
-                        tab === t.id ? 'bg-flame text-white' : 'text-slate-500 hover:text-white'
-                        }`}>
-                        <t.icon size={16} />
-                        <span className="hidden sm:block">{t.label}</span>
-                    </button>
-                ))}
-            </div>
-
-            {tab === 'detail' && (
-                <div className="space-y-4">
-                    <div className="card space-y-3">
-                        <h3 className="flex items-center gap-2 font-semibold text-white">
-                            <User size={16} className="text-flame" />
-                            Info Pelanggan
-                        </h3>
-
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                            <div>
-                                <p className="text-slate-500">Nama</p>
-                                <p className="font-medium text-white">{current.customer_name}</p>
-                            </div>
-                            <div>
-                                <p className="text-slate-500">Telepon</p>
-                                <p className="text-white">{current.customer_phone}</p>
-                            </div>
-                            <div className="col-span-2">
-                                <p className="text-slate-500">Alamat</p>
-                                <p className="text-white">{current.destination_address}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="card space-y-3">
-                        <h3 className="flex items-center gap-2 font-semibold text-white">
-                            <Truck size={16} className="text-flame" />
-                            Detail Pengiriman
-                        </h3>
-
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                            <div>
-                                <p className="text-slate-500">Driver</p>
-                                <p className="text-white">{current.driver?.name ?? '-'}</p>
-                            </div>
-
-                            <div>
-                                <p className="text-slate-500">Jenis BBM</p>
-                                <p className="text-white">{current.fuel_type?.replace('_', ' ')}</p>
-                            </div>
-
-                            <div>
-                                <p className="text-slate-500">Volume</p>
-                                <p className="font-mono text-white">{current.volume_liters} L</p>
-                            </div>
-
-                            <div>
-                                <p className="text-slate-500">Total Harga</p>
-                                <p className="font-mono text-white">
-                                    Rp {Number(current.total_price).toLocaleString('id-ID')}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {current.proof && (
-                        <div className="card space-y-3">
-                            <h3 className="flex items-center gap-2 font-semibold text-white">
-                                <FileText size={16} className="text-flame" />
-                                Bukti Pengiriman
-                            </h3>
-                            <div className="grid grid-cols-2 gap-3 text-sm">
-                                <div>
-                                    <p className="text-slate-500">Penerima</p>
-                                    <p className="text-white">{current.proof.recipient_name}</p>
-                                </div>
-
-                                <div>
-                                    <p className="text-slate-500">Geofence</p>
-                                    <p
-                                        className={
-                                        current.proof.geofence_valid ? 'text-emerald-400' : 'text-red-400'
-                                        }>
-                                        {current.proof.geofence_valid ? '✅ Valid' : '❌ Di luar zona'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {current.proof.signature_url && (
-                                <div>
-                                    <p className="mb-2 text-sm text-slate-500">Tanda Tangan</p>
-                                    <img
-                                        src={current.proof.signature_url}
-                                        alt="Tanda tangan"
-                                        className="h-20 rounded-lg bg-white p-2"
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {tab === 'map' && (
-                <div className="card !p-0 overflow-hidden rounded-2xl" style={{ height: 400 }}>
-                    <DeliveryMap delivery={current} locations={current.locations || []} />
-                </div>
-            )}
-
-            {tab === 'photos' && (
-                <div className="space-y-4">
-                    {hasRole(['driver']) && !['COMPLETED'].includes(current.status) && (
-                        <PhotoUpload deliveryId={current.id} onUploaded={() => fetchDelivery(id)} />
-                    )}
-
-                    <div className="grid grid-cols-2 gap-3">
-                        {(current.photos || []).map((photo) => (
-                            <div key={photo.id} className="card !p-0 overflow-hidden rounded-xl">
-                                <img
-                                    src={photo.photo_url}
-                                    alt={photo.caption}
-                                    className="h-40 w-full object-cover"
-                                />
-
-                                <div className="p-3">
-                                    <p className="text-flame text-xs font-medium">{photo.photo_type}</p>
-                                    
-                                    {photo.caption && (
-                                        <p className="mt-0.5 text-xs text-slate-500">{photo.caption}</p>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-
-                        {(current.photos || []).length === 0 && !hasRole(['driver']) && (
-                            <p className="col-span-2 py-8 text-center text-slate-600">Belum ada foto</p>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {tab === 'timeline' && (
-                <div className="card">
-                    <StatusTimeline logs={current.statusLogs || []} />
-                </div>
-            )}
-        </div>
+      <div className="flex h-64 items-center justify-center gap-3">
+        <div className="w-8 h-8 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
+        <p className="text-sm" style={{ color: '#4a6080' }}>Memuat data...</p>
+      </div>
     );
+  }
+
+  const canUpdateStatus = hasRole(['driver','super-admin','admin-operasional'])
+    && !['COMPLETED'].includes(current.status);
+
+  return (
+    <div className="max-w-2xl space-y-5 animate-fade-in">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <button className="btn-ghost p-2" onClick={() => navigate(-1)} id="back-btn">
+          <ArrowLeft size={19} />
+        </button>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="font-mono text-xl font-bold text-text-primary">{current.delivery_code}</h1>
+            <StatusBadge status={current.status} size="md" pulse />
+          </div>
+          <p className="text-sm mt-0.5" style={{ color: '#4a6080' }}>
+            {current.customer_name} · {current.fuel_type?.replace(/_/g, ' ')}
+          </p>
+        </div>
+      </div>
+
+      {/* Status update panel */}
+      {canUpdateStatus && (
+        <StatusUpdatePanel delivery={current} onUpdated={() => fetchDelivery(id)} />
+      )}
+
+      {/* Tabs */}
+      <div className="flex gap-1 rounded-xl p-1"
+        style={{ background: 'rgba(6,13,26,0.8)', border: '1px solid rgba(30,45,66,0.8)' }}>
+        {TABS.map(t => (
+          <button
+            key={t.id}
+            id={`tab-${t.id}`}
+            onClick={() => setTab(t.id)}
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-all duration-200"
+            style={tab === t.id ? {
+              background: 'linear-gradient(135deg, #f97316, #ea6c0a)',
+              color: 'white',
+              boxShadow: '0 2px 12px rgba(249,115,22,0.3)',
+            } : { color: '#4a6080' }}
+          >
+            <t.icon size={14} />
+            <span className="hidden sm:block">{t.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Tab: Detail */}
+      {tab === 'detail' && (
+        <div className="space-y-4 animate-fade-in">
+          {/* Customer info */}
+          <div className="card">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(249,115,22,0.1)' }}>
+                <User size={14} style={{ color: '#f97316' }} />
+              </div>
+              <h3 className="font-semibold text-text-primary text-sm">Info Pelanggan</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <InfoRow label="Nama" value={current.customer_name} />
+              <InfoRow label="Telepon" value={current.customer_phone} />
+              <div className="col-span-2">
+                <InfoRow label="Alamat Tujuan" value={current.destination_address} />
+              </div>
+              <InfoRow label="Koordinat" value={`${current.destination_lat}, ${current.destination_lng}`} mono />
+              <InfoRow label="Geofence Radius" value={`${current.geofence_radius}m`} />
+            </div>
+          </div>
+
+          {/* Delivery info */}
+          <div className="card">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(249,115,22,0.1)' }}>
+                <Truck size={14} style={{ color: '#f97316' }} />
+              </div>
+              <h3 className="font-semibold text-text-primary text-sm">Detail Pengiriman</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <InfoRow label="Driver" value={current.driver?.name ?? 'Belum assign'} />
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-widest mb-0.5" style={{ color: '#4a6080' }}>Jenis BBM</p>
+                <span className="badge-orange text-xs">{current.fuel_type?.replace(/_/g, ' ')}</span>
+              </div>
+              <InfoRow label="Volume" value={`${current.volume_liters} Liter`} mono />
+              <InfoRow label="Harga/L" value={`Rp ${Number(current.price_per_liter).toLocaleString('id-ID')}`} mono />
+              <div className="col-span-2">
+                <p className="text-[11px] font-semibold uppercase tracking-widest mb-0.5" style={{ color: '#4a6080' }}>Total Harga</p>
+                <p className="font-display text-2xl font-bold text-gradient-orange">
+                  Rp {Number(current.total_price).toLocaleString('id-ID')}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Proof of delivery */}
+          {current.proof && (
+            <div className="card" style={{ border: '1px solid rgba(74,222,128,0.2)' }}>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(74,222,128,0.1)' }}>
+                  <CheckCircle size={14} style={{ color: '#4ade80' }} />
+                </div>
+                <h3 className="font-semibold text-text-primary text-sm">Bukti Pengiriman</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <InfoRow label="Penerima" value={current.proof.recipient_name} />
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-widest mb-1" style={{ color: '#4a6080' }}>Geofence</p>
+                  <span className={`badge text-xs ${current.proof.geofence_valid ? 'badge-green' : 'badge-red'}`}>
+                    {current.proof.geofence_valid ? '✓ Valid' : '✗ Invalid'}
+                  </span>
+                </div>
+                <InfoRow label="Jarak dari Tujuan" value={`${current.proof.distance_from_destination}m`} />
+              </div>
+              {current.proof.signature_path && (
+                <div className="mt-4">
+                  <p className="label mb-2">Tanda Tangan</p>
+                  <div className="rounded-xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(30,45,66,0.8)' }}>
+                    <img
+                      src={`${import.meta.env.VITE_API_URL?.replace('/api','')}` + `/storage/${current.proof.signature_path}`}
+                      alt="Tanda tangan"
+                      className="h-24 object-contain p-3"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Tab: Map */}
+      {tab === 'map' && (
+        <div className="animate-fade-in">
+          <div className="rounded-2xl overflow-hidden" style={{ height: 420, border: '1px solid rgba(30,45,66,0.8)' }}>
+            <DeliveryMap delivery={current} locations={current.locations || []} />
+          </div>
+          {current.locations?.length > 0 && (
+            <p className="text-xs mt-2 text-center" style={{ color: '#4a6080' }}>
+              {current.locations.length} titik lokasi terekam
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Tab: Photos */}
+      {tab === 'photos' && (
+        <div className="space-y-4 animate-fade-in">
+          {hasRole(['driver']) && !['COMPLETED'].includes(current.status) && (
+            <PhotoUpload deliveryId={current.id} onUploaded={() => fetchDelivery(id)} />
+          )}
+          {(current.photos || []).length === 0 ? (
+            <div className="card py-12 text-center">
+              <Camera size={36} className="mx-auto mb-3" style={{ color: '#2a3f5a' }} />
+              <p className="text-sm" style={{ color: '#4a6080' }}>Belum ada foto</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {(current.photos || []).map(photo => (
+                <div key={photo.id} className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(30,45,66,0.8)' }}>
+                  <img src={photo.photo_url} alt={photo.caption || 'Foto'} className="w-full h-40 object-cover" />
+                  <div className="p-3" style={{ background: 'rgba(13,20,36,0.9)' }}>
+                    <span className="badge-orange text-[10px]">{photo.photo_type}</span>
+                    {photo.caption && <p className="text-xs mt-1" style={{ color: '#8fa3bd' }}>{photo.caption}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Tab: Timeline */}
+      {tab === 'timeline' && (
+        <div className="card animate-fade-in">
+          <div className="flex items-center gap-2 mb-5">
+            <Clock size={15} style={{ color: '#f97316' }} />
+            <h3 className="font-semibold text-text-primary text-sm">Riwayat Status</h3>
+          </div>
+          <StatusTimeline currentStatus={current.status} logs={current.status_logs || current.statusLogs || []} />
+        </div>
+      )}
+    </div>
+  );
 }
