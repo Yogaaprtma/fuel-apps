@@ -34,10 +34,11 @@ class UserController extends Controller
         ]);
 
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'phone'    => $request->phone,
-            'password' => Hash::make($request->password),
+            'name'      => $request->name,
+            'email'     => $request->email,
+            'phone'     => $request->phone,
+            'password'  => Hash::make($request->password),
+            'is_active' => true, // Fix B3: Default is_active = true
         ]);
 
         $user->assignRole($request->role);
@@ -70,7 +71,7 @@ class UserController extends Controller
         }
 
         $user->delete();
-        
+
         return response()->json(['message' => 'User berhasil dihapus']);
     }
 }
