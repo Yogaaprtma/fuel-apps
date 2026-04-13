@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Delivery;
+use App\Models\DeliveryStatusLog;
 use Illuminate\Http\Request;
 
 class ProofOfDeliveryController extends Controller
@@ -21,14 +22,14 @@ class ProofOfDeliveryController extends Controller
             return response()->json(['message' => 'Bukti pengiriman sudah ada'], 422);
         }
 
-        // Bug #6 Fix: POD hanya bisa disubmit ketika status DELIVERED
+        // POD hanya bisa disubmit ketika status DELIVERED
         if ($delivery->status !== 'DELIVERED') {
             return response()->json([
                 'message' => 'Bukti pengiriman hanya bisa disubmit ketika status delivery adalah DELIVERED. Status saat ini: ' . $delivery->status
             ], 422);
         }
 
-        $distance = $delivery->calculateDistance($request->latitude, $request->longitude);
+        $distance      = $delivery->calculateDistance($request->latitude, $request->longitude);
         $geofenceValid = $delivery->isWithinGeofence($request->latitude, $request->longitude);
 
         $signaturePath = 'signatures/' . uniqid() . '.png';
@@ -41,17 +42,35 @@ class ProofOfDeliveryController extends Controller
         }
 
         $proof = $delivery->proof()->create([
-            'recipient_name'           => $request->recipient_name,
-            'signature_path'           => $signaturePath,
-            'photo_path'               => $photoPath,
-            'latitude'                 => $request->latitude,
-            'longitude'                => $request->longitude,
-            'distance_from_destination'=> round($distance, 2),
-            'geofence_valid'           => $geofenceValid,
-            'signed_at'                => now(),
+            'recipient_name'            => $request->recipient_name,
+            'signature_path'            => $signaturePath,
+            'photo_path'                => $photoPath,
+            'latitude'                  => $request->latitude,
+            'longitude'                 => $request->longitude,
+            'distance_from_destination' => round($distance, 2),
+            'geofence_valid'            => $geofenceValid,
+            'signed_at'                 => now(),
         ]);
 
-        return response()->json($proof, 201);
+        // Fix B2: Auto-transition ke COMPLETED setelah POD berhasil disubmit
+        $oldStatus = $delivery->status;
+        $delivery->update(['status' => 'COMPLETED']);
+
+        DeliveryStatusLog::create([
+            'delivery_id' => $delivery->id,
+            'changed_by'  => $request->user()->id,
+            'from_status' => $oldStatus,
+            'to_status'   => 'COMPLETED',
+            'notes'       => 'Otomatis selesai setelah bukti pengiriman diterima',
+            'latitude'    => $request->latitude,
+            'longitude'   => $request->longitude,
+        ]);
+
+        return response()->json([
+            'proof'    => $proof,
+            'delivery' => $delivery->fresh()->load('statusLogs.user:id,name'),
+            'message'  => 'Bukti pengiriman berhasil disimpan. Delivery telah selesai.',
+        ], 201);
     }
 
     public function show(Delivery $delivery)
