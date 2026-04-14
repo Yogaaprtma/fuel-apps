@@ -1,160 +1,167 @@
 import React, { useState, useRef } from 'react';
-import { Camera, Upload, X, Loader2, Image, CheckCircle } from 'lucide-react';
+import { Camera, Upload, X, Loader2, Image, CheckCircle2 } from 'lucide-react';
 import { photoApi } from '../services/api';
 import toast from 'react-hot-toast';
 
-const PHOTO_TYPES = ['PICKUP', 'IN_TRANSIT', 'DESTINATION', 'OTHER'];
+const PHOTO_TYPES = [
+  { value: 'PICKUP',      label: 'Pickup',      color: '#2563EB' },
+  { value: 'IN_TRANSIT',  label: 'In Transit',  color: '#F97316' },
+  { value: 'DESTINATION', label: 'Destination', color: '#10B981' },
+  { value: 'OTHER',       label: 'Lainnya',     color: '#94A3B8' },
+];
 
 export default function PhotoUpload({ deliveryId, compact = false, onUploaded }) {
-  const [preview, setPreview] = useState(null);
-  const [file, setFile] = useState(null);
-  const [photoType, setPhotoType] = useState('IN_TRANSIT');
-  const [caption, setCaption] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [preview,   setPreview]   = useState(null);
+  const [file,      setFile]      = useState(null);
+  const [type,      setType]      = useState('IN_TRANSIT');
+  const [caption,   setCaption]   = useState('');
+  const [loading,   setLoading]   = useState(false);
+  const [uploaded,  setUploaded]  = useState(false);
   const fileRef = useRef();
 
-  const handleFile = (e) => {
-    const f = e.target.files[0];
+  const handleFile = (f) => {
     if (!f) return;
     setFile(f);
     setPreview(URL.createObjectURL(f));
-    setSuccess(false);
+    setUploaded(false);
   };
 
+  const handleCamera = () => fileRef.current?.click();
+
   const handleUpload = async () => {
-    if (!file) return;
+    if (!file) return toast.error('Pilih foto terlebih dahulu');
     setLoading(true);
     try {
-      const fd = new FormData();
-      fd.append('photo', file);
-      fd.append('photo_type', photoType);
-      if (caption) fd.append('caption', caption);
+      const formData = new FormData();
+      formData.append('photo',      file);
+      formData.append('photo_type', type);
+      if (caption) formData.append('caption', caption);
+
+      // Try to get GPS
       try {
         const pos = await new Promise((res, rej) =>
           navigator.geolocation.getCurrentPosition(res, rej, { timeout: 5000 })
         );
-        fd.append('latitude', pos.coords.latitude);
-        fd.append('longitude', pos.coords.longitude);
-      } catch {}
+        formData.append('latitude',  pos.coords.latitude);
+        formData.append('longitude', pos.coords.longitude);
+      } catch {
+        // GPS optional
+      }
 
-      await photoApi.upload(deliveryId, fd);
-      toast.success('Foto berhasil diupload!');
-      setSuccess(true);
-      setFile(null); setPreview(null); setCaption('');
+      await photoApi.upload(deliveryId, formData);
+      toast.success('Foto berhasil diunggah!');
+      setPreview(null);
+      setFile(null);
+      setCaption('');
+      setUploaded(true);
       onUploaded?.();
-    } catch {
-      toast.error('Gagal upload foto');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Gagal upload foto');
     } finally {
       setLoading(false);
     }
   };
 
-  if (compact) return (
-    <div>
-      <input ref={fileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFile} id={`photo-file-compact-${deliveryId}`} />
-      <button type="button" onClick={() => fileRef.current?.click()}
-        className="flex items-center gap-2 text-sm transition-all duration-200 py-2"
-        style={{ color: '#4a6080' }}
-        onMouseEnter={e => e.currentTarget.style.color = '#f97316'}
-        onMouseLeave={e => e.currentTarget.style.color = '#4a6080'}
-        id={`take-photo-${deliveryId}`}>
-        <Camera size={15} /> Ambil / Upload Foto
-      </button>
-      {preview && (
-        <div className="mt-2 flex items-center gap-2">
-          <img src={preview} alt="preview" className="w-14 h-14 rounded-xl object-cover"
-            style={{ border: '1px solid rgba(30,45,66,0.8)' }} />
-          <div className="flex flex-col gap-1.5">
-            <button onClick={handleUpload} className="btn-primary text-xs py-1.5 px-3" disabled={loading} id={`upload-photo-${deliveryId}`}>
-              {loading ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
-              {loading ? 'Upload...' : 'Upload'}
-            </button>
-            <button onClick={() => { setFile(null); setPreview(null); }}
-              className="text-xs" style={{ color: '#4a6080' }}>
-              <X size={13} />
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+  const clearPreview = () => {
+    setPreview(null);
+    setFile(null);
+    setUploaded(false);
+  };
 
   return (
-    <div className="card space-y-4">
-      <div className="flex items-center gap-2">
-        <Image size={16} style={{ color: '#f97316' }} />
-        <h3 className="font-semibold text-text-primary text-sm">Upload Foto</h3>
-      </div>
+    <div className={compact ? 'space-y-2' : 'space-y-3'}>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={e => handleFile(e.target.files[0])}
+      />
 
-      <input ref={fileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFile} id={`photo-file-${deliveryId}`} />
-
-      {!preview ? (
-        <button type="button" onClick={() => fileRef.current?.click()}
-          className="w-full rounded-xl py-10 flex flex-col items-center gap-3 transition-all duration-200"
-          style={{
-            border: '2px dashed rgba(30,45,66,0.8)',
-            color: '#4a6080',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.borderColor = 'rgba(249,115,22,0.4)';
-            e.currentTarget.style.color = '#f97316';
-            e.currentTarget.style.background = 'rgba(249,115,22,0.03)';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.borderColor = 'rgba(30,45,66,0.8)';
-            e.currentTarget.style.color = '#4a6080';
-            e.currentTarget.style.background = '';
-          }}
-          id={`open-camera-${deliveryId}`}>
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
-            style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.15)' }}>
-            <Camera size={24} style={{ color: '#f97316' }} />
-          </div>
-          <div>
-            <p className="text-sm font-medium">Ambil foto atau pilih dari galeri</p>
-            <p className="text-xs mt-0.5" style={{ color: '#2a3f5a' }}>Maks. 5MB · JPG, PNG</p>
-          </div>
-        </button>
-      ) : (
-        <div className="relative">
-          <img src={preview} alt="Preview" className="w-full rounded-xl object-cover max-h-52" />
-          <button onClick={() => { setFile(null); setPreview(null); }}
-            className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
-            style={{ background: 'rgba(0,0,0,0.6)' }}>
-            <X size={15} className="text-white" />
-          </button>
+      {/* Type selector */}
+      {!compact && (
+        <div className="flex flex-wrap gap-1.5">
+          {PHOTO_TYPES.map(t => (
+            <button
+              key={t.value}
+              onClick={() => setType(t.value)}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200"
+              style={type === t.value ? {
+                background: `${t.color}15`,
+                color: t.color,
+                border: `1px solid ${t.color}40`,
+              } : {
+                background: '#F8FAFC',
+                color: '#94A3B8',
+                border: '1px solid #E2E8F0',
+              }}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
       )}
 
-      {/* Photo type selection */}
-      <div className="grid grid-cols-4 gap-1.5">
-        {PHOTO_TYPES.map(t => (
-          <button key={t} type="button" onClick={() => setPhotoType(t)}
-            className="py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wide transition-all"
-            style={photoType === t ? {
-              background: 'rgba(249,115,22,0.15)',
-              color: '#f97316',
-              border: '1px solid rgba(249,115,22,0.3)',
-            } : {
-              background: 'rgba(30,45,66,0.4)',
-              color: '#4a6080',
-              border: '1px solid rgba(30,45,66,0.8)',
-            }}>
-            {t.replace('_', ' ')}
+      {/* Preview */}
+      {preview ? (
+        <div className="relative">
+          <img src={preview} alt="preview" className="w-full rounded-xl object-cover max-h-48"
+            style={{ border: '1px solid #E2E8F0' }} />
+          <button onClick={clearPreview}
+            className="absolute top-2 right-2 w-7 h-7 rounded-lg flex items-center justify-center"
+            style={{ background: 'rgba(255,255,255,0.9)', border: '1px solid #E2E8F0' }}>
+            <X size={14} className="text-slate-600" />
           </button>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <button
+          onClick={handleCamera}
+          className={`w-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-all duration-200 hover:border-blue-400 hover:bg-blue-50 ${
+            compact ? 'py-3' : 'py-6'
+          }`}
+          style={{ borderColor: '#CBD5E1', background: '#F8FAFC' }}
+        >
+          {uploaded ? (
+            <>
+              <CheckCircle2 size={compact ? 18 : 24} className="text-emerald-500" />
+              <span className="text-xs font-medium text-emerald-600">{compact ? 'Upload lagi' : 'Foto terupload!'}</span>
+            </>
+          ) : (
+            <>
+              <Camera size={compact ? 18 : 24} className="text-slate-400" />
+              <span className="text-xs font-medium text-slate-500">
+                {compact ? 'Ambil Foto' : 'Ambil foto / pilih dari galeri'}
+              </span>
+            </>
+          )}
+        </button>
+      )}
 
-      <input type="text" className="input text-sm" placeholder="Keterangan foto (opsional)"
-        value={caption} onChange={e => setCaption(e.target.value)} id={`photo-caption-${deliveryId}`} />
+      {/* Caption (non-compact) */}
+      {preview && !compact && (
+        <input
+          type="text"
+          className="input text-xs"
+          placeholder="Keterangan foto (opsional)..."
+          value={caption}
+          onChange={e => setCaption(e.target.value)}
+        />
+      )}
 
-      <button onClick={handleUpload} className="btn-primary w-full" disabled={!file || loading} id={`submit-photo-${deliveryId}`}>
-        {loading
-          ? <><Loader2 size={17} className="animate-spin" /> Mengupload...</>
-          : <><Upload size={17} /> Upload Foto</>
-        }
-      </button>
+      {/* Upload button */}
+      {preview && (
+        <button
+          onClick={handleUpload}
+          disabled={loading}
+          className="btn-primary w-full py-2.5"
+        >
+          {loading
+            ? <><Loader2 size={15} className="animate-spin" /> Mengupload...</>
+            : <><Upload size={15} /> Upload Foto</>
+          }
+        </button>
+      )}
     </div>
   );
 }
