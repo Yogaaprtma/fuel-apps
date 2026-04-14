@@ -1,41 +1,28 @@
 import React from 'react';
 
 const STATUS_CONFIG = {
-  CREATED:          { color: '#94a3b8', bg: 'rgba(100,116,139,0.15)', border: 'rgba(100,116,139,0.25)', label: 'Created',       dot: '#94a3b8' },
-  PACKED:           { color: '#60a5fa', bg: 'rgba(59,130,246,0.15)',  border: 'rgba(59,130,246,0.25)',  label: 'Packed',        dot: '#60a5fa' },
-  IN_TRANSIT:       { color: '#fb923c', bg: 'rgba(249,115,22,0.15)',  border: 'rgba(249,115,22,0.25)',  label: 'In Transit',    dot: '#fb923c' },
-  NEAR_DESTINATION: { color: '#22d3ee', bg: 'rgba(6,182,212,0.15)',   border: 'rgba(6,182,212,0.25)',   label: 'Near Dest.',    dot: '#22d3ee' },
-  DELIVERED:        { color: '#4ade80', bg: 'rgba(34,197,94,0.15)',   border: 'rgba(34,197,94,0.25)',   label: 'Delivered',     dot: '#4ade80' },
-  COMPLETED:        { color: '#a78bfa', bg: 'rgba(167,139,250,0.15)', border: 'rgba(167,139,250,0.25)', label: 'Completed',     dot: '#a78bfa' },
+  CREATED:          { label: 'Created',       bg: '#F8FAFC', color: '#475569', border: '#E2E8F0',  dot: '#CBD5E1' },
+  PACKED:           { label: 'Packed',        bg: '#EFF6FF', color: '#2563EB', border: '#BFDBFE',  dot: '#60A5FA' },
+  IN_TRANSIT:       { label: 'In Transit',    bg: '#FFF7ED', color: '#EA580C', border: '#FED7AA',  dot: '#FB923C' },
+  NEAR_DESTINATION: { label: 'Near Dest.',    bg: '#ECFEFF', color: '#0E7490', border: '#A5F3FC',  dot: '#22D3EE' },
+  DELIVERED:        { label: 'Delivered',     bg: '#ECFDF5', color: '#059669', border: '#A7F3D0',  dot: '#34D399' },
+  COMPLETED:        { label: 'Completed',     bg: '#F5F3FF', color: '#7C3AED', border: '#DDD6FE',  dot: '#A78BFA' },
 };
 
-export default function StatusBadge({ status, size = 'sm', pulse = false }) {
-  const cfg = STATUS_CONFIG[status] ?? {
-    color: '#8fa3bd', bg: 'rgba(143,163,189,0.1)', border: 'rgba(143,163,189,0.2)', label: status ?? 'Unknown', dot: '#8fa3bd'
-  };
-
-  const isActive = ['IN_TRANSIT', 'NEAR_DESTINATION'].includes(status);
+export default function StatusBadge({ status, pulse = false, size = 'sm' }) {
+  const cfg   = STATUS_CONFIG[status] ?? STATUS_CONFIG.CREATED;
+  const sizes = size === 'lg'
+    ? 'px-3 py-1 text-xs gap-1.5'
+    : 'px-2.5 py-0.5 text-xs gap-1.5';
 
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full font-semibold select-none"
-      style={{
-        background: cfg.bg,
-        color: cfg.color,
-        border: `1px solid ${cfg.border}`,
-        fontSize: size === 'sm' ? '11px' : size === 'md' ? '12px' : '13px',
-        padding: size === 'sm' ? '3px 10px' : '4px 12px',
-        boxShadow: isActive ? `0 0 10px ${cfg.color}30` : undefined,
-      }}
+      className={`inline-flex items-center rounded-full font-semibold ${sizes}`}
+      style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
     >
       <span
-        className={`rounded-full flex-shrink-0 ${(isActive || pulse) ? 'animate-ping-slow' : ''}`}
-        style={{
-          width: size === 'sm' ? '5px' : '6px',
-          height: size === 'sm' ? '5px' : '6px',
-          background: cfg.dot,
-          display: 'inline-block',
-        }}
+        className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${pulse ? 'animate-pulse-dot' : ''}`}
+        style={{ background: cfg.dot }}
       />
       {cfg.label}
     </span>
