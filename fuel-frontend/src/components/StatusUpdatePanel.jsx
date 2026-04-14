@@ -1,112 +1,122 @@
 import React, { useState } from 'react';
-import { ArrowRight, Navigation, Loader2, AlertCircle, CheckCircle, ChevronUp } from 'lucide-react';
+import { ChevronRight, Loader2, MapPin, AlertTriangle, Navigation } from 'lucide-react';
 import useDeliveryStore from '../store/deliveryStore';
 import toast from 'react-hot-toast';
 
 const STATUS_FLOW = {
-  CREATED: 'PACKED', PACKED: 'IN_TRANSIT', IN_TRANSIT: 'NEAR_DESTINATION',
-  NEAR_DESTINATION: 'DELIVERED', DELIVERED: 'COMPLETED',
+  CREATED:          'PACKED',
+  PACKED:           'IN_TRANSIT',
+  IN_TRANSIT:       'NEAR_DESTINATION',
+  NEAR_DESTINATION: 'DELIVERED',
+  DELIVERED:        'COMPLETED',
 };
 
-const STATUS_CONFIG = {
-  PACKED:           { label: 'Tandai Sudah Dikemas',     color: '#60a5fa', needsGps: false },
-  IN_TRANSIT:       { label: 'Mulai Perjalanan',          color: '#fb923c', needsGps: true },
-  NEAR_DESTINATION: { label: 'Tandai Hampir Tiba',        color: '#22d3ee', needsGps: true },
-  DELIVERED:        { label: 'Konfirmasi Terkirim',       color: '#4ade80', needsGps: true },
-  COMPLETED:        { label: 'Selesaikan Pengiriman',     color: '#a78bfa', needsGps: false },
+const NEXT_LABELS = {
+  PACKED:           { label: 'Tandai: Dikemas',           color: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE' },
+  IN_TRANSIT:       { label: 'Mulai Pengiriman',          color: '#EA580C', bg: '#FFF7ED', border: '#FED7AA' },
+  NEAR_DESTINATION: { label: 'Mendekati Tujuan',          color: '#0E7490', bg: '#ECFEFF', border: '#A5F3FC' },
+  DELIVERED:        { label: 'Konfirmasi Terkirim (GPS)', color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
+  COMPLETED:        { label: 'Selesai',                   color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE' },
 };
 
 export default function StatusUpdatePanel({ delivery, onUpdated }) {
-  const [loading, setLoading] = useState(false);
-  const [notes, setNotes] = useState('');
   const { updateStatus } = useDeliveryStore();
+  const [loading, setLoading] = useState(false);
+  const [notes,   setNotes]   = useState('');
+  const [showNote, setShowNote] = useState(false);
 
   const nextStatus = STATUS_FLOW[delivery.status];
-  const config = nextStatus ? STATUS_CONFIG[nextStatus] : null;
+  const nextInfo   = NEXT_LABELS[nextStatus];
 
-  if (!nextStatus || !config) return null;
+  if (!nextStatus || delivery.status === 'COMPLETED') {
+    return (
+      <div className="flex items-center gap-2 px-4 py-3 rounded-xl"
+        style={{ background: '#F5F3FF', border: '1px solid #DDD6FE' }}>
+        <div className="w-2 h-2 rounded-full bg-violet-500" />
+        <p className="text-sm font-semibold text-violet-700">Pengiriman Selesai</p>
+      </div>
+    );
+  }
 
   const handleUpdate = async () => {
     setLoading(true);
     try {
-      let lat, lng;
-      if (config.needsGps) {
-        toast('Mengambil lokasi GPS...', { icon: '📍' });
-        const pos = await new Promise((res, rej) =>
-          navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 10000 })
-        );
-        lat = pos.coords.latitude;
-        lng = pos.coords.longitude;
+      const payload = { status: nextStatus, notes };
+
+      if (nextStatus === 'DELIVERED') {
+        const pos = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true, timeout: 15000,
+          });
+        });
+        payload.latitude  = pos.coords.latitude;
+        payload.longitude = pos.coords.longitude;
       }
 
-      await updateStatus(delivery.id, { status: nextStatus, notes, latitude: lat, longitude: lng });
-      toast.success(`Status → ${nextStatus.replace(/_/g, ' ')}`);
+      await updateStatus(delivery.id, payload);
+      toast.success(`Status diperbarui ke ${nextStatus.replace(/_/g, ' ')}`);
       setNotes('');
+      setShowNote(false);
       onUpdated?.();
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Gagal update status';
-      toast.error(msg);
+      if (err.code === 1) {
+        toast.error('Akses GPS ditolak. Izinkan akses lokasi terlebih dahulu.');
+      } else {
+        toast.error(err.response?.data?.message || 'Gagal update status');
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="rounded-2xl p-4 space-y-3"
-      style={{
-        background: `linear-gradient(135deg, ${config.color}08, ${config.color}04)`,
-        border: `1px solid ${config.color}25`,
-      }}>
-      {/* Status flow indicator */}
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#4a6080' }}>
-          {delivery.status?.replace(/_/g, ' ')}
-        </span>
-        <ArrowRight size={13} style={{ color: config.color }} />
-        <span className="text-xs font-bold uppercase tracking-wider" style={{ color: config.color }}>
-          {nextStatus.replace(/_/g, ' ')}
-        </span>
-      </div>
-
-      {/* GPS warning */}
-      {config.needsGps && (
-        <div className="flex items-start gap-2 rounded-xl p-2.5 text-xs"
-          style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', color: '#fbbf24' }}>
-          <AlertCircle size={13} className="mt-0.5 flex-shrink-0" />
-          <span>
-            GPS diperlukan.
-            {nextStatus === 'DELIVERED' ? ` Harus dalam radius ${delivery.geofence_radius}m dari tujuan.` : ' Lokasi akan direkam.'}
-          </span>
+    <div className="space-y-2">
+      {/* GPS warning untuk DELIVERED */}
+      {nextStatus === 'DELIVERED' && (
+        <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl"
+          style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}>
+          <Navigation size={14} className="text-amber-600 mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-amber-700">
+            GPS akan diaktifkan untuk validasi lokasi pengiriman.
+          </p>
         </div>
       )}
 
-      {/* Notes */}
-      <input
-        type="text"
-        className="input text-sm py-2.5"
-        placeholder="Catatan (opsional)..."
-        value={notes}
-        onChange={e => setNotes(e.target.value)}
-        id={`status-notes-${delivery.id}`}
-      />
+      {/* Note toggle */}
+      <button
+        onClick={() => setShowNote(!showNote)}
+        className="text-xs text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1"
+      >
+        {showNote ? '− Tutup catatan' : '+ Tambah catatan (opsional)'}
+      </button>
+
+      {showNote && (
+        <textarea
+          className="input text-xs resize-none"
+          rows={2}
+          placeholder="Tambah catatan untuk update ini..."
+          value={notes}
+          onChange={e => setNotes(e.target.value)}
+        />
+      )}
 
       {/* Update button */}
       <button
-        id={`update-status-${delivery.id}`}
         onClick={handleUpdate}
-        className="w-full py-3 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2"
         disabled={loading}
+        className="w-full flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 disabled:opacity-50"
         style={{
-          background: loading ? 'rgba(30,45,66,0.5)' : `linear-gradient(135deg, ${config.color}, ${config.color}cc)`,
-          color: loading ? '#4a6080' : '#000',
-          boxShadow: loading ? undefined : `0 4px 16px ${config.color}35`,
+          background: nextInfo.bg,
+          color:      nextInfo.color,
+          border:     `1.5px solid ${nextInfo.border}`,
         }}
+        id={`update-status-${delivery.id}`}
       >
-        {loading ? (
-          <><Loader2 size={16} className="animate-spin" /> Memproses...</>
-        ) : (
-          <><ChevronUp size={16} /> {config.label}</>
-        )}
+        <span>{loading ? 'Memproses...' : nextInfo.label}</span>
+        {loading
+          ? <Loader2 size={15} className="animate-spin" />
+          : <ChevronRight size={15} />
+        }
       </button>
     </div>
   );
