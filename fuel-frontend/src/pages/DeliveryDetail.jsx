@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Package, User, Truck, MapPin, Camera,
-  FileText, Clock, Phone, Fuel, AlertCircle, CheckCircle, DollarSign
+  Clock, Phone, Fuel, CheckCircle, DollarSign, FileText
 } from 'lucide-react';
 import useDeliveryStore from '../store/deliveryStore';
 import useAuthStore from '../store/authStore';
@@ -14,7 +14,7 @@ import StatusUpdatePanel from '../components/StatusUpdatePanel';
 
 const TABS = [
   { id: 'detail',   label: 'Detail',   icon: Package },
-  { id: 'map',      label: 'Map',      icon: MapPin },
+  { id: 'map',      label: 'Peta',     icon: MapPin },
   { id: 'photos',   label: 'Foto',     icon: Camera },
   { id: 'timeline', label: 'Timeline', icon: Clock },
 ];
@@ -22,9 +22,25 @@ const TABS = [
 function InfoRow({ label, value, mono = false, accent }) {
   return (
     <div>
-      <p className="text-[11px] font-semibold uppercase tracking-widest mb-0.5" style={{ color: '#4a6080' }}>{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider mb-0.5" style={{ color: '#94A3B8', letterSpacing: '0.06em' }}>
+        {label}
+      </p>
       <p className={`text-sm font-medium ${mono ? 'font-mono' : ''}`}
-        style={{ color: accent ?? '#f0f4f8' }}>{value ?? '—'}</p>
+        style={{ color: accent ?? '#0F172A' }}>
+        {value ?? '—'}
+      </p>
+    </div>
+  );
+}
+
+function SectionHeader({ icon: Icon, title, color = '#2563EB', bg = '#EFF6FF' }) {
+  return (
+    <div className="flex items-center gap-2 mb-4">
+      <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+        style={{ background: bg }}>
+        <Icon size={16} style={{ color }} />
+      </div>
+      <h3 className="font-semibold text-sm" style={{ color: '#0F172A' }}>{title}</h3>
     </div>
   );
 }
@@ -33,16 +49,16 @@ export default function DeliveryDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { current, fetchDelivery } = useDeliveryStore();
-  const { hasRole } = useAuthStore();
-  const [tab, setTab] = useState('detail');
+  const { hasRole }               = useAuthStore();
+  const [tab, setTab]             = useState('detail');
 
   useEffect(() => { fetchDelivery(id); }, [id]);
 
   if (!current) {
     return (
       <div className="flex h-64 items-center justify-center gap-3">
-        <div className="w-8 h-8 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
-        <p className="text-sm" style={{ color: '#4a6080' }}>Memuat data...</p>
+        <div className="w-8 h-8 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+        <p className="text-sm text-slate-400">Memuat data pengiriman...</p>
       </div>
     );
   }
@@ -51,7 +67,8 @@ export default function DeliveryDetail() {
     && !['COMPLETED'].includes(current.status);
 
   return (
-    <div className="max-w-2xl space-y-5 animate-fade-in">
+    <div className="max-w-2xl space-y-4 animate-fade-in">
+
       {/* Header */}
       <div className="flex items-center gap-3">
         <button className="btn-ghost p-2" onClick={() => navigate(-1)} id="back-btn">
@@ -59,36 +76,42 @@ export default function DeliveryDetail() {
         </button>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="font-mono text-xl font-bold text-text-primary">{current.delivery_code}</h1>
-            <StatusBadge status={current.status} size="md" pulse />
+            <h1 className="font-mono text-xl font-bold" style={{ color: '#0F172A' }}>
+              {current.delivery_code}
+            </h1>
+            <StatusBadge status={current.status} size="lg" pulse />
           </div>
-          <p className="text-sm mt-0.5" style={{ color: '#4a6080' }}>
+          <p className="text-sm mt-0.5 text-slate-400">
             {current.customer_name} · {current.fuel_type?.replace(/_/g, ' ')}
           </p>
         </div>
       </div>
 
-      {/* Status update panel */}
+      {/* Status Update Panel */}
       {canUpdateStatus && (
-        <StatusUpdatePanel delivery={current} onUpdated={() => fetchDelivery(id)} />
+        <div className="card">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3"
+            style={{ letterSpacing: '0.06em' }}>
+            Update Status
+          </p>
+          <StatusUpdatePanel delivery={current} onUpdated={() => fetchDelivery(id)} />
+        </div>
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 rounded-xl p-1"
-        style={{ background: 'rgba(6,13,26,0.8)', border: '1px solid rgba(30,45,66,0.8)' }}>
+      <div className="flex gap-1 bg-slate-100 rounded-xl p-1">
         {TABS.map(t => (
           <button
             key={t.id}
             id={`tab-${t.id}`}
             onClick={() => setTab(t.id)}
             className="flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-all duration-200"
-            style={tab === t.id ? {
-              background: 'linear-gradient(135deg, #f97316, #ea6c0a)',
-              color: 'white',
-              boxShadow: '0 2px 12px rgba(249,115,22,0.3)',
-            } : { color: '#4a6080' }}
+            style={tab === t.id
+              ? { background: '#FFFFFF', color: '#2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }
+              : { color: '#64748B' }
+            }
           >
-            <t.icon size={14} />
+            <t.icon size={13} />
             <span className="hidden sm:block">{t.label}</span>
           </button>
         ))}
@@ -97,14 +120,9 @@ export default function DeliveryDetail() {
       {/* Tab: Detail */}
       {tab === 'detail' && (
         <div className="space-y-4 animate-fade-in">
-          {/* Customer info */}
+          {/* Customer */}
           <div className="card">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(249,115,22,0.1)' }}>
-                <User size={14} style={{ color: '#f97316' }} />
-              </div>
-              <h3 className="font-semibold text-text-primary text-sm">Info Pelanggan</h3>
-            </div>
+            <SectionHeader icon={User} title="Info Pelanggan" color="#2563EB" bg="#EFF6FF" />
             <div className="grid grid-cols-2 gap-4">
               <InfoRow label="Nama" value={current.customer_name} />
               <InfoRow label="Telepon" value={current.customer_phone} />
@@ -112,60 +130,53 @@ export default function DeliveryDetail() {
                 <InfoRow label="Alamat Tujuan" value={current.destination_address} />
               </div>
               <InfoRow label="Koordinat" value={`${current.destination_lat}, ${current.destination_lng}`} mono />
-              <InfoRow label="Geofence Radius" value={`${current.geofence_radius}m`} />
+              <InfoRow label="Geofence" value={`${current.geofence_radius}m radius`} />
             </div>
           </div>
 
           {/* Delivery info */}
           <div className="card">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(249,115,22,0.1)' }}>
-                <Truck size={14} style={{ color: '#f97316' }} />
-              </div>
-              <h3 className="font-semibold text-text-primary text-sm">Detail Pengiriman</h3>
-            </div>
+            <SectionHeader icon={Truck} title="Detail Pengiriman" color="#F97316" bg="#FFF7ED" />
             <div className="grid grid-cols-2 gap-4">
-              <InfoRow label="Driver" value={current.driver?.name ?? 'Belum assign'} />
+              <InfoRow label="Driver" value={current.driver?.name ?? 'Belum di-assign'} />
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest mb-0.5" style={{ color: '#4a6080' }}>Jenis BBM</p>
-                <span className="badge-orange text-xs">{current.fuel_type?.replace(/_/g, ' ')}</span>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-1"
+                  style={{ color: '#94A3B8', letterSpacing: '0.06em' }}>Jenis BBM</p>
+                <span className="badge badge-blue">{current.fuel_type?.replace(/_/g, ' ')}</span>
               </div>
               <InfoRow label="Volume" value={`${current.volume_liters} Liter`} mono />
-              <InfoRow label="Harga/L" value={`Rp ${Number(current.price_per_liter).toLocaleString('id-ID')}`} mono />
-              <div className="col-span-2">
-                <p className="text-[11px] font-semibold uppercase tracking-widest mb-0.5" style={{ color: '#4a6080' }}>Total Harga</p>
-                <p className="font-display text-2xl font-bold text-gradient-orange">
+              <InfoRow label="Harga / Liter" value={`Rp ${Number(current.price_per_liter).toLocaleString('id-ID')}`} mono />
+              <div className="col-span-2 pt-2 border-t border-slate-100">
+                <p className="text-xs font-semibold uppercase tracking-wider mb-1"
+                  style={{ color: '#94A3B8', letterSpacing: '0.06em' }}>Total Harga</p>
+                <p className="text-2xl font-bold" style={{ color: '#2563EB' }}>
                   Rp {Number(current.total_price).toLocaleString('id-ID')}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Proof of delivery */}
+          {/* Proof of Delivery */}
           {current.proof && (
-            <div className="card" style={{ border: '1px solid rgba(74,222,128,0.2)' }}>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(74,222,128,0.1)' }}>
-                  <CheckCircle size={14} style={{ color: '#4ade80' }} />
-                </div>
-                <h3 className="font-semibold text-text-primary text-sm">Bukti Pengiriman</h3>
-              </div>
+            <div className="card" style={{ border: '1px solid #A7F3D0' }}>
+              <SectionHeader icon={CheckCircle} title="Bukti Pengiriman (POD)" color="#059669" bg="#ECFDF5" />
               <div className="grid grid-cols-2 gap-4">
                 <InfoRow label="Penerima" value={current.proof.recipient_name} />
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-widest mb-1" style={{ color: '#4a6080' }}>Geofence</p>
-                  <span className={`badge text-xs ${current.proof.geofence_valid ? 'badge-green' : 'badge-red'}`}>
+                  <p className="text-xs font-semibold uppercase tracking-wider mb-1"
+                    style={{ color: '#94A3B8' }}>Validasi Geofence</p>
+                  <span className={`badge ${current.proof.geofence_valid ? 'badge-green' : 'badge-red'}`}>
                     {current.proof.geofence_valid ? '✓ Valid' : '✗ Invalid'}
                   </span>
                 </div>
                 <InfoRow label="Jarak dari Tujuan" value={`${current.proof.distance_from_destination}m`} />
               </div>
               {current.proof.signature_path && (
-                <div className="mt-4">
+                <div className="mt-4 pt-4 border-t border-slate-100">
                   <p className="label mb-2">Tanda Tangan</p>
-                  <div className="rounded-xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(30,45,66,0.8)' }}>
+                  <div className="rounded-xl overflow-hidden bg-slate-50" style={{ border: '1px solid #E2E8F0' }}>
                     <img
-                      src={`${import.meta.env.VITE_API_URL?.replace('/api','')}` + `/storage/${current.proof.signature_path}`}
+                      src={`${import.meta.env.VITE_API_URL?.replace('/api','')}/storage/${current.proof.signature_path}`}
                       alt="Tanda tangan"
                       className="h-24 object-contain p-3"
                     />
@@ -180,11 +191,11 @@ export default function DeliveryDetail() {
       {/* Tab: Map */}
       {tab === 'map' && (
         <div className="animate-fade-in">
-          <div className="rounded-2xl overflow-hidden" style={{ height: 420, border: '1px solid rgba(30,45,66,0.8)' }}>
+          <div className="rounded-2xl overflow-hidden" style={{ height: 420, border: '1px solid #E2E8F0' }}>
             <DeliveryMap delivery={current} locations={current.locations || []} />
           </div>
           {current.locations?.length > 0 && (
-            <p className="text-xs mt-2 text-center" style={{ color: '#4a6080' }}>
+            <p className="text-xs mt-2 text-center text-slate-400">
               {current.locations.length} titik lokasi terekam
             </p>
           )}
@@ -195,21 +206,30 @@ export default function DeliveryDetail() {
       {tab === 'photos' && (
         <div className="space-y-4 animate-fade-in">
           {hasRole(['driver']) && !['COMPLETED'].includes(current.status) && (
-            <PhotoUpload deliveryId={current.id} onUploaded={() => fetchDelivery(id)} />
+            <div className="card">
+              <p className="label mb-3">Upload Foto Pengiriman</p>
+              <PhotoUpload deliveryId={current.id} onUploaded={() => fetchDelivery(id)} />
+            </div>
           )}
+
           {(current.photos || []).length === 0 ? (
-            <div className="card py-12 text-center">
-              <Camera size={36} className="mx-auto mb-3" style={{ color: '#2a3f5a' }} />
-              <p className="text-sm" style={{ color: '#4a6080' }}>Belum ada foto</p>
+            <div className="card py-14 text-center">
+              <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center"
+                style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+                <Camera size={26} className="text-slate-300" />
+              </div>
+              <p className="text-sm font-medium text-slate-400">Belum ada foto</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-3">
               {(current.photos || []).map(photo => (
-                <div key={photo.id} className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(30,45,66,0.8)' }}>
+                <div key={photo.id} className="rounded-2xl overflow-hidden"
+                  style={{ border: '1px solid #E2E8F0' }}>
                   <img src={photo.photo_url} alt={photo.caption || 'Foto'} className="w-full h-40 object-cover" />
-                  <div className="p-3" style={{ background: 'rgba(13,20,36,0.9)' }}>
-                    <span className="badge-orange text-[10px]">{photo.photo_type}</span>
-                    {photo.caption && <p className="text-xs mt-1" style={{ color: '#8fa3bd' }}>{photo.caption}</p>}
+                  <div className="p-3 bg-white">
+                    <span className="badge badge-orange text-[10px]">{photo.photo_type}</span>
+                    {photo.caption && <p className="text-xs mt-1 text-slate-500">{photo.caption}</p>}
+                    {photo.uploader && <p className="text-[10px] mt-1 text-slate-400">Oleh: {photo.uploader.name}</p>}
                   </div>
                 </div>
               ))}
@@ -221,10 +241,7 @@ export default function DeliveryDetail() {
       {/* Tab: Timeline */}
       {tab === 'timeline' && (
         <div className="card animate-fade-in">
-          <div className="flex items-center gap-2 mb-5">
-            <Clock size={15} style={{ color: '#f97316' }} />
-            <h3 className="font-semibold text-text-primary text-sm">Riwayat Status</h3>
-          </div>
+          <SectionHeader icon={Clock} title="Riwayat Status" color="#2563EB" bg="#EFF6FF" />
           <StatusTimeline currentStatus={current.status} logs={current.status_logs || current.statusLogs || []} />
         </div>
       )}
