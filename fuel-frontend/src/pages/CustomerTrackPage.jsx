@@ -6,19 +6,19 @@ import DeliveryMap from '../components/DeliveryMap';
 const STATUSES = ['CREATED','PACKED','IN_TRANSIT','NEAR_DESTINATION','DELIVERED','COMPLETED'];
 
 const STATUS_CONFIG = {
-  CREATED:          { label: 'Dibuat',            icon: Clock,         color: '#94a3b8' },
-  PACKED:           { label: 'Dikemas',           icon: Package,       color: '#60a5fa' },
-  IN_TRANSIT:       { label: 'Dalam Perjalanan',  icon: Truck,         color: '#fb923c' },
-  NEAR_DESTINATION: { label: 'Hampir Tiba',       icon: MapPin,        color: '#22d3ee' },
-  DELIVERED:        { label: 'Terkirim',          icon: CheckCircle,   color: '#4ade80' },
-  COMPLETED:        { label: 'Selesai',           icon: CheckCircle,   color: '#a78bfa' },
+  CREATED:          { label: 'Dibuat',           icon: Clock,       color: '#94A3B8', bg: '#F8FAFC' },
+  PACKED:           { label: 'Dikemas',           icon: Package,     color: '#2563EB', bg: '#EFF6FF' },
+  IN_TRANSIT:       { label: 'Dalam Perjalanan',  icon: Truck,       color: '#EA580C', bg: '#FFF7ED' },
+  NEAR_DESTINATION: { label: 'Hampir Tiba',       icon: MapPin,      color: '#0E7490', bg: '#ECFEFF' },
+  DELIVERED:        { label: 'Terkirim',          icon: CheckCircle, color: '#059669', bg: '#ECFDF5' },
+  COMPLETED:        { label: 'Selesai',           icon: CheckCircle, color: '#7C3AED', bg: '#F5F3FF' },
 };
 
 export default function CustomerTrackPage() {
-  const [code, setCode] = useState('');
+  const [code,     setCode]     = useState('');
   const [delivery, setDelivery] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loading,  setLoading]  = useState(false);
+  const [error,    setError]    = useState('');
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -39,28 +39,24 @@ export default function CustomerTrackPage() {
   const currentIdx = delivery ? STATUSES.indexOf(delivery.status) : -1;
 
   return (
-    <div className="min-h-screen pb-10" style={{ background: '#030712' }}>
-      {/* Ambient */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-80 opacity-10"
-          style={{ background: 'radial-gradient(ellipse at top, #f97316, transparent 70%)' }} />
+    <div className="min-h-screen pb-10" style={{ background: '#F8FAFF' }}>
+
+      {/* Top banner */}
+      <div className="pt-10 pb-6 text-center"
+        style={{ background: 'linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%)' }}>
+        <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-white/20"
+          style={{ border: '1px solid rgba(255,255,255,0.3)' }}>
+          <Fuel size={30} className="text-white" />
+        </div>
+        <h1 className="text-2xl font-bold text-white" style={{ letterSpacing: '-0.02em' }}>
+          Lacak Pengiriman
+        </h1>
+        <p className="text-sm mt-1 text-blue-200">
+          Masukkan kode pengiriman yang tertera pada nota Anda
+        </p>
       </div>
 
-      <div className="max-w-md mx-auto px-4 pt-10 space-y-6 relative z-10">
-        {/* Header */}
-        <div className="text-center pb-2">
-          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center animate-float"
-            style={{
-              background: 'linear-gradient(135deg, #f97316, #ea6c0a)',
-              boxShadow: '0 0 30px rgba(249,115,22,0.4)',
-            }}>
-            <Fuel size={30} className="text-white" />
-          </div>
-          <h1 className="font-display text-2xl font-bold text-text-primary">Lacak Pengiriman</h1>
-          <p className="text-sm mt-1" style={{ color: '#4a6080' }}>
-            Masukkan kode pengiriman yang tertera pada nota Anda
-          </p>
-        </div>
+      <div className="max-w-md mx-auto px-4 pt-6 space-y-5">
 
         {/* Search form */}
         <form onSubmit={handleSearch} className="flex gap-2">
@@ -84,29 +80,28 @@ export default function CustomerTrackPage() {
 
         {/* Error */}
         {error && (
-          <div className="rounded-xl p-4 flex items-start gap-3"
-            style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
-            <AlertCircle size={16} className="flex-shrink-0 mt-0.5" style={{ color: '#f87171' }} />
-            <p className="text-sm" style={{ color: '#f87171' }}>{error}</p>
+          <div className="alert-error">
+            <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+            <p className="text-sm">{error}</p>
           </div>
         )}
 
         {/* Result */}
         {delivery && (
           <div className="space-y-4 animate-slide-up">
-            {/* Header card */}
-            <div className="card"
-              style={{
-                borderColor: `${STATUS_CONFIG[delivery.status]?.color}25` || 'rgba(249,115,22,0.25)',
-              }}>
-              <div className="flex items-start justify-between mb-4">
+
+            {/* Status card */}
+            <div className="card">
+              <div className="flex items-start justify-between mb-5">
                 <div>
-                  <p className="font-mono font-bold text-text-primary text-lg">{delivery.delivery_code}</p>
-                  <p className="text-sm mt-0.5" style={{ color: '#8fa3bd' }}>{delivery.customer_name}</p>
+                  <p className="font-mono font-bold text-lg" style={{ color: '#0F172A' }}>
+                    {delivery.delivery_code}
+                  </p>
+                  <p className="text-sm mt-0.5 text-slate-500">{delivery.customer_name}</p>
                 </div>
-                <span className="badge text-xs"
+                <span className="badge"
                   style={{
-                    background: `${STATUS_CONFIG[delivery.status]?.color}15`,
+                    background: STATUS_CONFIG[delivery.status]?.bg,
                     color: STATUS_CONFIG[delivery.status]?.color,
                     border: `1px solid ${STATUS_CONFIG[delivery.status]?.color}30`,
                   }}>
@@ -117,39 +112,37 @@ export default function CustomerTrackPage() {
               {/* Progress stepper */}
               <div className="space-y-0">
                 {STATUSES.map((s, i) => {
-                  const cfg = STATUS_CONFIG[s];
-                  const Icon = cfg.icon;
-                  const done = i <= currentIdx;
+                  const cfg    = STATUS_CONFIG[s];
+                  const Icon   = cfg.icon;
+                  const done   = i <= currentIdx;
                   const isActive = i === currentIdx;
 
                   return (
                     <div key={s} className="flex items-center gap-3 relative">
-                      {/* Connector line */}
+                      {/* Connector */}
                       {i < STATUSES.length - 1 && (
-                        <div className="absolute left-3.5 top-8 w-0.5 h-6"
-                          style={{
-                            background: done ? `linear-gradient(${cfg.color}, ${STATUS_CONFIG[STATUSES[i+1]]?.color}60)` : 'rgba(30,45,66,0.8)'
-                          }} />
+                        <div className="absolute left-3.5 top-8 w-0.5 h-6 rounded-full"
+                          style={{ background: done && i < currentIdx ? '#A7F3D0' : '#E2E8F0' }} />
                       )}
 
                       <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 z-10 transition-all duration-300"
                         style={{
-                          background: done ? `${cfg.color}20` : 'rgba(30,45,66,0.8)',
-                          border: `1.5px solid ${done ? cfg.color : 'rgba(30,45,66,0.8)'}`,
-                          boxShadow: isActive ? `0 0 12px ${cfg.color}50` : undefined,
+                          background: done ? cfg.bg : '#F8FAFC',
+                          border: `1.5px solid ${done ? cfg.color + '60' : '#E2E8F0'}`,
+                          boxShadow: isActive ? `0 0 0 3px ${cfg.color}20` : undefined,
                         }}>
-                        <Icon size={13} style={{ color: done ? cfg.color : '#2a3f5a' }} strokeWidth={2} />
+                        <Icon size={13} style={{ color: done ? cfg.color : '#CBD5E1' }} strokeWidth={2} />
                       </div>
 
-                      <div className="flex-1 py-2.5">
+                      <div className="flex-1 py-3">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-semibold"
-                            style={{ color: done ? cfg.color : '#2a3f5a' }}>
+                            style={{ color: done ? cfg.color : '#CBD5E1' }}>
                             {cfg.label}
                           </span>
                           {isActive && (
-                            <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full"
-                              style={{ background: `${cfg.color}20`, color: cfg.color }}>
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                              style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.color}30` }}>
                               Sekarang
                             </span>
                           )}
@@ -157,8 +150,8 @@ export default function CustomerTrackPage() {
                       </div>
 
                       {isActive && (
-                        <div className="w-1.5 h-1.5 rounded-full animate-pulse"
-                          style={{ background: cfg.color, boxShadow: `0 0 6px ${cfg.color}` }} />
+                        <div className="w-2 h-2 rounded-full animate-pulse"
+                          style={{ background: cfg.color }} />
                       )}
                     </div>
                   );
@@ -166,31 +159,33 @@ export default function CustomerTrackPage() {
               </div>
             </div>
 
-            {/* Info card */}
+            {/* Detail info */}
             <div className="card space-y-3">
-              <h3 className="font-semibold text-text-primary text-sm">Detail Pengiriman</h3>
-              <div className="space-y-2.5">
+              <h3 className="font-semibold text-sm" style={{ color: '#0F172A' }}>Detail Pengiriman</h3>
+              <div className="space-y-2">
                 {[
                   { label: 'Jenis BBM', value: delivery.fuel_type?.replace(/_/g, ' ') },
-                  { label: 'Volume', value: `${delivery.volume_liters} Liter`, mono: true },
-                  { label: 'Driver', value: delivery.driver?.name ?? 'Sedang diproses' },
+                  { label: 'Volume',    value: `${delivery.volume_liters} Liter`, mono: true },
+                  { label: 'Driver',    value: delivery.driver?.name ?? 'Sedang diproses' },
                 ].map(({ label, value, mono }) => (
                   <div key={label} className="flex items-center justify-between py-2"
-                    style={{ borderBottom: '1px solid rgba(30,45,66,0.5)' }}>
-                    <span className="text-xs" style={{ color: '#4a6080' }}>{label}</span>
-                    <span className={`text-xs font-semibold text-text-primary ${mono ? 'font-mono' : ''}`}>{value}</span>
+                    style={{ borderBottom: '1px solid #F1F5F9' }}>
+                    <span className="text-xs text-slate-400">{label}</span>
+                    <span className={`text-xs font-semibold text-slate-700 ${mono ? 'font-mono' : ''}`}>
+                      {value}
+                    </span>
                   </div>
                 ))}
                 <div className="pt-1">
-                  <p className="text-[11px] uppercase font-semibold tracking-wide mb-1" style={{ color: '#4a6080' }}>Alamat Tujuan</p>
-                  <p className="text-xs text-text-secondary">{delivery.destination_address}</p>
+                  <p className="text-xs uppercase font-semibold tracking-wider mb-1 text-slate-400">Alamat Tujuan</p>
+                  <p className="text-xs text-slate-500">{delivery.destination_address}</p>
                 </div>
               </div>
             </div>
 
             {/* Map */}
             {delivery.latest_location && (
-              <div className="rounded-2xl overflow-hidden" style={{ height: 260, border: '1px solid rgba(30,45,66,0.8)' }}>
+              <div className="rounded-2xl overflow-hidden" style={{ height: 260, border: '1px solid #E2E8F0' }}>
                 <DeliveryMap
                   delivery={{ destination_lat: delivery.destination_lat, destination_lng: delivery.destination_lng }}
                   locations={[delivery.latest_location]}
@@ -201,18 +196,24 @@ export default function CustomerTrackPage() {
             {/* Contact driver */}
             {delivery.driver?.phone && (
               <a href={`tel:${delivery.driver.phone}`}
-                className="card flex items-center gap-3 transition-all hover:border-glow-orange"
-                style={{ borderColor: 'rgba(249,115,22,0.2)' }}>
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-                  style={{ background: 'rgba(249,115,22,0.1)' }}>
-                  <Phone size={16} style={{ color: '#f97316' }} />
+                className="card flex items-center gap-3 transition-all hover:border-blue-200 hover:bg-blue-50">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ background: '#EFF6FF' }}>
+                  <Phone size={17} style={{ color: '#2563EB' }} />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-text-primary">Hubungi Driver</p>
-                  <p className="text-xs mt-0.5" style={{ color: '#4a6080' }}>{delivery.driver.phone}</p>
+                  <p className="text-sm font-semibold" style={{ color: '#0F172A' }}>Hubungi Driver</p>
+                  <p className="text-xs mt-0.5 text-slate-400">{delivery.driver.phone}</p>
                 </div>
               </a>
             )}
+
+            {/* Login link */}
+            <div className="text-center">
+              <a href="/login" className="text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors">
+                Punya akun? Masuk ke dashboard →
+              </a>
+            </div>
           </div>
         )}
       </div>
