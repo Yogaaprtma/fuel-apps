@@ -6,20 +6,20 @@ import toast from 'react-hot-toast';
 const ROLES = ['super-admin', 'admin-operasional', 'driver', 'customer'];
 
 const ROLE_CONFIG = {
-  'super-admin':       { color: '#a78bfa', bg: 'rgba(167,139,250,0.12)', border: 'rgba(167,139,250,0.25)', label: 'Super Admin' },
-  'admin-operasional': { color: '#60a5fa', bg: 'rgba(59,130,246,0.12)',  border: 'rgba(59,130,246,0.25)',  label: 'Admin Ops' },
-  'driver':            { color: '#fb923c', bg: 'rgba(249,115,22,0.12)',  border: 'rgba(249,115,22,0.25)',  label: 'Driver' },
-  'customer':          { color: '#4ade80', bg: 'rgba(34,197,94,0.12)',   border: 'rgba(34,197,94,0.25)',   label: 'Customer' },
+  'super-admin':       { color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE', label: 'Super Admin' },
+  'admin-operasional': { color: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE', label: 'Admin Ops' },
+  'driver':            { color: '#EA580C', bg: '#FFF7ED', border: '#FED7AA', label: 'Driver' },
+  'customer':          { color: '#059669', bg: '#ECFDF5', border: '#A7F3D0', label: 'Customer' },
 };
 
 const EMPTY_FORM = { name: '', email: '', phone: '', password: '', role: 'driver' };
 
 export default function UsersPage() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState('');
-  const [modal, setModal] = useState(null);
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [users,      setUsers]      = useState([]);
+  const [loading,    setLoading]    = useState(false);
+  const [search,     setSearch]     = useState('');
+  const [modal,      setModal]      = useState(null);
+  const [form,       setForm]       = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
 
   const fetchUsers = async () => {
@@ -27,13 +27,15 @@ export default function UsersPage() {
     try {
       const { data } = await userApi.list({ search });
       setUsers(data.data ?? []);
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchUsers(); }, [search]);
 
   const openCreate = () => { setForm(EMPTY_FORM); setModal('create'); };
-  const openEdit = (u) => {
+  const openEdit   = (u) => {
     setForm({ name: u.name, email: u.email, phone: u.phone || '', password: '', role: u.roles?.[0]?.name || 'driver' });
     setModal(u);
   };
@@ -42,23 +44,40 @@ export default function UsersPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      if (modal === 'create') { await userApi.create(form); toast.success('User berhasil dibuat!'); }
-      else { await userApi.update(modal.id, form); toast.success('User berhasil diupdate!'); }
-      setModal(null); fetchUsers();
+      if (modal === 'create') {
+        await userApi.create(form);
+        toast.success('User berhasil dibuat!');
+      } else {
+        await userApi.update(modal.id, form);
+        toast.success('User berhasil diperbarui!');
+      }
+      setModal(null);
+      fetchUsers();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Terjadi kesalahan');
-    } finally { setSubmitting(false); }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleDelete = async (id) => {
     if (!confirm('Yakin ingin menghapus user ini?')) return;
-    try { await userApi.delete(id); toast.success('User dihapus'); fetchUsers(); }
-    catch { toast.error('Gagal menghapus user'); }
+    try {
+      await userApi.delete(id);
+      toast.success('User dihapus');
+      fetchUsers();
+    } catch {
+      toast.error('Gagal menghapus user');
+    }
   };
 
   const handleToggle = async (u) => {
-    try { await userApi.update(u.id, { is_active: !u.is_active }); fetchUsers(); }
-    catch { toast.error('Gagal mengubah status'); }
+    try {
+      await userApi.update(u.id, { is_active: !u.is_active });
+      fetchUsers();
+    } catch {
+      toast.error('Gagal mengubah status');
+    }
   };
 
   const filteredUsers = users.filter(u =>
@@ -68,11 +87,12 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-5 animate-fade-in">
+
       {/* Header */}
       <div className="page-header">
         <div>
           <h1 className="page-title">Manajemen User</h1>
-          <p className="page-subtitle">{users.length} user terdaftar</p>
+          <p className="page-subtitle">{users.length} pengguna terdaftar</p>
         </div>
         <button onClick={openCreate} className="btn-primary" id="create-user">
           <Plus size={17} /> Tambah User
@@ -81,7 +101,7 @@ export default function UsersPage() {
 
       {/* Search */}
       <div className="relative">
-        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: '#4a6080' }} />
+        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
         <input type="text" className="input pl-11"
           placeholder="Cari nama atau email..."
           value={search} onChange={e => setSearch(e.target.value)}
@@ -93,10 +113,9 @@ export default function UsersPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(30,45,66,0.8)' }}>
+              <tr>
                 {['Pengguna', 'Role', 'Status', 'Aksi'].map(h => (
-                  <th key={h} className="text-left px-5 py-4 text-[11px] font-semibold uppercase tracking-widest"
-                    style={{ color: '#4a6080' }}>{h}</th>
+                  <th key={h} className="table-th">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -104,72 +123,65 @@ export default function UsersPage() {
               {loading ? (
                 Array(4).fill(0).map((_, i) => (
                   <tr key={i}>
-                    {[1,2,3,4].map(j => (
+                    {[160, 80, 60, 80].map((w, j) => (
                       <td key={j} className="px-5 py-4">
-                        <div className="skeleton h-4 rounded" style={{ width: j === 1 ? '140px' : j === 2 ? '80px' : j === 3 ? '60px' : '80px' }} />
+                        <div className="skeleton h-4 rounded" style={{ width: w }} />
                       </td>
                     ))}
                   </tr>
                 ))
               ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-5 py-12 text-center">
-                    <Users size={32} className="mx-auto mb-2" style={{ color: '#2a3f5a' }} />
-                    <p className="text-sm" style={{ color: '#4a6080' }}>Tidak ada user ditemukan</p>
+                  <td colSpan={4} className="px-5 py-14 text-center">
+                    <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center"
+                      style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+                      <Users size={26} className="text-slate-300" />
+                    </div>
+                    <p className="text-sm text-slate-400">Tidak ada user ditemukan</p>
                   </td>
                 </tr>
               ) : filteredUsers.map(u => {
-                const roleName = u.roles?.[0]?.name;
-                const roleConfig = ROLE_CONFIG[roleName] ?? ROLE_CONFIG.customer;
+                const roleName  = u.roles?.[0]?.name;
+                const roleCfg   = ROLE_CONFIG[roleName] ?? ROLE_CONFIG.customer;
                 return (
-                  <tr key={u.id} className="transition-colors group"
-                    style={{ borderBottom: '1px solid rgba(30,45,66,0.4)' }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(30,45,66,0.3)'}
-                    onMouseLeave={e => e.currentTarget.style.background = ''}>
-                    <td className="px-5 py-3.5">
+                  <tr key={u.id} className="table-row group">
+                    <td className="table-td">
                       <div className="flex items-center gap-3">
                         <img src={u.avatar_url} alt={u.name}
                           className="w-8 h-8 rounded-xl object-cover flex-shrink-0"
-                          style={{ border: '1px solid rgba(30,45,66,0.8)' }} />
+                          style={{ border: '2px solid #E2E8F0' }} />
                         <div>
-                          <p className="text-sm font-semibold text-text-primary">{u.name}</p>
-                          <p className="text-xs" style={{ color: '#4a6080' }}>{u.email}</p>
+                          <p className="text-sm font-semibold" style={{ color: '#0F172A' }}>{u.name}</p>
+                          <p className="text-xs text-slate-400">{u.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-3.5">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold"
-                        style={{ background: roleConfig.bg, color: roleConfig.color, border: `1px solid ${roleConfig.border}` }}>
+                    <td className="table-td">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                        style={{ background: roleCfg.bg, color: roleCfg.color, border: `1px solid ${roleCfg.border}` }}>
                         <Shield size={9} />
-                        {roleConfig.label}
+                        {roleCfg.label}
                       </span>
                     </td>
-                    <td className="px-5 py-3.5">
+                    <td className="table-td">
                       <button onClick={() => handleToggle(u)}
                         className="flex items-center gap-1.5 text-xs font-semibold transition-all"
-                        style={{ color: u.is_active ? '#4ade80' : '#f87171' }}
                         id={`toggle-user-${u.id}`}>
                         {u.is_active
-                          ? <><ToggleRight size={18} style={{ color: '#4ade80' }} /> Aktif</>
-                          : <><ToggleLeft size={18} style={{ color: '#f87171' }} /> Nonaktif</>
+                          ? <><ToggleRight size={18} className="text-emerald-500" /> <span className="text-emerald-600">Aktif</span></>
+                          : <><ToggleLeft size={18} className="text-red-400" /> <span className="text-red-500">Nonaktif</span></>
                         }
                       </button>
                     </td>
-                    <td className="px-5 py-3.5">
+                    <td className="table-td">
                       <div className="flex gap-1">
                         <button onClick={() => openEdit(u)}
-                          className="p-2 rounded-lg transition-all"
-                          style={{ color: '#4a6080' }}
-                          onMouseEnter={e => { e.currentTarget.style.color = '#f97316'; e.currentTarget.style.background = 'rgba(249,115,22,0.08)'; }}
-                          onMouseLeave={e => { e.currentTarget.style.color = '#4a6080'; e.currentTarget.style.background = ''; }}
+                          className="p-2 rounded-lg transition-all text-slate-400 hover:text-blue-600 hover:bg-blue-50"
                           id={`edit-user-${u.id}`}>
                           <Edit2 size={14} />
                         </button>
                         <button onClick={() => handleDelete(u.id)}
-                          className="p-2 rounded-lg transition-all"
-                          style={{ color: '#4a6080' }}
-                          onMouseEnter={e => { e.currentTarget.style.color = '#f87171'; e.currentTarget.style.background = 'rgba(239,68,68,0.08)'; }}
-                          onMouseLeave={e => { e.currentTarget.style.color = '#4a6080'; e.currentTarget.style.background = ''; }}
+                          className="p-2 rounded-lg transition-all text-slate-400 hover:text-red-500 hover:bg-red-50"
                           id={`delete-user-${u.id}`}>
                           <Trash2 size={14} />
                         </button>
@@ -186,13 +198,13 @@ export default function UsersPage() {
       {/* Modal */}
       {modal && (
         <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-4"
-          style={{ background: 'rgba(3,7,18,0.85)', backdropFilter: 'blur(8px)' }}
+          style={{ background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }}
           onClick={e => e.target === e.currentTarget && setModal(null)}>
           <div className="w-full max-w-md animate-slide-up">
-            <div className="card">
+            <div className="card" style={{ boxShadow: '0 25px 60px rgba(0,0,0,0.15)' }}>
               {/* Modal header */}
               <div className="flex items-center justify-between mb-5">
-                <h2 className="font-semibold text-text-primary">
+                <h2 className="font-bold text-base" style={{ color: '#0F172A' }}>
                   {modal === 'create' ? 'Tambah User Baru' : 'Edit User'}
                 </h2>
                 <button onClick={() => setModal(null)} className="btn-ghost p-1.5" id="close-modal">
@@ -202,14 +214,14 @@ export default function UsersPage() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {[
-                  { field: 'name', label: 'Nama Lengkap', type: 'text', required: true },
-                  { field: 'email', label: 'Email', type: 'email', required: modal === 'create', disabled: modal !== 'create' },
-                  { field: 'phone', label: 'Nomor HP', type: 'tel' },
+                  { field: 'name',  label: 'Nama Lengkap', type: 'text',  required: true },
+                  { field: 'email', label: 'Email',         type: 'email', required: modal === 'create', disabled: modal !== 'create' },
+                  { field: 'phone', label: 'Nomor HP',      type: 'tel' },
                 ].map(({ field, label, type, required, disabled }) => (
                   <div key={field}>
                     <label className="label">{label}</label>
-                    <input className={`input ${disabled ? 'opacity-50' : ''}`} type={type}
-                      value={form[field]} required={required} disabled={disabled}
+                    <input className={`input ${disabled ? 'bg-slate-50 cursor-not-allowed' : ''}`}
+                      type={type} value={form[field]} required={required} disabled={disabled}
                       onChange={e => setForm(p => ({ ...p, [field]: e.target.value }))}
                       id={`modal-${field}`} />
                   </div>
@@ -222,13 +234,12 @@ export default function UsersPage() {
                       const cfg = ROLE_CONFIG[r];
                       return (
                         <button key={r} type="button" onClick={() => setForm(p => ({ ...p, role: r }))}
-                          className="py-2 rounded-xl text-xs font-semibold transition-all border"
+                          className="py-2.5 rounded-xl text-xs font-semibold transition-all"
                           id={`role-${r}`}
-                          style={form.role === r ? {
-                            background: cfg.bg, color: cfg.color, borderColor: cfg.border,
-                          } : {
-                            background: 'rgba(30,45,66,0.4)', color: '#4a6080', borderColor: 'rgba(30,45,66,0.8)',
-                          }}>
+                          style={form.role === r
+                            ? { background: cfg.bg, color: cfg.color, border: `1.5px solid ${cfg.border}` }
+                            : { background: '#F8FAFC', color: '#64748B', border: '1.5px solid #E2E8F0' }
+                          }>
                           {cfg.label}
                         </button>
                       );
@@ -238,7 +249,10 @@ export default function UsersPage() {
 
                 <div>
                   <label className="label">
-                    Password {modal !== 'create' && <span style={{ color: '#4a6080', fontWeight: 400 }}>(kosongkan jika tidak diubah)</span>}
+                    Password{' '}
+                    {modal !== 'create' && (
+                      <span className="text-slate-400 font-normal text-xs">(kosongkan jika tidak diubah)</span>
+                    )}
                   </label>
                   <input className="input" type="password" value={form.password}
                     onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
@@ -248,9 +262,11 @@ export default function UsersPage() {
                 </div>
 
                 <div className="flex gap-3 pt-2">
-                  <button type="button" onClick={() => setModal(null)} className="btn-secondary flex-1">Batal</button>
+                  <button type="button" onClick={() => setModal(null)} className="btn-secondary flex-1">
+                    Batal
+                  </button>
                   <button type="submit" className="btn-primary flex-1" disabled={submitting} id="submit-user">
-                    {submitting ? <Loader2 size={15} className="animate-spin" /> : null}
+                    {submitting && <Loader2 size={15} className="animate-spin" />}
                     {submitting ? 'Menyimpan...' : modal === 'create' ? 'Buat User' : 'Simpan'}
                   </button>
                 </div>
