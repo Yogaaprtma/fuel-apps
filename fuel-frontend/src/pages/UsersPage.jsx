@@ -14,6 +14,53 @@ const ROLE_CONFIG = {
 
 const EMPTY_FORM = { name: '', email: '', phone: '', password: '', role: 'driver' };
 
+// Ambil 1-2 inisial dari nama user
+function getInitials(name = '') {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(w => w[0]?.toUpperCase() ?? '')
+    .join('');
+}
+
+// Avatar: tampilkan foto jika ada, fallback ke inisial berwarna sesuai role
+function UserAvatar({ user, roleCfg, size = 8 }) {
+  const [imgError, setImgError] = useState(false);
+  const hasPhoto = user.avatar_url && user.avatar_url !== 'null' && user.avatar_url !== 'undefined';
+  const initials = getInitials(user.name);
+
+  const px = size * 4; // tailwind size ke pixel (w-8 = 32px)
+  const fontSize = size <= 8 ? '11px' : '14px';
+
+  if (hasPhoto && !imgError) {
+    return (
+      <img
+        src={user.avatar_url}
+        alt={user.name}
+        onError={() => setImgError(true)}
+        className={`w-${size} h-${size} rounded-xl object-cover flex-shrink-0`}
+        style={{ border: '2px solid #E2E8F0' }}
+      />
+    );
+  }
+
+  return (
+    <div
+      className={`w-${size} h-${size} rounded-xl flex items-center justify-center flex-shrink-0 font-bold select-none`}
+      style={{
+        background: roleCfg?.bg ?? '#EFF6FF',
+        color: roleCfg?.color ?? '#2563EB',
+        border: `2px solid ${roleCfg?.border ?? '#BFDBFE'}`,
+        fontSize,
+        letterSpacing: '0.03em',
+      }}
+    >
+      {initials || <User size={size <= 8 ? 14 : 18} />}
+    </div>
+  );
+}
+
 export default function UsersPage() {
   const [users,      setUsers]      = useState([]);
   const [loading,    setLoading]    = useState(false);
@@ -147,9 +194,7 @@ export default function UsersPage() {
                   <tr key={u.id} className="table-row group">
                     <td className="table-td">
                       <div className="flex items-center gap-3">
-                        <img src={u.avatar_url} alt={u.name}
-                          className="w-8 h-8 rounded-xl object-cover flex-shrink-0"
-                          style={{ border: '2px solid #E2E8F0' }} />
+                        <UserAvatar user={u} roleCfg={roleCfg} size={8} />
                         <div>
                           <p className="text-sm font-semibold" style={{ color: '#0F172A' }}>{u.name}</p>
                           <p className="text-xs text-slate-400">{u.email}</p>
