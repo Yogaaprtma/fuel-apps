@@ -242,11 +242,13 @@ export default function UsersPage() {
 
       {/* Modal */}
       {modal && (
-        <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-4"
+        <div
+          className="fixed inset-0 flex items-end sm:items-center justify-center z-50 px-4 pt-4 pb-24 sm:p-4"
           style={{ background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }}
-          onClick={e => e.target === e.currentTarget && setModal(null)}>
-          <div className="w-full max-w-md animate-slide-up">
-            <div className="card" style={{ boxShadow: '0 25px 60px rgba(0,0,0,0.15)' }}>
+          onClick={e => e.target === e.currentTarget && setModal(null)}
+        >
+          <div className="w-full max-w-md animate-slide-up overflow-y-auto max-h-[80vh] sm:max-h-[90vh] rounded-2xl">
+            <div className="card rounded-2xl" style={{ boxShadow: '0 25px 60px rgba(0,0,0,0.15)' }}>
               {/* Modal header */}
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-base" style={{ color: '#0F172A' }}>
