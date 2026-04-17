@@ -5,6 +5,33 @@ import { authApi } from '../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
+// Komponen avatar dengan fallback icon
+function AvatarImage({ src, alt, className, style }) {
+  const [imgError, setImgError] = useState(false);
+  const hasValidSrc = src && src !== 'null' && src !== 'undefined';
+
+  if (!hasValidSrc || imgError) {
+    return (
+      <div
+        className={`flex items-center justify-center flex-shrink-0 ${className ?? ''}`}
+        style={{ background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', ...style }}
+      >
+        <User size={28} style={{ color: '#2563EB' }} />
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={`object-cover flex-shrink-0 ${className ?? ''}`}
+      style={style}
+      onError={() => setImgError(true)}
+    />
+  );
+}
+
 const ROLE_CONFIG = {
   'super-admin':       { label: 'Super Admin',        color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE' },
   'admin-operasional': { label: 'Admin Operasional',  color: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE' },
@@ -56,10 +83,10 @@ export default function ProfilePage() {
       <div className="card text-center sm:text-left">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
           <div className="relative flex-shrink-0">
-            <img
+            <AvatarImage
               src={user?.avatar_url}
               alt={user?.name}
-              className="w-20 h-20 rounded-2xl object-cover"
+              className="w-20 h-20 rounded-2xl"
               style={{ border: '2px solid #E2E8F0' }}
             />
             <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center"
