@@ -35,7 +35,7 @@ class DeliveryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'driver_id'           => 'required|exists:users,id',
             'customer_name'       => 'required|string|max:255',
             'customer_phone'      => 'required|string|max:20',
@@ -47,7 +47,7 @@ class DeliveryController extends Controller
             'volume_liters'       => 'required|numeric|min:1',
             'price_per_liter'     => 'required|numeric|min:0',
             'notes'               => 'sometimes|string',
-            'scheduled_at'        => 'sometimes|date', 
+            'scheduled_at'        => 'sometimes|date',
         ]);
 
         // Bug #4 Fix: Validasi bahwa driver_id harus punya role 'driver'
@@ -57,7 +57,7 @@ class DeliveryController extends Controller
         }
 
         $delivery = Delivery::create([
-            ...$request->validated(),
+            ...$validated,
             'admin_id'      => $request->user()->id,
             'delivery_code' => Delivery::generateCode(),
             'total_price'   => $request->volume_liters * $request->price_per_liter,
