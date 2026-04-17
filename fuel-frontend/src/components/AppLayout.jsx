@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Package, MapPin, Users, User, Truck,
@@ -6,53 +6,32 @@ import {
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 
-// ── Avatar fallback component ──────────────────────────────────
-function UserAvatar({ user, size = 'md', onClick, className = '' }) {
-  const [imgError, setImgError] = React.useState(false);
+// Komponen avatar dengan fallback icon jika foto gagal load / kosong
+function AvatarImage({ src, alt, className, style, onClick }) {
+  const [imgError, setImgError] = useState(false);
+  const hasValidSrc = src && src !== 'null' && src !== 'undefined';
 
-  const sizeClass = size === 'sm'
-    ? 'w-7 h-7 text-[10px]'
-    : size === 'lg'
-    ? 'w-12 h-12 text-base'
-    : 'w-8 h-8 text-xs'; // md default
-
-  const initials = user?.name
-    ? user.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
-    : '?';
-
-  const roleColors = {
-    'super-admin':       { bg: '#EFF6FF', color: '#2563EB' },
-    'admin-operasional': { bg: '#F0FDF4', color: '#16A34A' },
-    'driver':            { bg: '#FFF7ED', color: '#EA580C' },
-    'customer':          { bg: '#F5F3FF', color: '#7C3AED' },
-  };
-  const role = user?.roles?.[0];
-  const palette = roleColors[role] ?? { bg: '#EFF6FF', color: '#2563EB' };
-
-  const hasAvatar = user?.avatar_url && !imgError;
+  if (!hasValidSrc || imgError) {
+    return (
+      <div
+        className={`flex items-center justify-center flex-shrink-0 ${className ?? ''}`}
+        style={{ background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', ...style }}
+        onClick={onClick}
+      >
+        <User size={16} style={{ color: '#2563EB' }} />
+      </div>
+    );
+  }
 
   return (
-    <div
+    <img
+      src={src}
+      alt={alt}
+      className={`object-cover flex-shrink-0 ${className ?? ''}`}
+      style={style}
       onClick={onClick}
-      className={`${sizeClass} rounded-xl flex-shrink-0 flex items-center justify-center font-bold cursor-pointer overflow-hidden ${className}`}
-      style={hasAvatar
-        ? { border: '2px solid #E2E8F0' }
-        : { background: palette.bg, color: palette.color, border: `2px solid ${palette.color}25` }
-      }
-    >
-      {hasAvatar ? (
-        <img
-          src={user.avatar_url}
-          alt={user?.name}
-          className="w-full h-full object-cover"
-          onError={() => setImgError(true)}
-        />
-      ) : (
-        <span style={{ fontSize: size === 'sm' ? '9px' : size === 'lg' ? '14px' : '11px', lineHeight: 1 }}>
-          {initials}
-        </span>
-      )}
-    </div>
+      onError={() => setImgError(true)}
+    />
   );
 }
 
@@ -160,10 +139,10 @@ export default function AppLayout() {
             onMouseEnter={e => e.currentTarget.style.background = '#F8FAFF'}
             onMouseLeave={e => e.currentTarget.style.background = ''}
           >
-            <img
+            <AvatarImage
               src={user?.avatar_url}
               alt={user?.name}
-              className="w-8 h-8 rounded-xl object-cover flex-shrink-0"
+              className="w-8 h-8 rounded-xl"
               style={{ border: '2px solid #E2E8F0' }}
             />
             <div className="flex-1 min-w-0">
@@ -210,7 +189,13 @@ export default function AppLayout() {
           </div>
 
           <div className="flex items-center gap-2">
-            <UserAvatar user={user} size="md" onClick={() => navigate('/profile')} />
+            <AvatarImage
+              src={user?.avatar_url}
+              alt={user?.name}
+              className="w-8 h-8 rounded-xl cursor-pointer"
+              style={{ border: '2px solid #E2E8F0' }}
+              onClick={() => navigate('/profile')}
+            />
           </div>
         </header>
 
@@ -233,22 +218,16 @@ export default function AppLayout() {
         </header>
 
         {/* Page Content */}
-        {/* pb-28 = 112px cukup untuk bottom nav (~68px) + safe area iOS + extra breathing room */}
-        <main className="flex-1 overflow-y-auto px-4 py-5 lg:px-6 lg:py-6"
-          style={{ paddingBottom: 'calc(80px + env(safe-area-inset-bottom, 16px))' }}
-        >
-          <div className="max-w-7xl mx-auto animate-fade-in lg:pb-0" style={{ paddingBottom: '0' }}>
+        {/* pb-32 mobile: memberi ruang cukup agar konten tidak tertutup bottom nav (~72px) + safe area */}
+        <main className="flex-1 overflow-y-auto pb-32 lg:pb-6 px-4 py-5 lg:px-6 lg:py-6">
+          <div className="max-w-7xl mx-auto animate-fade-in">
             <Outlet />
           </div>
         </main>
 
         {/* ── Mobile Bottom Navigation ── */}
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white"
-          style={{
-            borderTop: '1px solid #E2E8F0',
-            boxShadow: '0 -4px 20px rgba(0,0,0,0.06)',
-            paddingBottom: 'env(safe-area-inset-bottom, 4px)',
-          }}>
+          style={{ borderTop: '1px solid #E2E8F0', boxShadow: '0 -4px 20px rgba(0,0,0,0.06)', paddingBottom: 'env(safe-area-inset-bottom, 8px)' }}>
           <div className="flex items-center justify-around px-1 pt-1.5 pb-2">
             {mobileNav.map(({ to, icon: Icon, label }) => (
               <NavLink
