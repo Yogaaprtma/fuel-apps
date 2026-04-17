@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Users, Plus, Loader2, Edit2, Trash2, X, Search, Shield, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Users, Plus, Loader2, Edit2, Trash2, X, Search, Shield, ToggleLeft, ToggleRight, AlertTriangle, User } from 'lucide-react';
 import { userApi } from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -61,6 +61,93 @@ function UserAvatar({ user, roleCfg, size = 8 }) {
   );
 }
 
+// ─────────────────────────────────────────────
+// Custom Confirm Dialog — pengganti native confirm()
+// ─────────────────────────────────────────────
+function ConfirmDialog({ open, title, message, userName, onConfirm, onCancel, loading }) {
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center px-4"
+      style={{ background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(6px)' }}
+      onClick={e => e.target === e.currentTarget && onCancel()}
+    >
+      <div className="w-full max-w-sm animate-scale-in">
+        <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.18)' }}>
+          {/* Top strip merah */}
+          <div className="h-1.5 w-full" style={{ background: 'linear-gradient(90deg, #EF4444, #F87171)' }} />
+
+          <div className="p-6">
+            {/* Icon */}
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                style={{ background: '#FEF2F2', border: '2px solid #FECACA' }}>
+                <Trash2 size={28} style={{ color: '#DC2626' }} />
+              </div>
+            </div>
+
+            {/* Text */}
+            <div className="text-center mb-6">
+              <h3 className="text-lg font-bold mb-1" style={{ color: '#0F172A' }}>
+                {title ?? 'Hapus User?'}
+              </h3>
+              {userName && (
+                <p className="text-sm font-semibold mb-2" style={{ color: '#2563EB' }}>
+                  &ldquo;{userName}&rdquo;
+                </p>
+              )}
+              <p className="text-sm" style={{ color: '#64748B' }}>
+                {message ?? 'Tindakan ini tidak dapat dibatalkan. Data user akan dihapus secara permanen.'}
+              </p>
+            </div>
+
+            {/* Warning note */}
+            <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl mb-5"
+              style={{ background: '#FFF7ED', border: '1px solid #FED7AA' }}>
+              <AlertTriangle size={14} style={{ color: '#EA580C', flexShrink: 0 }} />
+              <p className="text-xs font-medium" style={{ color: '#92400E' }}>
+                Semua data terkait user ini juga akan ikut terhapus.
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <button
+                onClick={onCancel}
+                disabled={loading}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200"
+                style={{
+                  background: '#F8FAFC',
+                  color: '#475569',
+                  border: '1.5px solid #E2E8F0',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
+                onMouseLeave={e => e.currentTarget.style.background = '#F8FAFC'}
+              >
+                Batal
+              </button>
+              <button
+                onClick={onConfirm}
+                disabled={loading}
+                className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-200 flex items-center justify-center gap-2"
+                style={{
+                  background: loading ? '#FCA5A5' : 'linear-gradient(135deg, #DC2626, #B91C1C)',
+                  boxShadow: loading ? 'none' : '0 2px 8px rgba(220,38,38,0.35)',
+                }}
+                onMouseEnter={e => !loading && (e.currentTarget.style.boxShadow = '0 4px 14px rgba(220,38,38,0.45)')}
+                onMouseLeave={e => !loading && (e.currentTarget.style.boxShadow = '0 2px 8px rgba(220,38,38,0.35)')}
+              >
+                {loading ? <><Loader2 size={15} className="animate-spin" /> Menghapus...</> : <><Trash2 size={15} /> Ya, Hapus</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 export default function UsersPage() {
   const [users,      setUsers]      = useState([]);
   const [loading,    setLoading]    = useState(false);
@@ -68,6 +155,11 @@ export default function UsersPage() {
   const [modal,      setModal]      = useState(null);
   const [form,       setForm]       = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
+  // State confirm dialog delete
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, userId: null, userName: '', deleting: false });
+
+  const openConfirm  = (user) => setConfirmDialog({ open: true, userId: user.id, userName: user.name, deleting: false });
+  const closeConfirm = ()    => setConfirmDialog({ open: false, userId: null, userName: '', deleting: false });
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -107,14 +199,16 @@ export default function UsersPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Yakin ingin menghapus user ini?')) return;
+  const handleDelete = async () => {
+    setConfirmDialog(prev => ({ ...prev, deleting: true }));
     try {
-      await userApi.delete(id);
-      toast.success('User dihapus');
+      await userApi.delete(confirmDialog.userId);
+      toast.success(`User "${confirmDialog.userName}" berhasil dihapus`);
+      closeConfirm();
       fetchUsers();
     } catch {
       toast.error('Gagal menghapus user');
+      setConfirmDialog(prev => ({ ...prev, deleting: false }));
     }
   };
 
@@ -225,7 +319,7 @@ export default function UsersPage() {
                           id={`edit-user-${u.id}`}>
                           <Edit2 size={14} />
                         </button>
-                        <button onClick={() => handleDelete(u.id)}
+                        <button onClick={() => openConfirm(u)}
                           className="p-2 rounded-lg transition-all text-slate-400 hover:text-red-500 hover:bg-red-50"
                           id={`delete-user-${u.id}`}>
                           <Trash2 size={14} />
@@ -322,6 +416,14 @@ export default function UsersPage() {
           </div>
         </div>
       )}
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        open={confirmDialog.open}
+        userName={confirmDialog.userName}
+        loading={confirmDialog.deleting}
+        onConfirm={handleDelete}
+        onCancel={closeConfirm}
+      />
     </div>
   );
 }
