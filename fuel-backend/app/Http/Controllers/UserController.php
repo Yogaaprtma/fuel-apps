@@ -23,6 +23,12 @@ class UserController extends Controller
         return response()->json($drivers);
     }
 
+    public function customers()
+    {
+        $customers = User::role('customer')->where('is_active', true)->get(['id', 'name', 'phone']);
+        return response()->json($customers);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
