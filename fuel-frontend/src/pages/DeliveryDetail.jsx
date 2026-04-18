@@ -205,7 +205,8 @@ export default function DeliveryDetail() {
       {/* Tab: Photos */}
       {tab === 'photos' && (
         <div className="space-y-4 animate-fade-in">
-          {hasRole(['driver']) && !['COMPLETED'].includes(current.status) && (
+          {/* Upload tersedia untuk driver dan admin (bukan customer), selama belum COMPLETED */}
+          {hasRole(['driver', 'super-admin', 'admin-operasional']) && !['COMPLETED'].includes(current.status) && (
             <div className="card">
               <p className="label mb-3">Upload Foto Pengiriman</p>
               <PhotoUpload deliveryId={current.id} onUploaded={() => fetchDelivery(id)} />
