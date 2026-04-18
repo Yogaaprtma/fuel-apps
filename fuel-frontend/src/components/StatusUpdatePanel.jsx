@@ -41,7 +41,9 @@ export default function StatusUpdatePanel({ delivery, onUpdated }) {
   const handleUpdate = async () => {
     setLoading(true);
     try {
-      const payload = { status: nextStatus, notes };
+      // Hanya sertakan notes jika diisi (hindari mengirim string kosong ke backend)
+      const payload = { status: nextStatus };
+      if (notes.trim()) payload.notes = notes.trim();
 
       if (nextStatus === 'DELIVERED') {
         const pos = await new Promise((resolve, reject) => {
