@@ -37,6 +37,7 @@ class DeliveryController extends Controller
     {
         $validated = $request->validate([
             'driver_id'           => 'required|exists:users,id',
+            'customer_id'         => 'sometimes|nullable|exists:users,id',  // opsional, untuk link ke akun customer
             'customer_name'       => 'required|string|max:255',
             'customer_phone'      => 'required|string|max:20',
             'destination_address' => 'required|string',
@@ -46,11 +47,11 @@ class DeliveryController extends Controller
             'fuel_type'           => 'required|in:PERTALITE,PERTAMAX,PERTAMAX_TURBO,SOLAR,DEXLITE',
             'volume_liters'       => 'required|numeric|min:1',
             'price_per_liter'     => 'required|numeric|min:0',
-            'notes'               => 'sometimes|string',
+            'notes'               => 'sometimes|nullable|string',
             'scheduled_at'        => 'sometimes|date',
         ]);
 
-        // Bug #4 Fix: Validasi bahwa driver_id harus punya role 'driver'
+        // Validasi driver harus punya role 'driver'
         $driver = \App\Models\User::find($request->driver_id);
         if (!$driver || !$driver->hasRole('driver')) {
             return response()->json(['message' => 'User yang dipilih bukan driver'], 422);
