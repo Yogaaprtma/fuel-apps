@@ -93,7 +93,7 @@ class DeliveryController extends Controller
 
     public function update(Request $request, Delivery $delivery)
     {
-        $request->validate([
+        $validated = $request->validate([
             'driver_id'           => 'sometimes|exists:users,id',
             'customer_name'       => 'sometimes|string',
             'customer_phone'      => 'sometimes|string',
@@ -104,22 +104,17 @@ class DeliveryController extends Controller
             'fuel_type'           => 'sometimes|in:PERTALITE,PERTAMAX,PERTAMAX_TURBO,SOLAR,DEXLITE',
             'volume_liters'       => 'sometimes|numeric',
             'price_per_liter'     => 'sometimes|numeric',
-            'notes'               => 'sometimes|string',
+            'notes'               => 'sometimes|nullable|string',  // nullable: terima null/empty
             'scheduled_at'        => 'sometimes|date',
         ]);
 
+        // Hitung ulang total_price jika volume/harga berubah
         if ($request->has('volume_liters') || $request->has('price_per_liter')) {
-            $request->merge([
-                'total_price' => ($request->volume_liters ?? $delivery->volume_liters) *
-                                 ($request->price_per_liter ?? $delivery->price_per_liter)
-            ]);
+            $validated['total_price'] = ($validated['volume_liters'] ?? $delivery->volume_liters)
+                                      * ($validated['price_per_liter'] ?? $delivery->price_per_liter);
         }
 
-        // Bug #3 Fix: Gunakan validated() bukan all() untuk mencegah mass assignment berbahaya
-        $delivery->update(array_merge(
-            $request->validated(),
-            $request->has('total_price') ? ['total_price' => $request->total_price] : []
-        ));
+        $delivery->update($validated);
         return response()->json($delivery->fresh()->load(['admin', 'driver']));
     }
 
