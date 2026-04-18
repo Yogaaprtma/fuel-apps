@@ -12,7 +12,7 @@ class DeliveryStatusController extends Controller
     {
         $request->validate([
             'status'    => 'required|string',
-            'notes'     => 'sometimes|string',
+            'notes'     => 'sometimes|nullable|string',  // nullable: kosong/null diterima
             'latitude'  => 'sometimes|numeric',
             'longitude' => 'sometimes|numeric',
         ]);
