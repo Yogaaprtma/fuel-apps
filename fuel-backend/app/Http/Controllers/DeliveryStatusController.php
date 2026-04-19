@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Delivery;
 use App\Models\DeliveryStatusLog;
+use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 
 class DeliveryStatusController extends Controller
@@ -12,7 +13,7 @@ class DeliveryStatusController extends Controller
     {
         $request->validate([
             'status'    => 'required|string',
-            'notes'     => 'sometimes|nullable|string',  // nullable: kosong/null diterima
+            'notes'     => 'sometimes|nullable|string',
             'latitude'  => 'sometimes|numeric',
             'longitude' => 'sometimes|numeric',
         ]);
@@ -36,8 +37,8 @@ class DeliveryStatusController extends Controller
 
             if (!$delivery->isWithinGeofence($request->latitude, $request->longitude)) {
                 return response()->json([
-                    'message' => "Driver berada di luar area pengiriman. Jarak: " . round($distance) . "m, radius: {$delivery->geofence_radius}m",
-                    'distance' => $distance,
+                    'message'         => "Driver berada di luar area pengiriman. Jarak: " . round($distance) . "m, radius: {$delivery->geofence_radius}m",
+                    'distance'        => $distance,
                     'geofence_radius' => $delivery->geofence_radius,
                 ], 422);
             }
@@ -53,8 +54,25 @@ class DeliveryStatusController extends Controller
             'to_status'   => $newStatus,
             'notes'       => $request->notes,
             'latitude'    => $request->latitude,
-            'longitude'   => $request->longitude
+            'longitude'   => $request->longitude,
         ]);
+
+        // Kirim notifikasi WhatsApp ke customer (async fire-and-forget)
+        try {
+            $wa = new WhatsAppService();
+            $delivery->load('driver:id,name');
+            $wa->send(
+                $delivery->customer_phone,
+                $wa->getStatusMessage($newStatus, [
+                    'delivery_code' => $delivery->delivery_code,
+                    'driver_name'   => $delivery->driver?->name ?? 'Driver',
+                    'address'       => $delivery->destination_address,
+                    'total_price'   => $delivery->total_price,
+                ])
+            );
+        } catch (\Exception $e) {
+            // WA gagal tidak boleh hentikan proses utama
+        }
 
         return response()->json([
             'message'  => 'Status berhasil diupdate',
