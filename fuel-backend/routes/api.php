@@ -42,4 +42,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('users', UserController::class)->except(['show']);
     });
     Route::get('/drivers', [UserController::class, 'drivers']);
+    Route::get('/customers', [UserController::class, 'customers']);
 });
