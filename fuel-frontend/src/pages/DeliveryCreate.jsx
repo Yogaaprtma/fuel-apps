@@ -19,7 +19,7 @@ const FUEL_STYLES = {
 };
 
 const INITIAL_FORM = {
-  driver_id: '', customer_name: '', customer_phone: '',
+  driver_id: '', customer_id: '', customer_name: '', customer_phone: '',
   destination_address: '', destination_lat: '', destination_lng: '',
   geofence_radius: 200, fuel_type: 'PERTALITE',
   volume_liters: '', price_per_liter: FUEL_PRICES.PERTALITE, notes: '',
@@ -43,6 +43,7 @@ export default function DeliveryCreate() {
   const navigate = useNavigate();
   const { createDelivery }  = useDeliveryStore();
   const [drivers,    setDrivers]    = useState([]);
+  const [customers,  setCustomers]  = useState([]);
   const [loading,    setLoading]    = useState(false);
   const [step,       setStep]       = useState(0);
   const [form,       setForm]       = useState(INITIAL_FORM);
@@ -50,6 +51,7 @@ export default function DeliveryCreate() {
 
   useEffect(() => {
     userApi.drivers().then(res => setDrivers(res.data));
+    userApi.customers().then(res => setCustomers(res.data)).catch(() => {});
   }, []);
 
   const total = (form.volume_liters || 0) * (form.price_per_liter || 0);
@@ -59,6 +61,22 @@ export default function DeliveryCreate() {
     setForm(prev => ({
       ...prev, [name]: value,
       ...(name === 'fuel_type' ? { price_per_liter: FUEL_PRICES[value] } : {}),
+    }));
+  };
+
+  // Saat customer dipilih dari dropdown, auto-fill nama & HP
+  const handleCustomerSelect = (e) => {
+    const cid = e.target.value;
+    if (!cid) {
+      setForm(prev => ({ ...prev, customer_id: '', customer_name: '', customer_phone: '' }));
+      return;
+    }
+    const cust = customers.find(c => String(c.id) === String(cid));
+    setForm(prev => ({
+      ...prev,
+      customer_id:    cid,
+      customer_name:  cust?.name  || prev.customer_name,
+      customer_phone: cust?.phone || prev.customer_phone,
     }));
   };
 
@@ -168,6 +186,26 @@ export default function DeliveryCreate() {
                 ))}
               </select>
             </Field>
+
+            {/* Dropdown pilih customer terdaftar */}
+            {customers.length > 0 && (
+              <Field label="Pilih Customer (Terdaftar)"
+                hint="Pilih customer dari sistem agar delivery terhubung ke akun mereka">
+                <select
+                  value={form.customer_id}
+                  onChange={handleCustomerSelect}
+                  className="input"
+                  id="customer-select"
+                >
+                  <option value="">-- Atau input manual di bawah --</option>
+                  {customers.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}{c.phone ? ` (${c.phone})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            )}
 
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="Nama Customer" required>
