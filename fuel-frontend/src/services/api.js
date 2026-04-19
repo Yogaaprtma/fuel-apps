@@ -63,11 +63,12 @@ export const proofApi = {
 };
 
 export const userApi = {
-    list:    (params) => api.get('/users', { params }),
-    drivers: ()       => api.get('/drivers'),
-    create:  (data)   => api.post('/users', data),
-    update:  (id, d)  => api.put(`/users/${id}`, d),
-    delete:  (id)     => api.delete(`/users/${id}`),
+    list:      (params) => api.get('/users', { params }),
+    drivers:   ()       => api.get('/drivers'),
+    customers: ()       => api.get('/customers'),
+    create:    (data)   => api.post('/users', data),
+    update:    (id, d)  => api.put(`/users/${id}`, d),
+    delete:    (id)     => api.delete(`/users/${id}`),
 };
 
 export default api;
