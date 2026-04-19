@@ -30,6 +30,12 @@ export default function DeliveryMap({ delivery, locations = [] }) {
       const destLat = parseFloat(delivery?.destination_lat) || -6.2088;
       const destLng = parseFloat(delivery?.destination_lng) || 106.8456;
 
+      // Fix: bersihkan container jika Leaflet sudah pernah di-init di element ini
+      if (mapRef.current._leaflet_id) {
+        mapRef.current._leaflet_id = null;
+        mapRef.current.innerHTML = '';
+      }
+
       // Dark tile layer matching our design
       const map = L.map(mapRef.current, {
         zoomControl: true,
