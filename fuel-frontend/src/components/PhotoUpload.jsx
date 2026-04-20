@@ -4,10 +4,11 @@ import { photoApi } from '../services/api';
 import toast from 'react-hot-toast';
 
 const PHOTO_TYPES = [
-  { value: 'PICKUP',      label: 'Pickup',      color: '#2563EB' },
-  { value: 'IN_TRANSIT',  label: 'In Transit',  color: '#F97316' },
-  { value: 'DESTINATION', label: 'Destination', color: '#10B981' },
-  { value: 'OTHER',       label: 'Lainnya',     color: '#94A3B8' },
+  { value: 'PICKUP',        label: 'Pickup',        color: '#2563EB' },
+  { value: 'IN_TRANSIT',    label: 'In Transit',    color: '#F97316' },
+  { value: 'DESTINATION',   label: 'Destination',   color: '#10B981' },
+  { value: 'VOLUME_METER',  label: 'Struk/Meter',   color: '#7C3AED' },
+  { value: 'OTHER',         label: 'Lainnya',       color: '#94A3B8' },
 ];
 
 export default function PhotoUpload({ deliveryId, compact = false, onUploaded }) {
