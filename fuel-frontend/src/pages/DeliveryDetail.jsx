@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Package, User, Truck, MapPin, Camera,
-  Clock, Phone, Fuel, CheckCircle, DollarSign, FileText
+  Clock, Phone, Fuel, CheckCircle, DollarSign, FileText, Printer, Star
 } from 'lucide-react';
 import useDeliveryStore from '../store/deliveryStore';
 import useAuthStore from '../store/authStore';
@@ -11,6 +11,7 @@ import StatusTimeline from '../components/StatusTimeline';
 import DeliveryMap from '../components/DeliveryMap';
 import PhotoUpload from '../components/PhotoUpload';
 import StatusUpdatePanel from '../components/StatusUpdatePanel';
+import ProofOfDeliveryForm from '../components/ProofOfDeliveryForm';
 
 const TABS = [
   { id: 'detail',   label: 'Detail',   icon: Package },
@@ -85,6 +86,16 @@ export default function DeliveryDetail() {
             {current.customer_name} · {current.fuel_type?.replace(/_/g, ' ')}
           </p>
         </div>
+        {/* Invoice button */}
+        {['DELIVERED','COMPLETED'].includes(current.status) && (
+          <button
+            onClick={() => navigate(`/deliveries/${id}/invoice`)}
+            className="btn-secondary flex items-center gap-1.5 text-xs"
+            id="invoice-btn"
+          >
+            <Printer size={14} /> Invoice
+          </button>
+        )}
       </div>
 
       {/* Status Update Panel */}
@@ -95,6 +106,14 @@ export default function DeliveryDetail() {
             Update Status
           </p>
           <StatusUpdatePanel delivery={current} onUpdated={() => fetchDelivery(id)} />
+        </div>
+      )}
+
+      {/* POD Form — muncul saat status DELIVERED dan belum ada proof */}
+      {current.status === 'DELIVERED' && !current.proof &&
+        hasRole(['driver', 'super-admin', 'admin-operasional']) && (
+        <div className="card" style={{ border: '1.5px solid #A7F3D0' }}>
+          <ProofOfDeliveryForm delivery={current} onCompleted={() => fetchDelivery(id)} />
         </div>
       )}
 
@@ -243,7 +262,11 @@ export default function DeliveryDetail() {
       {tab === 'timeline' && (
         <div className="card animate-fade-in">
           <SectionHeader icon={Clock} title="Riwayat Status" color="#2563EB" bg="#EFF6FF" />
-          <StatusTimeline currentStatus={current.status} logs={current.status_logs || current.statusLogs || []} />
+          <StatusTimeline
+            currentStatus={current.status}
+            logs={current.status_logs || current.statusLogs || []}
+            photos={current.photos || []}
+          />
         </div>
       )}
     </div>
