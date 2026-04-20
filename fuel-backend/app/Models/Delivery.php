@@ -117,4 +117,9 @@ class Delivery extends Model
     { 
         return $this->hasMany(DeliveryStatusLog::class)->orderBy('created_at'); 
     }
+
+    public function rating()
+    {
+        return $this->hasOne(DeliveryRating::class);
+    }
 }
