@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Delivery;
 use App\Models\DeliveryStatusLog;
+use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 
 class ProofOfDeliveryController extends Controller
@@ -65,6 +66,23 @@ class ProofOfDeliveryController extends Controller
             'latitude'    => $request->latitude,
             'longitude'   => $request->longitude,
         ]);
+
+        // Kirim notifikasi WhatsApp ke customer bahwa pengiriman selesai
+        try {
+            $wa = new WhatsAppService();
+            $delivery->load('driver:id,name');
+            $wa->send(
+                $delivery->customer_phone,
+                $wa->getStatusMessage('COMPLETED', [
+                    'delivery_code' => $delivery->delivery_code,
+                    'driver_name'   => $delivery->driver?->name ?? 'Driver',
+                    'address'       => $delivery->destination_address,
+                    'total_price'   => $delivery->total_price,
+                ])
+            );
+        } catch (\Exception $e) {
+            // WA gagal tidak hentikan proses
+        }
 
         return response()->json([
             'proof'    => $proof,
