@@ -5,6 +5,7 @@ use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\DeliveryStatusController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ProofOfDeliveryController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -43,4 +44,12 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::get('/drivers', [UserController::class, 'drivers']);
     Route::get('/customers', [UserController::class, 'customers']);
+
+    // Rating
+    Route::post('/deliveries/{delivery}/rating',  [RatingController::class, 'store']);
+    Route::get('/deliveries/{delivery}/rating',   [RatingController::class, 'show']);
+    Route::get('/drivers/{driverId}/rating-stats', [RatingController::class, 'driverStats']);
+
+    // Export CSV (admin only)
+    Route::get('/deliveries/export/csv', [DeliveryController::class, 'export']);
 });
