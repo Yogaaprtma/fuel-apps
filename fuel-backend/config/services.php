@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    // WhatsApp via Fonnte (https://fonnte.com)
+    // Daftar di fonnte.com → tambah device → salin token ke .env
+    'fonnte' => [
+        'token' => env('FONNTE_TOKEN', ''),
+    ],
+
 ];
