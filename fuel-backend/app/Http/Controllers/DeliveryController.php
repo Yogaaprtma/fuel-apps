@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Delivery;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class DeliveryController extends Controller
 {
@@ -168,6 +169,42 @@ class DeliveryController extends Controller
             'latest_location'    => $delivery->latestLocation,
             'status_logs'        => $delivery->statusLogs,
             'scheduled_at'       => $delivery->scheduled_at,
+        ]);
+    }
+
+    /** Export deliveries ke CSV */
+    public function export(Request $request)
+    {
+        $query = Delivery::with(['driver:id,name', 'admin:id,name', 'rating'])
+            ->when($request->status, fn($q) => $q->where('status', $request->status))
+            ->when($request->from,   fn($q) => $q->whereDate('created_at', '>=', $request->from))
+            ->when($request->to,     fn($q) => $q->whereDate('created_at', '<=', $request->to))
+            ->latest()->get();
+
+        $rows = [implode(',', ['Kode','Status','Customer','Telepon','Driver','Admin','BBM','Volume(L)','Harga/L','Total(Rp)','Alamat','Rating','Dibuat'])];
+
+        foreach ($query as $d) {
+            $rows[] = implode(',', [
+                $d->delivery_code,
+                $d->status,
+                '"'.str_replace('"','""',$d->customer_name).'"',
+                $d->customer_phone,
+                '"'.($d->driver?->name ?? '-').'"',
+                '"'.($d->admin?->name  ?? '-').'"',
+                $d->fuel_type,
+                $d->volume_liters,
+                $d->price_per_liter,
+                $d->total_price,
+                '"'.str_replace('"','""',$d->destination_address).'"',
+                $d->rating?->rating ?? '-',
+                $d->created_at->format('Y-m-d H:i'),
+            ]);
+        }
+
+        $filename = 'deliveries_'.now()->format('Ymd_His').'.csv';
+        return \Illuminate\Support\Facades\Response::make(implode("\n", $rows), 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename={$filename}",
         ]);
     }
 }
