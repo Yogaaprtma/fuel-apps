@@ -71,4 +71,14 @@ export const userApi = {
     delete:    (id)     => api.delete(`/users/${id}`),
 };
 
+export const ratingApi = {
+    submit:      (deliveryId, data) => api.post(`/deliveries/${deliveryId}/rating`, data),
+    get:         (deliveryId)       => api.get(`/deliveries/${deliveryId}/rating`),
+    driverStats: (driverId)         => api.get(`/drivers/${driverId}/rating-stats`),
+};
+
+export const exportApi = {
+    csv: (params) => api.get('/deliveries/export/csv', { params, responseType: 'blob' }),
+};
+
 export default api;
