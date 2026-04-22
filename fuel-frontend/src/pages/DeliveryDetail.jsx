@@ -12,6 +12,7 @@ import DeliveryMap from '../components/DeliveryMap';
 import PhotoUpload from '../components/PhotoUpload';
 import StatusUpdatePanel from '../components/StatusUpdatePanel';
 import ProofOfDeliveryForm from '../components/ProofOfDeliveryForm';
+import RatingForm from '../components/RatingForm';
 
 const TABS = [
   { id: 'detail',   label: 'Detail',   icon: Package },
@@ -114,6 +115,13 @@ export default function DeliveryDetail() {
         hasRole(['driver', 'super-admin', 'admin-operasional']) && (
         <div className="card" style={{ border: '1.5px solid #A7F3D0' }}>
           <ProofOfDeliveryForm delivery={current} onCompleted={() => fetchDelivery(id)} />
+        </div>
+      )}
+
+      {/* Rating Form — muncul untuk customer setelah COMPLETED */}
+      {current.status === 'COMPLETED' && hasRole(['customer']) && !current.rating && (
+        <div className="card" style={{ border: '1.5px solid #FDE68A' }}>
+          <RatingForm delivery={current} onRated={() => fetchDelivery(id)} />
         </div>
       )}
 
