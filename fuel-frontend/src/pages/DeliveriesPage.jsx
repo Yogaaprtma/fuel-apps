@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Loader2, Package, Plus, Search, SlidersHorizontal, Filter } from 'lucide-react';
+import { ArrowRight, Loader2, Package, Plus, Search, SlidersHorizontal, Download } from 'lucide-react';
 import useDeliveryStore from '../store/deliveryStore';
 import useAuthStore from '../store/authStore';
 import StatusBadge from '../components/StatusBadge';
+import { exportApi } from '../services/api';
 
 const STATUS_OPTIONS = ['CREATED','PACKED','IN_TRANSIT','NEAR_DESTINATION','DELIVERED','COMPLETED'];
 
@@ -43,6 +44,20 @@ export default function DeliveriesPage() {
   const canCreate    = hasRole(['super-admin', 'admin-operasional']);
   const deliveryList = deliveries ?? [];
 
+  const handleExport = async () => {
+    try {
+      const res = await exportApi.csv({ status, search });
+      const url  = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href  = url;
+      link.setAttribute('download', `deliveries_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch { /* silent */ }
+  };
+
   return (
     <div className="space-y-5 animate-fade-in">
 
@@ -61,6 +76,12 @@ export default function DeliveriesPage() {
             <SlidersHorizontal size={16} />
             <span className="hidden sm:inline text-sm">Filter</span>
           </button>
+          {canCreate && (
+            <button onClick={handleExport} className="btn-secondary px-3 py-2.5" id="export-csv" title="Export CSV">
+              <Download size={16} />
+              <span className="hidden sm:inline text-sm">Export</span>
+            </button>
+          )}
           {canCreate && (
             <Link to="/deliveries/new" className="btn-primary" id="create-delivery">
               <Plus size={16} />
