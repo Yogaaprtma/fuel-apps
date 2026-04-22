@@ -10,6 +10,7 @@ import DashboardPage    from './pages/DashboardPage';
 import DeliveriesPage   from './pages/DeliveriesPage';
 import DeliveryCreate   from './pages/DeliveryCreate';
 import DeliveryDetail   from './pages/DeliveryDetail';
+import InvoicePage      from './pages/InvoicePage';
 import TrackingPage     from './pages/TrackingPage';
 import DriverPage       from './pages/DriverPage';
 import CustomerTrackPage from './pages/CustomerTrackPage';
@@ -61,13 +62,14 @@ export default function App() {
         <Route path="/track" element={<CustomerTrackPage />} />
         <Route element={<AuthGuard><AppLayout /></AuthGuard>}>
           <Route index element={<DashboardPage />} />
-          <Route path="/deliveries"     element={<DeliveriesPage />} />
-          <Route path="/deliveries/new" element={<DeliveryCreate />} />
-          <Route path="/deliveries/:id" element={<DeliveryDetail />} />
-          <Route path="/tracking"       element={<TrackingPage />} />
-          <Route path="/driver"         element={<DriverPage />} />
-          <Route path="/users"          element={<UsersPage />} />
-          <Route path="/profile"        element={<ProfilePage />} />
+          <Route path="/deliveries"            element={<DeliveriesPage />} />
+          <Route path="/deliveries/new"         element={<DeliveryCreate />} />
+          <Route path="/deliveries/:id"         element={<DeliveryDetail />} />
+          <Route path="/deliveries/:id/invoice" element={<InvoicePage />} />
+          <Route path="/tracking"               element={<TrackingPage />} />
+          <Route path="/driver"                 element={<DriverPage />} />
+          <Route path="/users"                  element={<UsersPage />} />
+          <Route path="/profile"                element={<ProfilePage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
