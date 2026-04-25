@@ -5,6 +5,7 @@ use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\DeliveryStatusController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ProofOfDeliveryController;
+use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\UserController;
@@ -52,4 +53,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/deliveries/{delivery}/rating',  [RatingController::class, 'store']);
     Route::get('/deliveries/{delivery}/rating',   [RatingController::class, 'show']);
     Route::get('/drivers/{driverId}/rating-stats', [RatingController::class, 'driverStats']);
+
+    // Push Notifications
+    Route::get('/push/vapid-key',       [PushSubscriptionController::class, 'vapidKey']);
+    Route::post('/push/subscribe',      [PushSubscriptionController::class, 'store']);
+    Route::post('/push/unsubscribe',    [PushSubscriptionController::class, 'destroy']);
 });
