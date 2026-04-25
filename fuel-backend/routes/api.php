@@ -22,6 +22,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Statistics
     Route::get('/statistics', [DeliveryController::class, 'statistics']);
 
+    // Export CSV - HARUS sebelum apiResource agar tidak tertimpa route {delivery}
+    Route::get('/deliveries/export/csv', [DeliveryController::class, 'export']);
+
     // Deliveries
     Route::apiResource('deliveries', DeliveryController::class);
     Route::patch('/deliveries/{delivery}/status', [DeliveryStatusController::class, 'update']);
@@ -49,7 +52,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/deliveries/{delivery}/rating',  [RatingController::class, 'store']);
     Route::get('/deliveries/{delivery}/rating',   [RatingController::class, 'show']);
     Route::get('/drivers/{driverId}/rating-stats', [RatingController::class, 'driverStats']);
-
-    // Export CSV (admin only)
-    Route::get('/deliveries/export/csv', [DeliveryController::class, 'export']);
 });
