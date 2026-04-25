@@ -41,4 +41,13 @@ return [
         'token' => env('FONNTE_TOKEN', ''),
     ],
 
+    // Web Push VAPID keys
+    // Generate: php artisan vapid:generate (setelah install minischema/web-push)
+    // Atau generate manual di https://vapidkeys.com
+    'vapid' => [
+        'subject'     => env('VAPID_SUBJECT', 'mailto:admin@fueldelivery.com'),
+        'public_key'  => env('VAPID_PUBLIC_KEY', ''),
+        'private_key' => env('VAPID_PRIVATE_KEY', ''),
+    ],
+
 ];
