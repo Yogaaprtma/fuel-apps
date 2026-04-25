@@ -89,7 +89,8 @@ class DeliveryController extends Controller
             'locations', 
             'photos.uploader:id,name',
             'proof', 
-            'statusLogs.user:id,name'
+            'statusLogs.user:id,name',
+            'rating.rater:id,name',
         ]));
     }
 
