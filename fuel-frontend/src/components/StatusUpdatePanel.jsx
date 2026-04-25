@@ -38,6 +38,22 @@ export default function StatusUpdatePanel({ delivery, onUpdated }) {
     );
   }
 
+  // Saat DELIVERED, driver harus isi POD Form (tanda tangan) — bukan tombol langsung
+  if (delivery.status === 'DELIVERED' && !delivery.proof) {
+    return (
+      <div className="flex items-start gap-2.5 px-3 py-2.5 rounded-xl"
+        style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
+        <div className="w-5 h-5 mt-0.5 flex-shrink-0 text-emerald-500">✅</div>
+        <div>
+          <p className="text-sm font-semibold text-emerald-700">BBM sudah terkirim!</p>
+          <p className="text-xs text-emerald-600 mt-0.5">
+            Isi form bukti penerimaan (tanda tangan) di bawah untuk menyelesaikan pengiriman.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const handleUpdate = async () => {
     setLoading(true);
     try {
