@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { User, Save, Loader2, Mail, Phone, Lock, Shield, LogOut } from 'lucide-react';
+import { User, Save, Loader2, Mail, Phone, Lock, Shield, LogOut, Bell, BellOff } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 import { authApi } from '../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import usePushNotification from '../hooks/usePushNotification';
 
 // Komponen avatar dengan fallback icon
 function AvatarImage({ src, alt, className, style }) {
@@ -42,6 +43,7 @@ const ROLE_CONFIG = {
 export default function ProfilePage() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const { subscribed, subscribe, unsubscribe } = usePushNotification();
   const [form, setForm] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
@@ -206,6 +208,36 @@ export default function ProfilePage() {
           </button>
         </form>
       )}
+
+      {/* Push Notification Toggle */}
+      <div className="card">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+              style={{ background: subscribed ? '#EFF6FF' : '#F8FAFC', border: '1.5px solid #E2E8F0' }}>
+              {subscribed
+                ? <Bell size={16} style={{ color: '#2563EB' }} />
+                : <BellOff size={16} className="text-slate-400" />
+              }
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-700">Notifikasi Browser</p>
+              <p className="text-xs text-slate-400">{subscribed ? 'Notifikasi aktif di perangkat ini' : 'Aktifkan untuk dapat update real-time'}</p>
+            </div>
+          </div>
+          <button
+            onClick={subscribed ? unsubscribe : subscribe}
+            id="push-toggle"
+            className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors ${
+              subscribed
+                ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
+                : 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100'
+            }`}
+          >
+            {subscribed ? 'Matikan' : 'Aktifkan'}
+          </button>
+        </div>
+      </div>
 
       {/* Logout */}
       <button onClick={handleLogout}
