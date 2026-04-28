@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Delivery;
 use App\Models\DeliveryStatusLog;
 use App\Services\WhatsAppService;
+use App\Services\PushNotificationService;
 use Illuminate\Http\Request;
 
 class DeliveryStatusController extends Controller
@@ -57,7 +58,7 @@ class DeliveryStatusController extends Controller
             'longitude'   => $request->longitude,
         ]);
 
-        // Kirim notifikasi WhatsApp ke customer (async fire-and-forget)
+        // Kirim notifikasi WhatsApp ke customer (fire-and-forget)
         try {
             $wa = new WhatsAppService();
             $delivery->load('driver:id,name');
@@ -72,6 +73,22 @@ class DeliveryStatusController extends Controller
             );
         } catch (\Exception $e) {
             // WA gagal tidak boleh hentikan proses utama
+        }
+
+        // Kirim Browser Push Notification ke customer
+        try {
+            $push = new PushNotificationService();
+            [$title, $body] = PushNotificationService::getStatusNotification($newStatus, $delivery->delivery_code);
+
+            // Push ke customer
+            if ($delivery->customer_id) {
+                $push->sendToUser($delivery->customer_id, $title, $body, [
+                    'delivery_id' => $delivery->id,
+                    'status'      => $newStatus,
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Push gagal tidak hentikan proses
         }
 
         return response()->json([
