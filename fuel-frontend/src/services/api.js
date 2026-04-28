@@ -81,4 +81,10 @@ export const exportApi = {
     csv: (params) => api.get('/deliveries/export/csv', { params, responseType: 'blob' }),
 };
 
+export const pushApi = {
+    vapidKey:    ()     => api.get('/push/vapid-key'),
+    subscribe:   (data) => api.post('/push/subscribe', data),
+    unsubscribe: (data) => api.post('/push/unsubscribe', data),
+};
+
 export default api;
