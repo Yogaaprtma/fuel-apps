@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Truck, MapPin, Camera, Navigation, Loader2, Package, Signal, RefreshCw, Clock } from 'lucide-react';
+import { Truck, MapPin, Camera, Navigation, Loader2, Package, Signal, RefreshCw, Clock, Route } from 'lucide-react';
 import useDeliveryStore from '../store/deliveryStore';
 import useAuthStore from '../store/authStore';
 import { trackingApi } from '../services/api';
 import StatusBadge from '../components/StatusBadge';
 import PhotoUpload from '../components/PhotoUpload';
 import StatusUpdatePanel from '../components/StatusUpdatePanel';
+import MultiDeliveryRoute from '../components/MultiDeliveryRoute';
 import toast from 'react-hot-toast';
 
 const ACTIVE_STATUSES = ['PACKED', 'IN_TRANSIT', 'NEAR_DESTINATION', 'DELIVERED'];
@@ -19,6 +20,7 @@ export default function DriverPage() {
   const [position,        setPosition]        = useState(null);
   const [gpsAccuracy,     setGpsAccuracy]     = useState(null);
   const [expandedId,      setExpandedId]      = useState(null);
+  const [driverView,      setDriverView]      = useState('active'); // 'active' | 'route'
   const watchId = React.useRef(null);
 
   useEffect(() => {
@@ -114,8 +116,35 @@ export default function DriverPage() {
         </div>
       </div>
 
+      {/* View Tabs */}
+      <div className="flex gap-1 bg-slate-100 rounded-xl p-1">
+        <button
+          onClick={() => setDriverView('active')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+            driverView === 'active'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <Package size={13} /> Aktif ({activeDeliveries.length})
+        </button>
+        <button
+          onClick={() => setDriverView('route')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+            driverView === 'route'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <Route size={13} /> Rute Pengiriman
+        </button>
+      </div>
+
+      {/* Multi-delivery Route View */}
+      {driverView === 'route' && <MultiDeliveryRoute />}
+
       {/* Active Deliveries */}
-      <div>
+      {driverView === 'active' && <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold text-sm" style={{ color: '#0F172A' }}>Pengiriman Aktif</h2>
           <span className="badge badge-orange">{activeDeliveries.length} delivery</span>
@@ -219,7 +248,7 @@ export default function DriverPage() {
             })}
           </div>
         )}
-      </div>
+      </div>}
     </div>
   );
 }
