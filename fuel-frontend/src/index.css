@@ -472,3 +472,106 @@
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
+
+/* ── Dark Mode ── */
+[data-theme='dark'] {
+  --bg-page:   #0F172A;
+  --bg-card:   #1E293B;
+  --bg-sidebar:#1E293B;
+  --border:    #334155;
+  --text-main: #F1F5F9;
+  --text-muted:#94A3B8;
+}
+
+[data-theme='dark'] body {
+  background: #0F172A;
+  color: #F1F5F9;
+}
+
+[data-theme='dark'] .card {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+  color: #F1F5F9;
+}
+
+[data-theme='dark'] aside {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+}
+
+[data-theme='dark'] header {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+}
+
+[data-theme='dark'] nav.fixed {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+}
+
+[data-theme='dark'] .input,
+[data-theme='dark'] textarea,
+[data-theme='dark'] select {
+  background: #0F172A !important;
+  border-color: #475569 !important;
+  color: #F1F5F9 !important;
+}
+
+[data-theme='dark'] .input::placeholder,
+[data-theme='dark'] textarea::placeholder {
+  color: #64748B !important;
+}
+
+[data-theme='dark'] .stat-card {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+}
+
+[data-theme='dark'] .btn-ghost {
+  color: #94A3B8;
+}
+[data-theme='dark'] .btn-ghost:hover {
+  background: #334155 !important;
+  color: #F1F5F9;
+}
+
+[data-theme='dark'] .divider {
+  background: #334155 !important;
+}
+
+[data-theme='dark'] .section-title {
+  color: #64748B !important;
+}
+
+[data-theme='dark'] .progress-track {
+  background: #334155 !important;
+}
+
+[data-theme='dark'] .label {
+  color: #94A3B8 !important;
+}
+
+[data-theme='dark'] p[style*='color: #0F172A'],
+[data-theme='dark'] h1[style*='color: #0F172A'],
+[data-theme='dark'] h2[style*='color: #0F172A'],
+[data-theme='dark'] h3[style*='color: #0F172A'],
+[data-theme='dark'] span[style*='color: #0F172A'] {
+  color: #F1F5F9 !important;
+}
+
+[data-theme='dark'] p[style*='color: #475569'],
+[data-theme='dark'] p[style*='color: #64748B'],
+[data-theme='dark'] span[style*='color: #64748B'] {
+  color: #94A3B8 !important;
+}
+
+[data-theme='dark'] div[style*='background: #F8FAFC'],
+[data-theme='dark'] div[style*='background: #F8FAFF'],
+[data-theme='dark'] div[style*='background: #F1F5F9'] {
+  background: #334155 !important;
+}
+
+[data-theme='dark'] div[style*='background: #FFFFFF'],
+[data-theme='dark'] div[style*='background: white'] {
+  background: #1E293B !important;
+}
