@@ -1,9 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Package, Clock, Truck, CheckCircle, Plus, ArrowRight,
-  TrendingUp, Activity, Fuel, Zap, BarChart3
+  TrendingUp, Activity, Fuel, Zap, BarChart3, AlertTriangle
 } from 'lucide-react';
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend
+} from 'recharts';
 import useAuthStore from '../store/authStore';
 import useDeliveryStore from '../store/deliveryStore';
 import StatusBadge from '../components/StatusBadge';
@@ -84,7 +88,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchStats();
-    fetchDeliveries({ per_page: 6 });
+    fetchDeliveries({ per_page: 100 }); // lebih banyak untuk chart analytics
   }, []);
 
   const firstName        = user?.name?.split(' ')[0];
@@ -92,6 +96,35 @@ export default function DashboardPage() {
   const statusEntries    = Object.entries(stats?.by_status ?? {});
   const fuelEntries      = Object.entries(stats?.by_fuel ?? {});
   const canCreate        = hasRole(['super-admin', 'admin-operasional']);
+
+  // ── Analytics: 7 hari terakhir ──
+  const last7Days = useMemo(() => {
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const label = d.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' });
+      const count = recentDeliveries.filter(del =>
+        del.created_at?.slice(0, 10) === key
+      ).length;
+      days.push({ label, count, date: key });
+    }
+    return days;
+  }, [recentDeliveries]);
+
+  // ── Pie chart data: distribusi jenis BBM ──
+  const PIE_COLORS = ['#2563EB', '#F97316', '#10B981', '#8B5CF6', '#EC4899'];
+  const pieData = fuelEntries.map(([name, value]) => ({
+    name: name.replace(/_/g, ' '), value
+  }));
+
+  // ── Auto reminder: delivery CREATED/PACKED > 2 jam ──
+  const lateDeliveries = recentDeliveries.filter(d => {
+    if (!['CREATED', 'PACKED'].includes(d.status)) return false;
+    const hours = (Date.now() - new Date(d.created_at).getTime()) / (1000 * 60 * 60);
+    return hours > 2;
+  });
 
   const greeting = () => {
     const h = new Date().getHours();
@@ -235,6 +268,69 @@ export default function DashboardPage() {
                 ))}
               </div>
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Auto Reminder: Delivery Terlambat ── */}
+      {lateDeliveries.length > 0 && canCreate && (
+        <div className="rounded-xl p-4 flex items-start gap-3"
+          style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}>
+          <AlertTriangle size={18} className="text-amber-500 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-amber-700">
+              ⚠️ {lateDeliveries.length} Delivery belum dimulai lebih dari 2 jam
+            </p>
+            <div className="mt-2 space-y-1">
+              {lateDeliveries.slice(0, 3).map(d => (
+                <Link key={d.id} to={`/deliveries/${d.id}`}
+                  className="flex items-center justify-between text-xs text-amber-700 hover:text-amber-900 font-mono hover:underline">
+                  <span>{d.delivery_code} — {d.customer_name}</span>
+                  <span className="font-semibold ml-2">{d.status}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Analytics Charts ── */}
+      <div className="grid lg:grid-cols-2 gap-5">
+        <div className="card">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#EFF6FF' }}>
+              <TrendingUp size={15} style={{ color: '#2563EB' }} />
+            </div>
+            <h2 className="font-semibold text-sm" style={{ color: '#0F172A' }}>Pengiriman 7 Hari Terakhir</h2>
+          </div>
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={last7Days} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+              <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: '#94A3B8' }} axisLine={false} tickLine={false} allowDecimals={false} />
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} formatter={(v) => [v, 'Pengiriman']} />
+              <Bar dataKey="count" fill="#2563EB" radius={[4, 4, 0, 0]} maxBarSize={32} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="card">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#FFF7ED' }}>
+              <Fuel size={15} style={{ color: '#F97316' }} />
+            </div>
+            <h2 className="font-semibold text-sm" style={{ color: '#0F172A' }}>Distribusi Jenis BBM</h2>
+          </div>
+          {pieData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={160}>
+              <PieChart>
+                <Pie data={pieData} cx="50%" cy="50%" innerRadius={40} outerRadius={65} dataKey="value" paddingAngle={3}>
+                  {pieData.map((_, i) => (<Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />))}
+                </Pie>
+                <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} formatter={(v, n) => [v + ' delivery', n]} />
+                <Legend iconType="circle" iconSize={8} formatter={(v) => <span style={{ fontSize: 10, color: '#64748B' }}>{v}</span>} />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="py-10 text-center text-xs text-slate-400">Belum ada data BBM</div>
           )}
         </div>
       </div>
