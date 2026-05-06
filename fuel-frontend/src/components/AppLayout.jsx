@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Package, MapPin, Users, User, Truck,
-  LogOut, Fuel, ChevronRight
+  LogOut, Fuel, ChevronRight, Moon, Sun, Bell
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
+import useTheme from '../hooks/useTheme';
+import useNotifications from '../hooks/useNotifications';
 
 // Komponen avatar dengan fallback icon jika foto gagal load / kosong
 function AvatarImage({ src, alt, className, style, onClick }) {
@@ -55,6 +57,8 @@ export default function AppLayout() {
   const { user, logout, hasRole } = useAuthStore();
   const navigate  = useNavigate();
   const location  = useLocation();
+  const { isDark, toggleTheme } = useTheme();
+  const { unreadCount } = useNotifications();
 
   const visibleNav = NAV_ITEMS.filter(item => item.roles.some(r => hasRole(r)));
   const mobileNav  = visibleNav.slice(0, 5);
@@ -118,7 +122,14 @@ export default function AppLayout() {
                 <>
                   <Icon size={17} className={isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-500'} />
                   <span className="flex-1">{label}</span>
-                  {isActive && (
+                  {/* Badge notifikasi di menu Delivery */}
+                  {label === 'Delivery' && unreadCount > 0 && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white"
+                      style={{ background: '#EF4444', minWidth: '18px', textAlign: 'center' }}>
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                  {isActive && unreadCount === 0 && (
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                   )}
                 </>
@@ -208,7 +219,36 @@ export default function AppLayout() {
               {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Dark mode toggle */}
+            <button
+              onClick={toggleTheme}
+              id="dark-mode-toggle"
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+              style={{ background: isDark ? '#1E293B' : '#F8FAFC', border: '1px solid #E2E8F0' }}
+              title={isDark ? 'Light Mode' : 'Dark Mode'}
+            >
+              {isDark
+                ? <Sun size={14} className="text-yellow-400" />
+                : <Moon size={14} className="text-slate-400" />
+              }
+            </button>
+
+            {/* Notification bell */}
+            {unreadCount > 0 && (
+              <button
+                onClick={() => navigate('/deliveries')}
+                className="relative w-8 h-8 rounded-lg flex items-center justify-center"
+                style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}
+                title={`${unreadCount} delivery perlu perhatian`}
+              >
+                <Bell size={14} className="text-red-500" />
+                <span className="absolute -top-1 -right-1 text-[9px] font-bold bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              </button>
+            )}
+
             <div className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg"
               style={{ background: '#ECFDF5', color: '#059669', border: '1px solid #A7F3D0' }}>
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
