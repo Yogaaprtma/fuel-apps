@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Loader2, MapPin, ChevronRight, Fuel, User, Phone, Navigation, DollarSign, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useDeliveryStore from '../store/deliveryStore';
@@ -40,18 +40,33 @@ function Field({ label, required, hint, children }) {
 }
 
 export default function DeliveryCreate() {
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
+  const location  = useLocation();
   const { createDelivery }  = useDeliveryStore();
   const [drivers,    setDrivers]    = useState([]);
   const [customers,  setCustomers]  = useState([]);
   const [loading,    setLoading]    = useState(false);
   const [step,       setStep]       = useState(0);
-  const [form,       setForm]       = useState(INITIAL_FORM);
   const [gpsLoading, setGpsLoading] = useState(false);
+
+  // Baca prefill dari navigasi Repeat Order
+  const prefill = location.state?.prefill ?? {};
+  const [form, setForm] = useState({
+    ...INITIAL_FORM,
+    ...prefill,
+    // Pastikan price_per_liter disesuaikan dengan fuel_type jika ada prefill
+    price_per_liter: prefill.price_per_liter
+      ?? FUEL_PRICES[prefill.fuel_type] 
+      ?? FUEL_PRICES.PERTALITE,
+  });
 
   useEffect(() => {
     userApi.drivers().then(res => setDrivers(res.data));
     userApi.customers().then(res => setCustomers(res.data)).catch(() => {});
+    // Jika dari Repeat Order, skip langsung ke step BBM
+    if (location.state?.prefill) {
+      setStep(0); // tetap mulai dari step 1 agar driver bisa diganti
+    }
   }, []);
 
   const total = (form.volume_liters || 0) * (form.price_per_liter || 0);
