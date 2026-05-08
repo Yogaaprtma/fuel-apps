@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Package, User, Truck, MapPin, Camera,
-  Clock, Phone, Fuel, CheckCircle, DollarSign, FileText, Printer, Star
+  Clock, Phone, Fuel, CheckCircle, DollarSign, FileText, Printer, Star, CopyPlus
 } from 'lucide-react';
 import useDeliveryStore from '../store/deliveryStore';
 import useAuthStore from '../store/authStore';
@@ -95,6 +95,32 @@ export default function DeliveryDetail() {
             id="invoice-btn"
           >
             <Printer size={14} /> Invoice
+          </button>
+        )}
+        {/* Repeat Order button */}
+        {hasRole(['super-admin','admin-operasional']) && (
+          <button
+            onClick={() => navigate('/deliveries/new', {
+              state: {
+                prefill: {
+                  customer_name:        current.customer_name,
+                  customer_phone:       current.customer_phone,
+                  customer_id:          current.customer_id,
+                  destination_address:  current.destination_address,
+                  destination_lat:      current.destination_lat,
+                  destination_lng:      current.destination_lng,
+                  fuel_type:            current.fuel_type,
+                  volume_liters:        current.volume_liters,
+                  price_per_liter:      current.price_per_liter,
+                  geofence_radius:      current.geofence_radius,
+                }
+              }
+            })}
+            className="btn-ghost flex items-center gap-1.5 text-xs text-blue-600 border border-blue-200"
+            id="repeat-order-btn"
+            title="Buat pengiriman baru dengan data yang sama"
+          >
+            <CopyPlus size={14} /> Pesan Ulang
           </button>
         )}
       </div>
