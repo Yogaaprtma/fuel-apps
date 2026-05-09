@@ -19,7 +19,7 @@ const NEXT_LABELS = {
   COMPLETED:        { label: 'Selesai',                   color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE' },
 };
 
-export default function StatusUpdatePanel({ delivery, onUpdated }) {
+export default function StatusUpdatePanel({ delivery, onUpdated, currentPosition = null }) {
   const { updateStatus } = useDeliveryStore();
   const [loading, setLoading] = useState(false);
   const [notes,   setNotes]   = useState('');
@@ -57,18 +57,24 @@ export default function StatusUpdatePanel({ delivery, onUpdated }) {
   const handleUpdate = async () => {
     setLoading(true);
     try {
-      // Hanya sertakan notes jika diisi (hindari mengirim string kosong ke backend)
       const payload = { status: nextStatus };
       if (notes.trim()) payload.notes = notes.trim();
 
       if (nextStatus === 'DELIVERED') {
-        const pos = await new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true, timeout: 15000,
+        // Gunakan posisi dari GPS tracking yang aktif jika ada,
+        // supaya tidak ada konflik 2 request geolocation sekaligus
+        if (currentPosition?.lat && currentPosition?.lng) {
+          payload.latitude  = currentPosition.lat;
+          payload.longitude = currentPosition.lng;
+        } else {
+          const pos = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true, timeout: 15000,
+            });
           });
-        });
-        payload.latitude  = pos.coords.latitude;
-        payload.longitude = pos.coords.longitude;
+          payload.latitude  = pos.coords.latitude;
+          payload.longitude = pos.coords.longitude;
+        }
       }
 
       await updateStatus(delivery.id, payload);
