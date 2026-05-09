@@ -58,7 +58,8 @@ export default function AppLayout() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const { isDark, toggleTheme } = useTheme();
-  const { unreadCount } = useNotifications();
+  const { unreadCount, urgentDeliveries, clearNotifications } = useNotifications();
+  const [showBell, setShowBell] = useState(false);
 
   const visibleNav = NAV_ITEMS.filter(item => item.roles.some(r => hasRole(r)));
   const mobileNav  = visibleNav.slice(0, 5);
@@ -73,11 +74,11 @@ export default function AppLayout() {
   const pageLabel = NAV_ITEMS.find(n => n.to === location.pathname)?.label ?? 'Dashboard';
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: '#F8FAFF' }}>
+    <div className="flex h-screen overflow-hidden" style={{ background: isDark ? '#0F172A' : '#F8FAFF' }}>
 
       {/* ── Desktop Sidebar ── */}
-      <aside className="hidden lg:flex flex-col w-60 xl:w-64 flex-shrink-0 bg-white"
-        style={{ borderRight: '1px solid #E2E8F0', boxShadow: '1px 0 0 #E2E8F0' }}>
+      <aside className={`hidden lg:flex flex-col w-60 xl:w-64 flex-shrink-0 ${isDark ? 'bg-slate-900' : 'bg-white'}`}
+        style={{ borderRight: `1px solid ${isDark ? '#1E293B' : '#E2E8F0'}`, boxShadow: isDark ? 'none' : '1px 0 0 #E2E8F0' }}>
 
         {/* Logo */}
         <div className="px-5 pt-6 pb-5 flex items-center gap-3">
@@ -86,10 +87,10 @@ export default function AppLayout() {
             <Fuel size={18} className="text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-base leading-tight" style={{ color: '#0F172A', letterSpacing: '-0.02em' }}>
+            <h1 className="font-bold text-base leading-tight" style={{ color: isDark ? '#F1F5F9' : '#0F172A', letterSpacing: '-0.02em' }}>
               FuelDS
             </h1>
-            <p className="text-[10px] font-medium mt-0.5" style={{ color: '#94A3B8' }}>
+            <p className="text-[10px] font-medium mt-0.5" style={{ color: isDark ? '#64748B' : '#94A3B8' }}>
               Fuel Delivery System
             </p>
           </div>
@@ -113,14 +114,14 @@ export default function AppLayout() {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${
                   isActive
-                    ? 'bg-blue-50 text-blue-600 font-semibold'
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                    ? (isDark ? 'bg-blue-900/40 text-blue-400 font-semibold' : 'bg-blue-50 text-blue-600 font-semibold')
+                    : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700')
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <Icon size={17} className={isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-500'} />
+                  <Icon size={17} className={isActive ? (isDark ? 'text-blue-400' : 'text-blue-600') : (isDark ? 'text-slate-500 group-hover:text-slate-300' : 'text-slate-400 group-hover:text-slate-500')} />
                   <span className="flex-1">{label}</span>
                   {/* Badge notifikasi di menu Delivery */}
                   {label === 'Delivery' && unreadCount > 0 && (
@@ -146,24 +147,23 @@ export default function AppLayout() {
           <button
             onClick={() => navigate('/profile')}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-left"
-            style={{ hover: 'background:#F8FAFF' }}
-            onMouseEnter={e => e.currentTarget.style.background = '#F8FAFF'}
+            onMouseEnter={e => e.currentTarget.style.background = isDark ? '#1E293B' : '#F8FAFF'}
             onMouseLeave={e => e.currentTarget.style.background = ''}
           >
             <AvatarImage
               src={user?.avatar_url}
               alt={user?.name}
               className="w-8 h-8 rounded-xl"
-              style={{ border: '2px solid #E2E8F0' }}
+              style={{ border: `2px solid ${isDark ? '#334155' : '#E2E8F0'}` }}
             />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate" style={{ color: '#0F172A' }}>{user?.name}</p>
+              <p className="text-sm font-semibold truncate" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>{user?.name}</p>
               <span className="inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded-md mt-0.5"
                 style={{ background: roleInfo.bg, color: roleInfo.text }}>
                 {roleInfo.label}
               </span>
             </div>
-            <ChevronRight size={14} style={{ color: '#CBD5E1' }} />
+            <ChevronRight size={14} style={{ color: isDark ? '#475569' : '#CBD5E1' }} />
           </button>
 
           <button
@@ -171,8 +171,8 @@ export default function AppLayout() {
             className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
             style={{ color: '#94A3B8' }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = '#FEF2F2';
-              e.currentTarget.style.color = '#DC2626';
+              e.currentTarget.style.background = isDark ? '#450a0a' : '#FEF2F2';
+              e.currentTarget.style.color = '#EF4444';
             }}
             onMouseLeave={e => {
               e.currentTarget.style.background = '';
@@ -186,17 +186,17 @@ export default function AppLayout() {
       </aside>
 
       {/* ── Main Area ── */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: isDark ? '#0F172A' : '#F8FAFF' }}>
 
         {/* Mobile Topbar */}
-        <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white"
-          style={{ borderBottom: '1px solid #E2E8F0', boxShadow: '0 1px 0 #F1F5F9' }}>
+        <header className={`lg:hidden flex items-center justify-between px-4 py-3 ${isDark ? 'bg-slate-900' : 'bg-white'}`}
+          style={{ borderBottom: `1px solid ${isDark ? '#1E293B' : '#E2E8F0'}` }}>
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg flex items-center justify-center"
               style={{ background: 'linear-gradient(135deg, #2563EB, #1D4ED8)' }}>
               <Fuel size={14} className="text-white" />
             </div>
-            <span className="font-bold text-base" style={{ color: '#0F172A', letterSpacing: '-0.02em' }}>FuelDS</span>
+            <span className="font-bold text-base" style={{ color: isDark ? '#F1F5F9' : '#0F172A', letterSpacing: '-0.02em' }}>FuelDS</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -211,11 +211,11 @@ export default function AppLayout() {
         </header>
 
         {/* Desktop Topbar */}
-        <header className="hidden lg:flex items-center justify-between px-6 py-3.5 bg-white"
-          style={{ borderBottom: '1px solid #E2E8F0' }}>
+        <header className={`hidden lg:flex items-center justify-between px-6 py-3.5 ${isDark ? 'bg-slate-900' : 'bg-white'}`}
+          style={{ borderBottom: `1px solid ${isDark ? '#1E293B' : '#E2E8F0'}` }}>
           <div>
-            <h2 className="text-sm font-semibold" style={{ color: '#0F172A' }}>{pageLabel}</h2>
-            <p className="text-xs mt-0.5" style={{ color: '#94A3B8' }}>
+            <h2 className="text-sm font-semibold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>{pageLabel}</h2>
+            <p className="text-xs mt-0.5" style={{ color: isDark ? '#64748B' : '#94A3B8' }}>
               {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
@@ -234,19 +234,62 @@ export default function AppLayout() {
               }
             </button>
 
-            {/* Notification bell */}
+            {/* Notification bell with dropdown */}
             {unreadCount > 0 && (
-              <button
-                onClick={() => navigate('/deliveries')}
-                className="relative w-8 h-8 rounded-lg flex items-center justify-center"
-                style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}
-                title={`${unreadCount} delivery perlu perhatian`}
-              >
-                <Bell size={14} className="text-red-500" />
-                <span className="absolute -top-1 -right-1 text-[9px] font-bold bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => { setShowBell(v => !v); clearNotifications(); }}
+                  className="relative w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}
+                  title={`${unreadCount} delivery perlu perhatian`}
+                >
+                  <Bell size={14} className="text-red-500" />
+                  <span className="absolute -top-1 -right-1 text-[9px] font-bold bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                </button>
+
+                {/* Dropdown panel */}
+                {showBell && (
+                  <>
+                    {/* Overlay untuk close */}
+                    <div className="fixed inset-0 z-40" onClick={() => setShowBell(false)} />
+                    <div className="absolute right-0 top-10 z-50 w-72 rounded-2xl shadow-xl"
+                      style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}>
+                      <div className="px-4 py-3 border-b border-slate-100">
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Delivery Perlu Perhatian</p>
+                      </div>
+                      <div className="max-h-64 overflow-y-auto">
+                        {urgentDeliveries.length === 0 ? (
+                          <p className="text-xs text-slate-400 text-center py-6">Tidak ada notifikasi</p>
+                        ) : urgentDeliveries.map(d => (
+                          <button key={d.id}
+                            onClick={() => { setShowBell(false); navigate(`/deliveries/${d.id}`); }}
+                            className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-mono font-semibold text-slate-700">{d.delivery_code}</span>
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                style={{
+                                  background: d.status === 'DELIVERED' ? '#ECFDF5' : d.status === 'NEAR_DESTINATION' ? '#ECFEFF' : '#FFFBEB',
+                                  color: d.status === 'DELIVERED' ? '#059669' : d.status === 'NEAR_DESTINATION' ? '#0E7490' : '#D97706',
+                                }}>
+                                {d.status.replace(/_/g, ' ')}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-400 mt-0.5 truncate">{d.customer_name}</p>
+                          </button>
+                        ))}
+                      </div>
+                      <div className="px-4 py-2.5 border-t border-slate-100">
+                        <button onClick={() => { setShowBell(false); navigate('/deliveries'); }}
+                          className="text-xs text-blue-600 font-semibold hover:text-blue-700">
+                          Lihat semua delivery →
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             )}
 
             <div className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg"
