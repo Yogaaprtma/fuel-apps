@@ -8,6 +8,7 @@ import StatusBadge from '../components/StatusBadge';
 import PhotoUpload from '../components/PhotoUpload';
 import StatusUpdatePanel from '../components/StatusUpdatePanel';
 import MultiDeliveryRoute from '../components/MultiDeliveryRoute';
+import useTheme from '../hooks/useTheme';
 import toast from 'react-hot-toast';
 
 const ACTIVE_STATUSES = ['PACKED', 'IN_TRANSIT', 'NEAR_DESTINATION', 'DELIVERED'];
@@ -21,6 +22,7 @@ export default function DriverPage() {
   const [gpsAccuracy,     setGpsAccuracy]     = useState(null);
   const [expandedId,      setExpandedId]      = useState(null);
   const [driverView,      setDriverView]      = useState('active'); // 'active' | 'route'
+  const { isDark } = useTheme();
   const watchId = React.useRef(null);
 
   useEffect(() => {
@@ -86,14 +88,14 @@ export default function DriverPage() {
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
               style={{
-                background: tracking ? '#ECFDF5' : '#F8FAFC',
-                border: `1px solid ${tracking ? '#A7F3D0' : '#E2E8F0'}`,
+                background: tracking ? '#ECFDF5' : (isDark ? '#1E293B' : '#F8FAFC'),
+                border: `1px solid ${tracking ? '#A7F3D0' : (isDark ? '#334155' : '#E2E8F0')}`,
               }}>
-              <Signal size={20} style={{ color: tracking ? '#10B981' : '#94A3B8' }} />
+              <Signal size={20} style={{ color: tracking ? '#10B981' : (isDark ? '#64748B' : '#94A3B8') }} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <p className="font-semibold text-sm" style={{ color: '#0F172A' }}>GPS Tracking</p>
+                <p className="font-semibold text-sm" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>GPS Tracking</p>
                 {tracking && <div className="live-dot w-2 h-2" />}
               </div>
               <p className="text-xs mt-0.5 text-slate-400 font-mono">
@@ -117,13 +119,13 @@ export default function DriverPage() {
       </div>
 
       {/* View Tabs */}
-      <div className="flex gap-1 bg-slate-100 rounded-xl p-1">
+      <div className={`flex gap-1 rounded-xl p-1 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
         <button
           onClick={() => setDriverView('active')}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
             driverView === 'active'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-slate-400 hover:text-slate-600'
+              ? (isDark ? 'bg-slate-700 text-blue-400 shadow-sm' : 'bg-white text-blue-600 shadow-sm')
+              : (isDark ? 'text-slate-400 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600')
           }`}
         >
           <Package size={13} /> Aktif ({activeDeliveries.length})
@@ -132,8 +134,8 @@ export default function DriverPage() {
           onClick={() => setDriverView('route')}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
             driverView === 'route'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-slate-400 hover:text-slate-600'
+              ? (isDark ? 'bg-slate-700 text-blue-400 shadow-sm' : 'bg-white text-blue-600 shadow-sm')
+              : (isDark ? 'text-slate-400 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600')
           }`}
         >
           <Route size={13} /> Rute Pengiriman
@@ -146,7 +148,7 @@ export default function DriverPage() {
       {/* Active Deliveries */}
       {driverView === 'active' && <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-sm" style={{ color: '#0F172A' }}>Pengiriman Aktif</h2>
+          <h2 className="font-semibold text-sm" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>Pengiriman Aktif</h2>
           <span className="badge badge-orange">{activeDeliveries.length} delivery</span>
         </div>
 
@@ -177,28 +179,28 @@ export default function DriverPage() {
                   {/* Delivery header */}
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="font-mono font-bold" style={{ color: '#0F172A' }}>{d.delivery_code}</p>
-                      <p className="text-sm mt-0.5 text-slate-500">{d.customer_name}</p>
+                      <p className="font-mono font-bold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>{d.delivery_code}</p>
+                      <p className="text-sm mt-0.5" style={{ color: isDark ? '#94A3B8' : '#64748B' }}>{d.customer_name}</p>
                     </div>
                     <StatusBadge status={d.status} pulse />
                   </div>
 
                   {/* Address */}
                   <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl"
-                    style={{ background: '#FFF7ED', border: '1px solid #FED7AA' }}>
+                    style={{ background: isDark ? '#431407' : '#FFF7ED', border: `1px solid ${isDark ? '#7c2d12' : '#FED7AA'}` }}>
                     <MapPin size={13} className="mt-0.5 flex-shrink-0" style={{ color: '#F97316' }} />
-                    <span className="text-xs text-slate-600">{d.destination_address}</span>
+                    <span className="text-xs" style={{ color: isDark ? '#fed7aa' : '#EA580C' }}>{d.destination_address}</span>
                   </div>
 
                   {/* Fuel info */}
                   <div className="flex gap-6 text-xs">
                     <div>
                       <p className="text-slate-400 mb-0.5">BBM</p>
-                      <p className="font-semibold text-slate-700">{d.fuel_type?.replace(/_/g, ' ')}</p>
+                      <p className="font-semibold" style={{ color: isDark ? '#F1F5F9' : '#334155' }}>{d.fuel_type?.replace(/_/g, ' ')}</p>
                     </div>
                     <div>
                       <p className="text-slate-400 mb-0.5">Volume</p>
-                      <p className="font-mono font-semibold text-slate-700">{d.volume_liters}L</p>
+                      <p className="font-mono font-semibold" style={{ color: isDark ? '#F1F5F9' : '#334155' }}>{d.volume_liters}L</p>
                     </div>
                   </div>
 
@@ -225,8 +227,23 @@ export default function DriverPage() {
                     </Link>
                   </div>
 
-                  {/* Status update */}
-                  <StatusUpdatePanel delivery={d} onUpdated={() => fetchDeliveries({})} />
+                  {/* Status update — kirim posisi GPS aktif agar tidak konflik */}
+                  <StatusUpdatePanel
+                    delivery={d}
+                    onUpdated={() => fetchDeliveries({})}
+                    currentPosition={isCurrentTracking ? position : null}
+                  />
+
+                  {/* Bug 4 fix: shortcut POD dari driver panel */}
+                  {d.status === 'DELIVERED' && (
+                    <Link
+                      to={`/deliveries/${d.id}`}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                      style={{ background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE' }}
+                    >
+                      <span>✍️</span> Isi Bukti Penerimaan (Tanda Tangan)
+                    </Link>
+                  )}
 
                   {/* Toggle photo upload */}
                   <div>
