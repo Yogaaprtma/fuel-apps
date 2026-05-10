@@ -13,6 +13,7 @@ import PhotoUpload from '../components/PhotoUpload';
 import StatusUpdatePanel from '../components/StatusUpdatePanel';
 import ProofOfDeliveryForm from '../components/ProofOfDeliveryForm';
 import RatingForm from '../components/RatingForm';
+import useTheme from '../hooks/useTheme';
 
 const TABS = [
   { id: 'detail',   label: 'Detail',   icon: Package },
@@ -22,13 +23,14 @@ const TABS = [
 ];
 
 function InfoRow({ label, value, mono = false, accent }) {
+  const { isDark } = useTheme();
   return (
     <div>
       <p className="text-xs font-semibold uppercase tracking-wider mb-0.5" style={{ color: '#94A3B8', letterSpacing: '0.06em' }}>
         {label}
       </p>
       <p className={`text-sm font-medium ${mono ? 'font-mono' : ''}`}
-        style={{ color: accent ?? '#0F172A' }}>
+        style={{ color: accent ?? (isDark ? '#F1F5F9' : '#0F172A') }}>
         {value ?? '—'}
       </p>
     </div>
@@ -36,13 +38,14 @@ function InfoRow({ label, value, mono = false, accent }) {
 }
 
 function SectionHeader({ icon: Icon, title, color = '#2563EB', bg = '#EFF6FF' }) {
+  const { isDark } = useTheme();
   return (
     <div className="flex items-center gap-2 mb-4">
       <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
         style={{ background: bg }}>
         <Icon size={16} style={{ color }} />
       </div>
-      <h3 className="font-semibold text-sm" style={{ color: '#0F172A' }}>{title}</h3>
+      <h3 className="font-semibold text-sm" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>{title}</h3>
     </div>
   );
 }
@@ -53,6 +56,7 @@ export default function DeliveryDetail() {
   const { current, fetchDelivery } = useDeliveryStore();
   const { hasRole }               = useAuthStore();
   const [tab, setTab]             = useState('detail');
+  const { isDark }                = useTheme();
 
   useEffect(() => { fetchDelivery(id); }, [id]);
 
@@ -78,12 +82,12 @@ export default function DeliveryDetail() {
         </button>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="font-mono text-xl font-bold" style={{ color: '#0F172A' }}>
+            <h1 className="font-mono text-xl font-bold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>
               {current.delivery_code}
             </h1>
             <StatusBadge status={current.status} size="lg" pulse />
           </div>
-          <p className="text-sm mt-0.5 text-slate-400">
+          <p className="text-sm mt-0.5" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>
             {current.customer_name} · {current.fuel_type?.replace(/_/g, ' ')}
           </p>
         </div>
@@ -152,7 +156,7 @@ export default function DeliveryDetail() {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-slate-100 rounded-xl p-1">
+      <div className={`flex gap-1 rounded-xl p-1 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
         {TABS.map(t => (
           <button
             key={t.id}
@@ -160,8 +164,8 @@ export default function DeliveryDetail() {
             onClick={() => setTab(t.id)}
             className="flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-all duration-200"
             style={tab === t.id
-              ? { background: '#FFFFFF', color: '#2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }
-              : { color: '#64748B' }
+              ? { background: isDark ? '#1E293B' : '#FFFFFF', color: isDark ? '#60A5FA' : '#2563EB', boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.08)' }
+              : { color: isDark ? '#94A3B8' : '#64748B' }
             }
           >
             <t.icon size={13} />
