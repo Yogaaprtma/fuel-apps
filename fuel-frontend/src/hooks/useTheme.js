@@ -1,26 +1,35 @@
-import { useEffect, useState } from 'react';
+import { create } from 'zustand';
 
-/**
- * Hook untuk Dark Mode — simpan preferensi di localStorage
- * Gunakan di App.jsx agar berlaku global
- */
-export default function useTheme() {
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('fds_theme') || 'light';
-  });
+// Inisialisasi DOM saat pertama kali load agar tidak nunggu React mount
+const initTheme = localStorage.getItem('fds_theme') || 'light';
+if (initTheme === 'dark') {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  document.documentElement.classList.add('dark');
+}
 
-  useEffect(() => {
+const useTheme = create((set) => ({
+  theme: initTheme,
+  isDark: initTheme === 'dark',
+
+  toggleTheme: () => set((state) => {
+    const newTheme = state.theme === 'light' ? 'dark' : 'light';
     const root = document.documentElement;
-    if (theme === 'dark') {
+
+    if (newTheme === 'dark') {
       root.setAttribute('data-theme', 'dark');
+      root.classList.add('dark');
     } else {
       root.removeAttribute('data-theme');
+      root.classList.remove('dark');
     }
-    localStorage.setItem('fds_theme', theme);
-  }, [theme]);
 
-  const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
-  const isDark = theme === 'dark';
+    localStorage.setItem('fds_theme', newTheme);
+    
+    return { 
+      theme: newTheme, 
+      isDark: newTheme === 'dark' 
+    };
+  })
+}));
 
-  return { theme, isDark, toggleTheme };
-}
+export default useTheme;
