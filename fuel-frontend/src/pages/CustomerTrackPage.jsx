@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, MapPin, Package, Truck, CheckCircle, Clock, Fuel, Loader2, AlertCircle, Phone } from 'lucide-react';
 import { deliveryApi } from '../services/api';
 import DeliveryMap from '../components/DeliveryMap';
+import useTheme from '../hooks/useTheme';
 
 const STATUSES = ['CREATED','PACKED','IN_TRANSIT','NEAR_DESTINATION','DELIVERED','COMPLETED'];
 
@@ -19,6 +20,7 @@ export default function CustomerTrackPage() {
   const [delivery, setDelivery] = useState(null);
   const [loading,  setLoading]  = useState(false);
   const [error,    setError]    = useState('');
+  const { isDark } = useTheme();
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -39,7 +41,7 @@ export default function CustomerTrackPage() {
   const currentIdx = delivery ? STATUSES.indexOf(delivery.status) : -1;
 
   return (
-    <div className="min-h-screen pb-10" style={{ background: '#F8FAFF' }}>
+    <div className="min-h-screen pb-10" style={{ background: isDark ? '#0F172A' : '#F8FAFF' }}>
 
       {/* Top banner */}
       <div className="pt-10 pb-6 text-center"
@@ -94,10 +96,10 @@ export default function CustomerTrackPage() {
             <div className="card">
               <div className="flex items-start justify-between mb-5">
                 <div>
-                  <p className="font-mono font-bold text-lg" style={{ color: '#0F172A' }}>
+                  <p className="font-mono font-bold text-lg" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>
                     {delivery.delivery_code}
                   </p>
-                  <p className="text-sm mt-0.5 text-slate-500">{delivery.customer_name}</p>
+                  <p className="text-sm mt-0.5" style={{ color: isDark ? '#94A3B8' : '#64748B' }}>{delivery.customer_name}</p>
                 </div>
                 <span className="badge"
                   style={{
@@ -127,8 +129,8 @@ export default function CustomerTrackPage() {
 
                       <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 z-10 transition-all duration-300"
                         style={{
-                          background: done ? cfg.bg : '#F8FAFC',
-                          border: `1.5px solid ${done ? cfg.color + '60' : '#E2E8F0'}`,
+                          background: done ? cfg.bg : (isDark ? '#1E293B' : '#F8FAFC'),
+                          border: `1.5px solid ${done ? cfg.color + '60' : (isDark ? '#334155' : '#E2E8F0')}`,
                           boxShadow: isActive ? `0 0 0 3px ${cfg.color}20` : undefined,
                         }}>
                         <Icon size={13} style={{ color: done ? cfg.color : '#CBD5E1' }} strokeWidth={2} />
@@ -137,7 +139,7 @@ export default function CustomerTrackPage() {
                       <div className="flex-1 py-3">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-semibold"
-                            style={{ color: done ? cfg.color : '#CBD5E1' }}>
+                            style={{ color: done ? cfg.color : (isDark ? '#475569' : '#CBD5E1') }}>
                             {cfg.label}
                           </span>
                           {isActive && (
@@ -161,7 +163,7 @@ export default function CustomerTrackPage() {
 
             {/* Detail info */}
             <div className="card space-y-3">
-              <h3 className="font-semibold text-sm" style={{ color: '#0F172A' }}>Detail Pengiriman</h3>
+              <h3 className="font-semibold text-sm" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>Detail Pengiriman</h3>
               <div className="space-y-2">
                 {[
                   { label: 'Jenis BBM', value: delivery.fuel_type?.replace(/_/g, ' ') },
@@ -169,16 +171,16 @@ export default function CustomerTrackPage() {
                   { label: 'Driver',    value: delivery.driver?.name ?? 'Sedang diproses' },
                 ].map(({ label, value, mono }) => (
                   <div key={label} className="flex items-center justify-between py-2"
-                    style={{ borderBottom: '1px solid #F1F5F9' }}>
-                    <span className="text-xs text-slate-400">{label}</span>
-                    <span className={`text-xs font-semibold text-slate-700 ${mono ? 'font-mono' : ''}`}>
+                    style={{ borderBottom: `1px solid ${isDark ? '#334155' : '#F1F5F9'}` }}>
+                    <span className="text-xs" style={{ color: isDark ? '#64748B' : '#94A3B8' }}>{label}</span>
+                    <span className={`text-xs font-semibold ${mono ? 'font-mono' : ''}`} style={{ color: isDark ? '#CBD5E1' : '#334155' }}>
                       {value}
                     </span>
                   </div>
                 ))}
                 <div className="pt-1">
-                  <p className="text-xs uppercase font-semibold tracking-wider mb-1 text-slate-400">Alamat Tujuan</p>
-                  <p className="text-xs text-slate-500">{delivery.destination_address}</p>
+                  <p className="text-xs uppercase font-semibold tracking-wider mb-1" style={{ color: isDark ? '#64748B' : '#94A3B8' }}>Alamat Tujuan</p>
+                  <p className="text-xs" style={{ color: isDark ? '#94A3B8' : '#64748B' }}>{delivery.destination_address}</p>
                 </div>
               </div>
             </div>
@@ -198,12 +200,12 @@ export default function CustomerTrackPage() {
               <a href={`tel:${delivery.driver.phone}`}
                 className="card flex items-center gap-3 transition-all hover:border-blue-200 hover:bg-blue-50">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{ background: '#EFF6FF' }}>
-                  <Phone size={17} style={{ color: '#2563EB' }} />
+                  style={{ background: isDark ? '#1E3A8A' : '#EFF6FF' }}>
+                  <Phone size={17} style={{ color: isDark ? '#60A5FA' : '#2563EB' }} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold" style={{ color: '#0F172A' }}>Hubungi Driver</p>
-                  <p className="text-xs mt-0.5 text-slate-400">{delivery.driver.phone}</p>
+                  <p className="text-sm font-semibold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>Hubungi Driver</p>
+                  <p className="text-xs mt-0.5" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>{delivery.driver.phone}</p>
                 </div>
               </a>
             )}
