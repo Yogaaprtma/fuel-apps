@@ -5,6 +5,7 @@ import useDeliveryStore from '../store/deliveryStore';
 import useAuthStore from '../store/authStore';
 import StatusBadge from '../components/StatusBadge';
 import { exportApi } from '../services/api';
+import useTheme from '../hooks/useTheme';
 
 const STATUS_OPTIONS = ['CREATED','PACKED','IN_TRANSIT','NEAR_DESTINATION','DELIVERED','COMPLETED'];
 
@@ -36,6 +37,7 @@ export default function DeliveriesPage() {
   const [search,     setSearch]     = useState('');
   const [status,     setStatus]     = useState('');
   const [showFilter, setShowFilter] = useState(false);
+  const { isDark } = useTheme();
 
   useEffect(() => {
     fetchDeliveries({ search, status });
@@ -114,8 +116,8 @@ export default function DeliveriesPage() {
                 onClick={() => setStatus('')}
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200"
                 style={status === ''
-                  ? { background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE' }
-                  : { background: '#F8FAFC', color: '#64748B', border: '1px solid #E2E8F0' }
+                  ? { background: isDark ? '#1E3A8A' : '#EFF6FF', color: isDark ? '#93C5FD' : '#2563EB', border: `1px solid ${isDark ? '#1E40AF' : '#BFDBFE'}` }
+                  : { background: isDark ? '#1E293B' : '#F8FAFC', color: isDark ? '#94A3B8' : '#64748B', border: `1px solid ${isDark ? '#334155' : '#E2E8F0'}` }
                 }
               >
                 Semua
@@ -126,8 +128,8 @@ export default function DeliveriesPage() {
                   onClick={() => setStatus(s => s === opt ? '' : opt)}
                   className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200"
                   style={status === opt
-                    ? { background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE' }
-                    : { background: '#F8FAFC', color: '#64748B', border: '1px solid #E2E8F0' }
+                    ? { background: isDark ? '#1E3A8A' : '#EFF6FF', color: isDark ? '#93C5FD' : '#2563EB', border: `1px solid ${isDark ? '#1E40AF' : '#BFDBFE'}` }
+                    : { background: isDark ? '#1E293B' : '#F8FAFC', color: isDark ? '#94A3B8' : '#64748B', border: `1px solid ${isDark ? '#334155' : '#E2E8F0'}` }
                   }
                 >
                   {opt.replace(/_/g, ' ')}
@@ -146,10 +148,10 @@ export default function DeliveriesPage() {
       ) : deliveryList.length === 0 ? (
         <div className="card py-16 text-center">
           <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-            style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
-            <Package size={28} className="text-slate-300" />
+            style={{ background: isDark ? '#1E293B' : '#F8FAFC', border: `1px solid ${isDark ? '#334155' : '#E2E8F0'}` }}>
+            <Package size={28} style={{ color: isDark ? '#475569' : '#CBD5E1' }} />
           </div>
-          <p className="font-semibold text-slate-400">Tidak ada pengiriman ditemukan</p>
+          <p className="font-semibold" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>Tidak ada pengiriman ditemukan</p>
           <p className="text-xs mt-1 text-slate-300">
             {search || status ? 'Coba ubah filter pencarian' : 'Belum ada data pengiriman'}
           </p>
@@ -179,7 +181,7 @@ export default function DeliveriesPage() {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                    <span className="font-mono text-sm font-bold" style={{ color: '#0F172A' }}>
+                    <span className="font-mono text-sm font-bold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>
                       {delivery.delivery_code}
                     </span>
                     <span className="text-[10px] px-2 py-0.5 rounded-md font-semibold"
@@ -187,8 +189,8 @@ export default function DeliveriesPage() {
                       {delivery.fuel_type?.replace(/_/g, ' ')}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-600 font-medium">{delivery.customer_name}</p>
-                  <p className="text-xs mt-0.5 text-slate-400">
+                  <p className="text-xs font-medium" style={{ color: isDark ? '#94A3B8' : '#475569' }}>{delivery.customer_name}</p>
+                  <p className="text-xs mt-0.5" style={{ color: isDark ? '#64748B' : '#94A3B8' }}>
                     {delivery.volume_liters}L ·{' '}
                     Driver: {delivery.driver?.name ?? <em>Belum assign</em>}
                   </p>
