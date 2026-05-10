@@ -5,19 +5,22 @@ import { authApi } from '../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import usePushNotification from '../hooks/usePushNotification';
+import useTheme from '../hooks/useTheme';
 
 // Komponen avatar dengan fallback icon
 function AvatarImage({ src, alt, className, style }) {
   const [imgError, setImgError] = useState(false);
   const hasValidSrc = src && src !== 'null' && src !== 'undefined';
 
+  const { isDark } = useTheme();
+
   if (!hasValidSrc || imgError) {
     return (
       <div
         className={`flex items-center justify-center flex-shrink-0 ${className ?? ''}`}
-        style={{ background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', ...style }}
+        style={{ background: isDark ? '#1E3A8A' : 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', ...style }}
       >
-        <User size={28} style={{ color: '#2563EB' }} />
+        <User size={28} style={{ color: isDark ? '#93C5FD' : '#2563EB' }} />
       </div>
     );
   }
@@ -53,6 +56,7 @@ export default function ProfilePage() {
   });
   const [loading, setLoading] = useState(false);
   const [section, setSection] = useState('info');
+  const { isDark } = useTheme();
 
   const role       = user?.roles?.[0];
   const roleCfg    = ROLE_CONFIG[role] ?? ROLE_CONFIG['customer'];
@@ -98,9 +102,9 @@ export default function ProfilePage() {
           </div>
 
           <div className="flex-1">
-            <h2 className="text-xl font-bold" style={{ color: '#0F172A' }}>{user?.name}</h2>
-            <p className="text-sm mt-0.5 text-slate-400">{user?.email}</p>
-            {user?.phone && <p className="text-sm mt-0.5 text-slate-400">{user.phone}</p>}
+            <h2 className="text-xl font-bold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>{user?.name}</h2>
+            <p className="text-sm mt-0.5" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>{user?.email}</p>
+            {user?.phone && <p className="text-sm mt-0.5" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>{user.phone}</p>}
             <div className="flex flex-wrap gap-2 mt-3 justify-center sm:justify-start">
               {user?.roles?.map(r => {
                 const cfg = ROLE_CONFIG[r] ?? roleCfg;
@@ -118,7 +122,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Tab toggle */}
-      <div className="flex gap-1 bg-slate-100 rounded-xl p-1">
+      <div className={`flex gap-1 rounded-xl p-1 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
         {[
           { id: 'info',     label: 'Informasi', icon: User },
           { id: 'password', label: 'Password',  icon: Lock },
@@ -127,8 +131,8 @@ export default function ProfilePage() {
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
             id={`section-${s.id}`}
             style={section === s.id
-              ? { background: '#FFFFFF', color: '#2563EB', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }
-              : { color: '#64748B' }
+              ? { background: isDark ? '#1E293B' : '#FFFFFF', color: isDark ? '#60A5FA' : '#2563EB', boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.08)' }
+              : { color: isDark ? '#94A3B8' : '#64748B' }
             }>
             <s.icon size={15} />
             {s.label}
@@ -214,15 +218,15 @@ export default function ProfilePage() {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{ background: subscribed ? '#EFF6FF' : '#F8FAFC', border: '1.5px solid #E2E8F0' }}>
+              style={{ background: subscribed ? (isDark ? '#1E3A8A' : '#EFF6FF') : (isDark ? '#1E293B' : '#F8FAFC'), border: `1.5px solid ${isDark ? '#334155' : '#E2E8F0'}` }}>
               {subscribed
-                ? <Bell size={16} style={{ color: '#2563EB' }} />
-                : <BellOff size={16} className="text-slate-400" />
+                ? <Bell size={16} style={{ color: isDark ? '#60A5FA' : '#2563EB' }} />
+                : <BellOff size={16} style={{ color: isDark ? '#64748B' : '#94A3B8' }} />
               }
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-700">Notifikasi Browser</p>
-              <p className="text-xs text-slate-400">{subscribed ? 'Notifikasi aktif di perangkat ini' : 'Aktifkan untuk dapat update real-time'}</p>
+              <p className="text-sm font-semibold" style={{ color: isDark ? '#F1F5F9' : '#334155' }}>Notifikasi Browser</p>
+              <p className="text-xs" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>{subscribed ? 'Notifikasi aktif di perangkat ini' : 'Aktifkan untuk dapat update real-time'}</p>
             </div>
           </div>
           <button
