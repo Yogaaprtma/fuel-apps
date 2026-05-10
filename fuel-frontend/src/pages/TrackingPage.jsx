@@ -5,12 +5,14 @@ import DeliveryMap from '../components/DeliveryMap';
 import StatusBadge from '../components/StatusBadge';
 import { Link } from 'react-router-dom';
 import { trackingApi } from '../services/api';
+import useTheme from '../hooks/useTheme';
 
 export default function TrackingPage() {
   const { deliveries, fetchDeliveries, loading } = useDeliveryStore();
   const [selected,   setSelected]   = useState(null);
   const [locations,  setLocations]  = useState([]);
   const [locLoading, setLocLoading] = useState(false);
+  const { isDark } = useTheme();
 
   useEffect(() => {
     fetchDeliveries({ per_page: 50 });
@@ -67,10 +69,10 @@ export default function TrackingPage() {
           ) : inTransit.length === 0 ? (
             <div className="card py-10 text-center">
               <div className="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center"
-                style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
-                <Navigation size={24} className="text-slate-300" />
+                style={{ background: isDark ? '#1E293B' : '#F8FAFC', border: `1px solid ${isDark ? '#334155' : '#E2E8F0'}` }}>
+                <Navigation size={24} style={{ color: isDark ? '#475569' : '#CBD5E1' }} />
               </div>
-              <p className="text-sm font-medium text-slate-400">Tidak ada kendaraan dalam perjalanan</p>
+              <p className="text-sm font-medium" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>Tidak ada kendaraan dalam perjalanan</p>
             </div>
           ) : inTransit.map(d => (
             <button
@@ -79,20 +81,20 @@ export default function TrackingPage() {
               className="w-full text-left card transition-all duration-200"
               id={`track-select-${d.id}`}
               style={selected?.id === d.id
-                ? { borderColor: '#BFDBFE', background: '#EFF6FF' }
+                ? { borderColor: isDark ? '#1E40AF' : '#BFDBFE', background: isDark ? '#1E3A8A' : '#EFF6FF' }
                 : {}
               }
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-sm font-bold" style={{ color: '#0F172A' }}>
+                <span className="font-mono text-sm font-bold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>
                   {d.delivery_code}
                 </span>
                 <StatusBadge status={d.status} pulse />
               </div>
-              <p className="text-xs text-slate-500 truncate">{d.customer_name}</p>
+              <p className="text-xs truncate" style={{ color: isDark ? '#94A3B8' : '#64748B' }}>{d.customer_name}</p>
               <div className="flex items-start gap-1.5 mt-2">
                 <MapPin size={11} className="flex-shrink-0 mt-0.5" style={{ color: '#F97316' }} />
-                <p className="text-xs text-slate-400 line-clamp-2">{d.destination_address}</p>
+                <p className="text-xs line-clamp-2" style={{ color: isDark ? '#64748B' : '#94A3B8' }}>{d.destination_address}</p>
               </div>
             </button>
           ))}
@@ -100,22 +102,22 @@ export default function TrackingPage() {
 
         {/* Right: Map */}
         <div className="lg:col-span-3">
-          <div className="rounded-2xl overflow-hidden" style={{ height: 480, border: '1px solid #E2E8F0' }}>
+          <div className="rounded-2xl overflow-hidden" style={{ height: 480, border: `1px solid ${isDark ? '#334155' : '#E2E8F0'}` }}>
             {locLoading ? (
-              <div className="h-full flex flex-col items-center justify-center gap-3 bg-slate-50">
+              <div className={`h-full flex flex-col items-center justify-center gap-3 ${isDark ? 'bg-slate-800' : 'bg-slate-50'}`}>
                 <Loader2 size={28} className="animate-spin text-blue-500" />
-                <p className="text-sm text-slate-400">Memuat data lokasi...</p>
+                <p className="text-sm" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>Memuat data lokasi...</p>
               </div>
             ) : selected ? (
               <DeliveryMap delivery={selected} locations={locations} />
             ) : (
-              <div className="h-full flex flex-col items-center justify-center bg-slate-50">
+              <div className={`h-full flex flex-col items-center justify-center ${isDark ? 'bg-slate-800' : 'bg-slate-50'}`}>
                 <div className="w-16 h-16 rounded-2xl mb-4 flex items-center justify-center"
-                  style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}>
-                  <Activity size={28} style={{ color: '#2563EB' }} />
+                  style={{ background: isDark ? '#1E3A8A' : '#EFF6FF', border: `1px solid ${isDark ? '#1E40AF' : '#BFDBFE'}` }}>
+                  <Activity size={28} style={{ color: isDark ? '#60A5FA' : '#2563EB' }} />
                 </div>
-                <p className="font-semibold text-sm text-slate-500">Pilih delivery untuk melihat peta</p>
-                <p className="text-xs mt-1 text-slate-400">Klik salah satu delivery di panel kiri</p>
+                <p className="font-semibold text-sm" style={{ color: isDark ? '#94A3B8' : '#64748B' }}>Pilih delivery untuk melihat peta</p>
+                <p className="text-xs mt-1" style={{ color: isDark ? '#64748B' : '#94A3B8' }}>Klik salah satu delivery di panel kiri</p>
               </div>
             )}
           </div>
