@@ -146,13 +146,13 @@ export default function DeliveriesPage() {
           {[1,2,3,4,5].map(i => <SkeletonCard key={i} />)}
         </div>
       ) : deliveryList.length === 0 ? (
-        <div className="card py-16 text-center">
+        <div className="card py-12 text-center">
           <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-            style={{ background: isDark ? '#1E293B' : '#F8FAFC', border: `1px solid ${isDark ? '#334155' : '#E2E8F0'}` }}>
-            <Package size={28} style={{ color: isDark ? '#475569' : '#CBD5E1' }} />
+            style={{ background: 'var(--bg-muted)', border: '1px solid var(--border-main)' }}>
+            <Package size={28} style={{ color: 'var(--text-dim)' }} />
           </div>
-          <p className="font-semibold" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>Tidak ada pengiriman ditemukan</p>
-          <p className="text-xs mt-1 text-slate-300">
+          <p className="font-semibold" style={{ color: 'var(--text-muted)' }}>Tidak ada pengiriman ditemukan</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>
             {search || status ? 'Coba ubah filter pencarian' : 'Belum ada data pengiriman'}
           </p>
           {canCreate && !search && !status && (
@@ -181,7 +181,7 @@ export default function DeliveriesPage() {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                    <span className="font-mono text-sm font-bold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>
+                    <span className="font-mono text-sm font-bold" style={{ color: 'var(--text-main)' }}>
                       {delivery.delivery_code}
                     </span>
                     <span className="text-[10px] px-2 py-0.5 rounded-md font-semibold"
@@ -189,8 +189,8 @@ export default function DeliveriesPage() {
                       {delivery.fuel_type?.replace(/_/g, ' ')}
                     </span>
                   </div>
-                  <p className="text-xs font-medium" style={{ color: isDark ? '#94A3B8' : '#475569' }}>{delivery.customer_name}</p>
-                  <p className="text-xs mt-0.5" style={{ color: isDark ? '#64748B' : '#94A3B8' }}>
+                  <p className="text-xs font-medium" style={{ color: 'var(--text-main)' }}>{delivery.customer_name}</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                     {delivery.volume_liters}L ·{' '}
                     Driver: {delivery.driver?.name ?? <em>Belum assign</em>}
                   </p>
