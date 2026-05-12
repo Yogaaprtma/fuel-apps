@@ -74,11 +74,11 @@ export default function AppLayout() {
   const pageLabel = NAV_ITEMS.find(n => n.to === location.pathname)?.label ?? 'Dashboard';
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: isDark ? '#0F172A' : '#F8FAFF' }}>
+    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-main)' }}>
 
       {/* ── Desktop Sidebar ── */}
-      <aside className={`hidden lg:flex flex-col w-60 xl:w-64 flex-shrink-0 ${isDark ? 'bg-slate-900' : 'bg-white'}`}
-        style={{ borderRight: `1px solid ${isDark ? '#1E293B' : '#E2E8F0'}`, boxShadow: isDark ? 'none' : '1px 0 0 #E2E8F0' }}>
+      <aside className="hidden lg:flex flex-col w-60 xl:w-64 flex-shrink-0"
+        style={{ background: 'var(--bg-sidebar)', borderRight: '1px solid var(--border-main)', boxShadow: 'var(--shadow)' }}>
 
         {/* Logo */}
         <div className="px-5 pt-6 pb-5 flex items-center gap-3">
@@ -87,10 +87,10 @@ export default function AppLayout() {
             <Fuel size={18} className="text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-base leading-tight" style={{ color: isDark ? '#F1F5F9' : '#0F172A', letterSpacing: '-0.02em' }}>
+            <h1 className="font-bold text-base leading-tight" style={{ color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
               FuelDS
             </h1>
-            <p className="text-[10px] font-medium mt-0.5" style={{ color: isDark ? '#64748B' : '#94A3B8' }}>
+            <p className="text-[10px] font-medium mt-0.5" style={{ color: 'var(--text-muted)' }}>
               Fuel Delivery System
             </p>
           </div>
@@ -157,13 +157,10 @@ export default function AppLayout() {
               style={{ border: `2px solid ${isDark ? '#334155' : '#E2E8F0'}` }}
             />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>{user?.name}</p>
-              <span className="inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded-md mt-0.5"
-                style={{ background: roleInfo.bg, color: roleInfo.text }}>
-                {roleInfo.label}
-              </span>
+              <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-main)' }}>{user?.name}</p>
+              <p className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>{user?.email}</p>
             </div>
-            <ChevronRight size={14} style={{ color: isDark ? '#475569' : '#CBD5E1' }} />
+            <ChevronRight size={14} style={{ color: 'var(--text-dim)' }} />
           </button>
 
           <button
@@ -186,17 +183,14 @@ export default function AppLayout() {
       </aside>
 
       {/* ── Main Area ── */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: isDark ? '#0F172A' : '#F8FAFF' }}>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'var(--bg-main)' }}>
 
         {/* Mobile Topbar */}
-        <header className={`lg:hidden flex items-center justify-between px-4 py-3 ${isDark ? 'bg-slate-900' : 'bg-white'}`}
-          style={{ borderBottom: `1px solid ${isDark ? '#1E293B' : '#E2E8F0'}` }}>
+        <header className="lg:hidden flex items-center justify-between px-4 py-3"
+          style={{ background: 'var(--bg-header)', borderBottom: '1px solid var(--border-main)' }}>
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #2563EB, #1D4ED8)' }}>
-              <Fuel size={14} className="text-white" />
-            </div>
-            <span className="font-bold text-base" style={{ color: isDark ? '#F1F5F9' : '#0F172A', letterSpacing: '-0.02em' }}>FuelDS</span>
+            <Fuel size={18} className="text-blue-600" />
+            <span className="font-bold text-base" style={{ color: 'var(--text-main)', letterSpacing: '-0.02em' }}>FuelDS</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -211,21 +205,20 @@ export default function AppLayout() {
         </header>
 
         {/* Desktop Topbar */}
-        <header className={`hidden lg:flex items-center justify-between px-6 py-3.5 ${isDark ? 'bg-slate-900' : 'bg-white'}`}
-          style={{ borderBottom: `1px solid ${isDark ? '#1E293B' : '#E2E8F0'}` }}>
+        <header className="hidden lg:flex items-center justify-between px-6 py-3.5"
+          style={{ background: 'var(--bg-header)', borderBottom: '1px solid var(--border-main)' }}>
           <div>
-            <h2 className="text-sm font-semibold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>{pageLabel}</h2>
-            <p className="text-xs mt-0.5" style={{ color: isDark ? '#64748B' : '#94A3B8' }}>
-              {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            <h2 className="text-sm font-semibold" style={{ color: 'var(--text-main)' }}>{pageLabel}</h2>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+              Fuel Delivery Tracking System
             </p>
           </div>
           <div className="flex items-center gap-2">
             {/* Dark mode toggle */}
             <button
               onClick={toggleTheme}
-              id="dark-mode-toggle"
-              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
-              style={{ background: isDark ? '#1E293B' : '#F8FAFC', border: '1px solid #E2E8F0' }}
+              className="btn-ghost p-2"
+              style={{ background: 'var(--bg-muted)', border: '1px solid var(--border-main)' }}
               title={isDark ? 'Light Mode' : 'Dark Mode'}
             >
               {isDark
