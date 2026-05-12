@@ -81,21 +81,21 @@ export default function DriverPage() {
       {/* GPS Status Card */}
       <div className="card"
         style={tracking
-          ? { borderColor: '#A7F3D0', background: 'linear-gradient(135deg, #ECFDF5, #FFFFFF)' }
+          ? { borderColor: 'var(--success)', background: 'rgba(16, 185, 129, 0.05)' }
           : {}
         }>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
               style={{
-                background: tracking ? '#ECFDF5' : (isDark ? '#1E293B' : '#F8FAFC'),
-                border: `1px solid ${tracking ? '#A7F3D0' : (isDark ? '#334155' : '#E2E8F0')}`,
+                background: tracking ? 'rgba(16, 185, 129, 0.1)' : 'var(--bg-muted)',
+                border: `1px solid ${tracking ? 'var(--success)' : 'var(--border-main)'}`,
               }}>
-              <Signal size={20} style={{ color: tracking ? '#10B981' : (isDark ? '#64748B' : '#94A3B8') }} />
+              <Signal size={20} style={{ color: tracking ? 'var(--success)' : 'var(--text-dim)' }} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <p className="font-semibold text-sm" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>GPS Tracking</p>
+                <p className="font-semibold text-sm" style={{ color: 'var(--text-main)' }}>GPS Tracking</p>
                 {tracking && <div className="live-dot w-2 h-2" />}
               </div>
               <p className="text-xs mt-0.5 text-slate-400 font-mono">
@@ -119,14 +119,18 @@ export default function DriverPage() {
       </div>
 
       {/* View Tabs */}
-      <div className={`flex gap-1 rounded-xl p-1 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+      <div className="flex gap-1 rounded-xl p-1" style={{ background: 'var(--bg-muted)' }}>
         <button
           onClick={() => setDriverView('active')}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
             driverView === 'active'
-              ? (isDark ? 'bg-slate-700 text-blue-400 shadow-sm' : 'bg-white text-blue-600 shadow-sm')
-              : (isDark ? 'text-slate-400 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600')
+              ? 'shadow-sm'
+              : 'text-slate-400 hover:text-slate-600'
           }`}
+          style={{ 
+            background: driverView === 'active' ? 'var(--bg-card)' : 'transparent',
+            color: driverView === 'active' ? 'var(--primary)' : 'var(--text-muted)'
+          }}
         >
           <Package size={13} /> Aktif ({activeDeliveries.length})
         </button>
@@ -134,9 +138,13 @@ export default function DriverPage() {
           onClick={() => setDriverView('route')}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
             driverView === 'route'
-              ? (isDark ? 'bg-slate-700 text-blue-400 shadow-sm' : 'bg-white text-blue-600 shadow-sm')
-              : (isDark ? 'text-slate-400 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600')
+              ? 'shadow-sm'
+              : 'text-slate-400 hover:text-slate-600'
           }`}
+          style={{ 
+            background: driverView === 'route' ? 'var(--bg-card)' : 'transparent',
+            color: driverView === 'route' ? 'var(--primary)' : 'var(--text-muted)'
+          }}
         >
           <Route size={13} /> Rute Pengiriman
         </button>
