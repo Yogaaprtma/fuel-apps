@@ -277,10 +277,10 @@ export default function UsersPage() {
                 <tr>
                   <td colSpan={4} className="px-5 py-14 text-center">
                     <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center"
-                      style={{ background: isDark ? '#1E293B' : '#F8FAFC', border: `1px solid ${isDark ? '#334155' : '#E2E8F0'}` }}>
-                      <Users size={26} style={{ color: isDark ? '#475569' : '#CBD5E1' }} />
+                      style={{ background: 'var(--bg-muted)', border: '1px solid var(--border-main)' }}>
+                      <Users size={26} style={{ color: 'var(--text-dim)' }} />
                     </div>
-                    <p className="text-sm" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>Tidak ada user ditemukan</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>Tidak ada user ditemukan</p>
                   </td>
                 </tr>
               ) : filteredUsers.map(u => {
@@ -292,8 +292,8 @@ export default function UsersPage() {
                       <div className="flex items-center gap-3">
                         <UserAvatar user={u} roleCfg={roleCfg} size={8} />
                         <div>
-                          <p className="text-sm font-semibold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>{u.name}</p>
-                          <p className="text-xs" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>{u.email}</p>
+                          <p className="text-sm font-semibold" style={{ color: 'var(--text-main)' }}>{u.name}</p>
+                          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{u.email}</p>
                         </div>
                       </div>
                     </td>
