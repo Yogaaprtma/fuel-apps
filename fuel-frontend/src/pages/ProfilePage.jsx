@@ -14,16 +14,14 @@ function AvatarImage({ src, alt, className, style }) {
 
   const { isDark } = useTheme();
 
-  if (!hasValidSrc || imgError) {
     return (
       <div
         className={`flex items-center justify-center flex-shrink-0 ${className ?? ''}`}
-        style={{ background: isDark ? '#1E3A8A' : 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', ...style }}
+        style={{ background: 'var(--bg-muted)', border: '1px solid var(--border-main)', ...style }}
       >
-        <User size={28} style={{ color: isDark ? '#93C5FD' : '#2563EB' }} />
+        <User size={28} style={{ color: 'var(--text-dim)' }} />
       </div>
     );
-  }
 
   return (
     <img
@@ -102,9 +100,9 @@ export default function ProfilePage() {
           </div>
 
           <div className="flex-1">
-            <h2 className="text-xl font-bold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>{user?.name}</h2>
-            <p className="text-sm mt-0.5" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>{user?.email}</p>
-            {user?.phone && <p className="text-sm mt-0.5" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>{user.phone}</p>}
+            <h2 className="text-xl font-bold" style={{ color: 'var(--text-main)' }}>{user?.name}</h2>
+            <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>{user?.email}</p>
+            {user?.phone && <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>{user.phone}</p>}
             <div className="flex flex-wrap gap-2 mt-3 justify-center sm:justify-start">
               {user?.roles?.map(r => {
                 const cfg = ROLE_CONFIG[r] ?? roleCfg;
@@ -122,7 +120,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Tab toggle */}
-      <div className={`flex gap-1 rounded-xl p-1 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+      <div className="flex gap-1 rounded-xl p-1" style={{ background: 'var(--bg-muted)' }}>
         {[
           { id: 'info',     label: 'Informasi', icon: User },
           { id: 'password', label: 'Password',  icon: Lock },
@@ -131,8 +129,8 @@ export default function ProfilePage() {
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
             id={`section-${s.id}`}
             style={section === s.id
-              ? { background: isDark ? '#1E293B' : '#FFFFFF', color: isDark ? '#60A5FA' : '#2563EB', boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.08)' }
-              : { color: isDark ? '#94A3B8' : '#64748B' }
+              ? { background: 'var(--bg-card)', color: 'var(--primary)', boxShadow: 'var(--shadow)' }
+              : { color: 'var(--text-muted)' }
             }>
             <s.icon size={15} />
             {s.label}
