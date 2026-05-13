@@ -44,7 +44,7 @@ export default function TrackingPage() {
           <div className="flex items-center gap-2 mb-1">
             {inTransit.length > 0 && <div className="live-dot w-2 h-2" />}
             <span className="text-xs font-semibold uppercase tracking-wider"
-              style={{ color: '#94A3B8', letterSpacing: '0.07em' }}>
+              style={{ color: 'var(--text-dim)', letterSpacing: '0.07em' }}>
               {inTransit.length > 0 ? 'Live Tracking' : 'Monitoring'}
             </span>
           </div>
@@ -69,10 +69,10 @@ export default function TrackingPage() {
           ) : inTransit.length === 0 ? (
             <div className="card py-10 text-center">
               <div className="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center"
-                style={{ background: isDark ? '#1E293B' : '#F8FAFC', border: `1px solid ${isDark ? '#334155' : '#E2E8F0'}` }}>
-                <Navigation size={24} style={{ color: isDark ? '#475569' : '#CBD5E1' }} />
+                style={{ background: 'var(--bg-muted)', border: '1px solid var(--border-main)' }}>
+                <Navigation size={24} style={{ color: 'var(--text-dim)' }} />
               </div>
-              <p className="text-sm font-medium" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>Tidak ada kendaraan dalam perjalanan</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>Tidak ada kendaraan dalam perjalanan</p>
             </div>
           ) : inTransit.map(d => (
             <button
@@ -81,20 +81,20 @@ export default function TrackingPage() {
               className="w-full text-left card transition-all duration-200"
               id={`track-select-${d.id}`}
               style={selected?.id === d.id
-                ? { borderColor: isDark ? '#1E40AF' : '#BFDBFE', background: isDark ? '#1E3A8A' : '#EFF6FF' }
-                : {}
+                ? { borderColor: 'var(--primary)', background: 'rgba(37, 99, 235, 0.1)' }
+                : { background: 'var(--bg-card)' }
               }
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-sm font-bold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>
+                <span className="font-mono text-sm font-bold" style={{ color: 'var(--text-main)' }}>
                   {d.delivery_code}
                 </span>
                 <StatusBadge status={d.status} pulse />
               </div>
-              <p className="text-xs truncate" style={{ color: isDark ? '#94A3B8' : '#64748B' }}>{d.customer_name}</p>
+              <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>{d.customer_name}</p>
               <div className="flex items-start gap-1.5 mt-2">
                 <MapPin size={11} className="flex-shrink-0 mt-0.5" style={{ color: '#F97316' }} />
-                <p className="text-xs line-clamp-2" style={{ color: isDark ? '#64748B' : '#94A3B8' }}>{d.destination_address}</p>
+                <p className="text-xs line-clamp-2" style={{ color: 'var(--text-muted)' }}>{d.destination_address}</p>
               </div>
             </button>
           ))}
