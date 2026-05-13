@@ -160,20 +160,20 @@ export default function DeliveryCreate() {
               >
                 <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300"
                   style={{
-                    background: i < step ? '#ECFDF5' : i === step ? '#2563EB' : '#F1F5F9',
-                    color:      i < step ? '#059669' : i === step ? 'white' : '#94A3B8',
-                    border:     i < step ? '2px solid #A7F3D0' : i === step ? '2px solid #2563EB' : '2px solid #E2E8F0',
+                    background: i < step ? 'var(--success)' : i === step ? 'var(--primary)' : 'var(--bg-muted)',
+                    color:      i < step ? 'white' : i === step ? 'white' : 'var(--text-dim)',
+                    border:     i < step ? '2px solid var(--success)' : i === step ? '2px solid var(--primary)' : '2px solid var(--border-main)',
                   }}>
                   {i < step ? <CheckCircle size={14} /> : i + 1}
                 </div>
                 <span className="text-xs font-medium hidden sm:block"
-                  style={{ color: i === step ? '#2563EB' : i < step ? '#10B981' : '#94A3B8' }}>
+                  style={{ color: i === step ? 'var(--primary)' : i < step ? 'var(--success)' : 'var(--text-dim)' }}>
                   {label}
                 </span>
               </button>
               {i < STEPS.length - 1 && (
                 <div className="flex-1 h-0.5 mx-2 rounded-full"
-                  style={{ background: i < step ? '#A7F3D0' : '#E2E8F0' }} />
+                  style={{ background: i < step ? 'var(--success)' : 'var(--border-main)' }} />
               )}
             </React.Fragment>
           ))}
@@ -185,10 +185,10 @@ export default function DeliveryCreate() {
         {step === 0 && (
           <div className="card space-y-5 animate-slide-up">
             <div className="flex items-center gap-2 mb-1">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: '#EFF6FF' }}>
-                <User size={16} style={{ color: '#2563EB' }} />
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'var(--bg-muted)' }}>
+                <User size={16} style={{ color: 'var(--primary)' }} />
               </div>
-              <h2 className="font-semibold text-sm" style={{ color: '#0F172A' }}>Driver & Customer</h2>
+              <h2 className="font-semibold text-sm" style={{ color: 'var(--text-main)' }}>Driver & Customer</h2>
             </div>
 
             <Field label="Pilih Driver" required>
@@ -243,10 +243,10 @@ export default function DeliveryCreate() {
         {step === 1 && (
           <div className="card space-y-5 animate-slide-up">
             <div className="flex items-center gap-2 mb-1">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: '#FFF7ED' }}>
-                <MapPin size={16} style={{ color: '#F97316' }} />
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'var(--bg-muted)' }}>
+                <MapPin size={16} style={{ color: 'var(--accent)' }} />
               </div>
-              <h2 className="font-semibold text-sm" style={{ color: '#0F172A' }}>Lokasi Tujuan</h2>
+              <h2 className="font-semibold text-sm" style={{ color: 'var(--text-main)' }}>Lokasi Tujuan</h2>
             </div>
 
             <Field label="Alamat Lengkap" required>
@@ -289,10 +289,10 @@ export default function DeliveryCreate() {
         {step === 2 && (
           <div className="card space-y-5 animate-slide-up">
             <div className="flex items-center gap-2 mb-1">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: '#EFF6FF' }}>
-                <Fuel size={16} style={{ color: '#2563EB' }} />
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'var(--bg-muted)' }}>
+                <Fuel size={16} style={{ color: 'var(--primary)' }} />
               </div>
-              <h2 className="font-semibold text-sm" style={{ color: '#0F172A' }}>Detail Bahan Bakar</h2>
+              <h2 className="font-semibold text-sm" style={{ color: 'var(--text-main)' }}>Detail Bahan Bakar</h2>
             </div>
 
             {/* Fuel type selector */}
@@ -308,7 +308,7 @@ export default function DeliveryCreate() {
                       id={`fuel-${ft}`}
                       style={isActive
                         ? { background: s.bg, color: s.color, border: `1.5px solid ${s.border}` }
-                        : { background: '#F8FAFC', color: '#94A3B8', border: '1.5px solid #E2E8F0' }
+                        : { background: 'var(--bg-muted)', color: 'var(--text-dim)', border: '1.5px solid var(--border-main)' }
                       }>
                       {ft.replace('_', ' ')}
                     </button>
@@ -330,14 +330,14 @@ export default function DeliveryCreate() {
             </div>
 
             {/* Total price */}
-            <div className="rounded-xl p-4" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}>
+            <div className="rounded-xl p-4" style={{ background: 'var(--bg-muted)', border: '1px solid var(--border-main)' }}>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-500">Total Harga Estimasi</span>
-                <span className="text-2xl font-bold" style={{ color: '#2563EB' }}>
+                <span className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>Total Harga Estimasi</span>
+                <span className="text-2xl font-bold" style={{ color: 'var(--primary)' }}>
                   Rp {total.toLocaleString('id-ID')}
                 </span>
               </div>
-              <p className="text-xs mt-1 text-slate-400">
+              <p className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>
                 {form.volume_liters || 0}L × Rp {Number(form.price_per_liter || 0).toLocaleString('id-ID')}
               </p>
             </div>
