@@ -515,36 +515,31 @@
 }
 
 /* ── Dark Mode Overrides ── */
-.dark, [data-theme='dark'] {
-  .btn-ghost:hover {
-    background-color: var(--bg-muted) !important;
-    color: var(--text-main);
-  }
+.dark .btn-ghost:hover, [data-theme='dark'] .btn-ghost:hover {
+  background-color: var(--bg-muted) !important;
+  color: var(--text-main);
+}
 
-  .btn-secondary {
-    background-color: var(--bg-card) !important;
-    border-color: var(--border-main) !important;
-    color: var(--text-muted) !important;
-  }
+.dark .btn-secondary, [data-theme='dark'] .btn-secondary {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-main) !important;
+  color: var(--text-muted) !important;
+}
 
-  /* Recharts text in dark mode */
-  .recharts-text,
-  .recharts-cartesian-axis-tick-value,
-  .recharts-legend-item-text {
-    fill: var(--text-muted) !important;
-    color: var(--text-muted) !important;
-  }
+.dark .recharts-text, .dark .recharts-cartesian-axis-tick-value, .dark .recharts-legend-item-text,
+[data-theme='dark'] .recharts-text, [data-theme='dark'] .recharts-cartesian-axis-tick-value, [data-theme='dark'] .recharts-legend-item-text {
+  fill: var(--text-muted) !important;
+  color: var(--text-muted) !important;
+}
 
-  /* Status badge text stays readable in dark */
-  .badge {
-    opacity: 0.95;
-    border-width: 1.5px;
-  }
+.dark .badge, [data-theme='dark'] .badge {
+  opacity: 0.95;
+  border-width: 1.5px;
+}
 
-  /* Table borders */
-  .table-td, .table-th {
-    border-color: var(--border-main) !important;
-  }
+.dark .table-td, .dark .table-th, 
+[data-theme='dark'] .table-td, [data-theme='dark'] .table-th {
+  border-color: var(--border-main) !important;
 }
 
 /* Fix for legacy/library elements that don't use variables yet */
