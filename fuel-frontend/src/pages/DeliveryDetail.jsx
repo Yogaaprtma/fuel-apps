@@ -26,11 +26,11 @@ function InfoRow({ label, value, mono = false, accent }) {
   const { isDark } = useTheme();
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-wider mb-0.5" style={{ color: '#94A3B8', letterSpacing: '0.06em' }}>
+      <p className="text-xs font-semibold uppercase tracking-wider mb-0.5" style={{ color: 'var(--text-dim)', letterSpacing: '0.06em' }}>
         {label}
       </p>
       <p className={`text-sm font-medium ${mono ? 'font-mono' : ''}`}
-        style={{ color: accent ?? (isDark ? '#F1F5F9' : '#0F172A') }}>
+        style={{ color: accent ?? 'var(--text-main)' }}>
         {value ?? '—'}
       </p>
     </div>
@@ -42,10 +42,10 @@ function SectionHeader({ icon: Icon, title, color = '#2563EB', bg = '#EFF6FF' })
   return (
     <div className="flex items-center gap-2 mb-4">
       <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{ background: bg }}>
+        style={{ background: 'var(--bg-muted)' }}>
         <Icon size={16} style={{ color }} />
       </div>
-      <h3 className="font-semibold text-sm" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>{title}</h3>
+      <h3 className="font-semibold text-sm" style={{ color: 'var(--text-main)' }}>{title}</h3>
     </div>
   );
 }
@@ -82,12 +82,12 @@ export default function DeliveryDetail() {
         </button>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="font-mono text-xl font-bold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>
+            <h1 className="font-mono text-xl font-bold" style={{ color: 'var(--text-main)' }}>
               {current.delivery_code}
             </h1>
             <StatusBadge status={current.status} size="lg" pulse />
           </div>
-          <p className="text-sm mt-0.5" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>
+          <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
             {current.customer_name} · {current.fuel_type?.replace(/_/g, ' ')}
           </p>
         </div>
@@ -132,8 +132,8 @@ export default function DeliveryDetail() {
       {/* Status Update Panel */}
       {canUpdateStatus && (
         <div className="card">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3"
-            style={{ letterSpacing: '0.06em' }}>
+          <p className="text-xs font-semibold uppercase tracking-wider mb-3"
+            style={{ color: 'var(--text-dim)', letterSpacing: '0.06em' }}>
             Update Status
           </p>
           <StatusUpdatePanel delivery={current} onUpdated={() => fetchDelivery(id)} />
@@ -156,7 +156,7 @@ export default function DeliveryDetail() {
       )}
 
       {/* Tabs */}
-      <div className={`flex gap-1 rounded-xl p-1 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+      <div className="flex gap-1 rounded-xl p-1" style={{ background: 'var(--bg-muted)' }}>
         {TABS.map(t => (
           <button
             key={t.id}
@@ -164,8 +164,8 @@ export default function DeliveryDetail() {
             onClick={() => setTab(t.id)}
             className="flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-all duration-200"
             style={tab === t.id
-              ? { background: isDark ? '#1E293B' : '#FFFFFF', color: isDark ? '#60A5FA' : '#2563EB', boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.08)' }
-              : { color: isDark ? '#94A3B8' : '#64748B' }
+              ? { background: 'var(--bg-card)', color: 'var(--primary)', boxShadow: 'var(--shadow)' }
+              : { color: 'var(--text-muted)' }
             }
           >
             <t.icon size={13} />
@@ -198,15 +198,15 @@ export default function DeliveryDetail() {
               <InfoRow label="Driver" value={current.driver?.name ?? 'Belum di-assign'} />
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider mb-1"
-                  style={{ color: '#94A3B8', letterSpacing: '0.06em' }}>Jenis BBM</p>
+                  style={{ color: 'var(--text-dim)', letterSpacing: '0.06em' }}>Jenis BBM</p>
                 <span className="badge badge-blue">{current.fuel_type?.replace(/_/g, ' ')}</span>
               </div>
               <InfoRow label="Volume" value={`${current.volume_liters} Liter`} mono />
               <InfoRow label="Harga / Liter" value={`Rp ${Number(current.price_per_liter).toLocaleString('id-ID')}`} mono />
-              <div className="col-span-2 pt-2 border-t border-slate-100">
+              <div className="col-span-2 pt-2 border-t" style={{ borderColor: 'var(--border-light)' }}>
                 <p className="text-xs font-semibold uppercase tracking-wider mb-1"
-                  style={{ color: '#94A3B8', letterSpacing: '0.06em' }}>Total Harga</p>
-                <p className="text-2xl font-bold" style={{ color: '#2563EB' }}>
+                  style={{ color: 'var(--text-dim)', letterSpacing: '0.06em' }}>Total Harga</p>
+                <p className="text-2xl font-bold" style={{ color: 'var(--primary)' }}>
                   Rp {Number(current.total_price).toLocaleString('id-ID')}
                 </p>
               </div>
@@ -221,7 +221,7 @@ export default function DeliveryDetail() {
                 <InfoRow label="Penerima" value={current.proof.recipient_name} />
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wider mb-1"
-                    style={{ color: '#94A3B8' }}>Validasi Geofence</p>
+                    style={{ color: 'var(--text-dim)' }}>Validasi Geofence</p>
                   <span className={`badge ${current.proof.geofence_valid ? 'badge-green' : 'badge-red'}`}>
                     {current.proof.geofence_valid ? '✓ Valid' : '✗ Invalid'}
                   </span>
@@ -229,9 +229,9 @@ export default function DeliveryDetail() {
                 <InfoRow label="Jarak dari Tujuan" value={`${current.proof.distance_from_destination}m`} />
               </div>
               {current.proof.signature_path && (
-                <div className="mt-4 pt-4 border-t border-slate-100">
+                <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--border-light)' }}>
                   <p className="label mb-2">Tanda Tangan</p>
-                  <div className="rounded-xl overflow-hidden bg-slate-50" style={{ border: '1px solid #E2E8F0' }}>
+                  <div className="rounded-xl overflow-hidden" style={{ background: 'var(--bg-muted)', border: '1px solid var(--border-main)' }}>
                     <img
                       src={`${import.meta.env.VITE_API_URL?.replace('/api','')}/storage/${current.proof.signature_path}`}
                       alt="Tanda tangan"
