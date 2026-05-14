@@ -58,7 +58,7 @@ export default function SignaturePad({ onChange }) {
 
   return (
     <div className="space-y-2">
-      <div className="relative rounded-xl overflow-hidden" style={{ border: '2px solid #E2E8F0', background: '#FFFFFF' }}>
+      <div className="relative rounded-xl overflow-hidden" style={{ border: '2px solid var(--border-main)', background: '#FFFFFF' }}>
         <canvas
           ref={canvasRef}
           width={600}
@@ -81,7 +81,10 @@ export default function SignaturePad({ onChange }) {
       <button
         type="button"
         onClick={clear}
-        className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-red-500 transition-colors"
+        className="flex items-center gap-1.5 text-xs transition-colors"
+        style={{ color: 'var(--text-dim)' }}
+        onMouseEnter={e => e.currentTarget.style.color = 'var(--danger)'}
+        onMouseLeave={e => e.currentTarget.style.color = 'var(--text-dim)'}
       >
         <RotateCcw size={12} /> Hapus tanda tangan
       </button>
