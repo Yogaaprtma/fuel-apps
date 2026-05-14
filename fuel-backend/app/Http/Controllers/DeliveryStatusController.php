@@ -91,6 +91,9 @@ class DeliveryStatusController extends Controller
             // Push gagal tidak hentikan proses
         }
 
+        // Real-time Broadcast (WebSockets)
+        event(new \App\Events\DeliveryStatusUpdated($delivery->fresh()));
+
         return response()->json([
             'message'  => 'Status berhasil diupdate',
             'delivery' => $delivery->fresh()->load('statusLogs.user:id,name'),
