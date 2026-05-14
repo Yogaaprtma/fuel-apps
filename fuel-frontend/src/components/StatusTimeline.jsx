@@ -45,7 +45,7 @@ function PhotoModal({ photo, onClose }) {
           className="absolute -top-10 right-0 text-white/70 hover:text-white transition-colors">
           <X size={22} />
         </button>
-        <div className="rounded-2xl overflow-hidden" style={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-main)' }}>
           <img
             src={photo.photo_url}
             alt={photo.caption || 'Foto'}
@@ -55,13 +55,13 @@ function PhotoModal({ photo, onClose }) {
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <span className="badge badge-orange text-[10px]">{photo.photo_type}</span>
               {photo.uploader?.name && (
-                <span className="text-xs text-slate-400">Oleh: {photo.uploader.name}</span>
+                <span className="text-xs" style={{ color: 'var(--text-dim)' }}>Oleh: {photo.uploader.name}</span>
               )}
             </div>
             {photo.caption && (
-              <p className="text-sm text-slate-300 italic">"{photo.caption}"</p>
+              <p className="text-sm italic" style={{ color: 'var(--text-muted)' }}>"{photo.caption}"</p>
             )}
-            <div className="flex gap-4 text-xs text-slate-500">
+            <div className="flex gap-4 text-xs" style={{ color: 'var(--text-dim)' }}>
               {photo.latitude && photo.longitude && (
                 <span className="flex items-center gap-1">
                   <MapPin size={11} />
@@ -103,23 +103,24 @@ export default function StatusTimeline({ currentStatus, logs = [], photos = [] }
               {/* Line + icon */}
               <div className="flex flex-col items-center">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${isCurrent ? 'ring-4 ring-blue-100' : ''}`}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${isCurrent ? 'ring-4' : ''}`}
                   style={{
-                    background: isDone ? (isCurrent ? '#2563EB' : '#ECFDF5') : '#F1F5F9',
-                    border: isDone ? (isCurrent ? '2px solid #2563EB' : '2px solid #A7F3D0') : '2px solid #E2E8F0',
+                    background: isDone ? (isCurrent ? 'var(--primary)' : 'var(--success-light)') : 'var(--bg-muted)',
+                    border: isDone ? (isCurrent ? '2px solid var(--primary)' : '2px solid var(--success-light)') : '2px solid var(--border-main)',
+                    boxShadow: isCurrent ? '0 0 0 4px var(--primary-light)' : 'none',
                   }}
                 >
                   {isDone ? (
                     isCurrent
                       ? <Clock size={14} className="text-white" />
-                      : <CheckCircle size={14} style={{ color: '#059669' }} />
+                      : <CheckCircle size={14} style={{ color: 'var(--success)' }} />
                   ) : (
-                    <Circle size={14} className="text-slate-300" />
+                    <Circle size={14} style={{ color: 'var(--text-dim)' }} />
                   )}
                 </div>
                 {index < STEPS.length - 1 && (
                   <div className="w-0.5 flex-1 my-1 rounded-full"
-                    style={{ background: isDone && index < currentIndex ? '#A7F3D0' : '#E2E8F0', minHeight: '20px' }} />
+                    style={{ background: isDone && index < currentIndex ? 'var(--success-light)' : 'var(--border-main)', minHeight: '20px' }} />
                 )}
               </div>
 
@@ -127,17 +128,18 @@ export default function StatusTimeline({ currentStatus, logs = [], photos = [] }
               <div className={`pb-5 flex-1 ${index === STEPS.length - 1 ? 'pb-0' : ''}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className={`text-sm font-semibold transition-colors ${isCurrent ? 'text-blue-600' : isDone ? 'text-slate-700' : 'text-slate-300'}`}>
+                    <p className={`text-sm font-semibold transition-colors`}
+                      style={{ color: isCurrent ? 'var(--primary)' : isDone ? 'var(--text-main)' : 'var(--text-dim)' }}>
                       {label}
                       {isCurrent && (
                         <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold"
-                          style={{ background: '#EFF6FF', color: '#2563EB' }}>
-                          <span className="w-1 h-1 rounded-full bg-blue-500" />
+                          style={{ background: 'var(--bg-muted)', color: 'var(--primary)' }}>
+                          <span className="w-1 h-1 rounded-full" style={{ background: 'var(--primary)' }} />
                           Sekarang
                         </span>
                       )}
                     </p>
-                    <p className={`text-xs mt-0.5 ${isDone ? 'text-slate-400' : 'text-slate-300'}`}>{sub}</p>
+                    <p className="text-xs mt-0.5" style={{ color: isDone ? 'var(--text-muted)' : 'var(--text-dim)' }}>{sub}</p>
                   </div>
                   {log && (
                     <div className="text-right flex-shrink-0">
