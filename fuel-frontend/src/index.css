@@ -242,6 +242,14 @@
     ring-color: rgba(37, 99, 235, 0.1);
   }
 
+  .input:disabled {
+    background-color: var(--bg-muted) !important;
+    color: var(--text-dim) !important;
+    border-color: var(--border-main);
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+
   .input::placeholder {
     color: var(--text-dim);
   }
