@@ -121,7 +121,8 @@ export default function AppLayout() {
             >
               {({ isActive }) => (
                 <>
-                  <Icon size={17} className={isActive ? (isDark ? 'text-blue-400' : 'text-blue-600') : (isDark ? 'text-slate-500 group-hover:text-slate-300' : 'text-slate-400 group-hover:text-slate-500')} />
+                  <Icon size={17} className={isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-500'} 
+                    style={{ color: isActive ? 'var(--primary)' : 'var(--text-dim)' }} />
                   <span className="flex-1">{label}</span>
                   {/* Badge notifikasi di menu Delivery */}
                   {label === 'Delivery' && unreadCount > 0 && (
@@ -147,14 +148,14 @@ export default function AppLayout() {
           <button
             onClick={() => navigate('/profile')}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-left"
-            onMouseEnter={e => e.currentTarget.style.background = isDark ? '#1E293B' : '#F8FAFF'}
-            onMouseLeave={e => e.currentTarget.style.background = ''}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-muted)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
             <AvatarImage
               src={user?.avatar_url}
               alt={user?.name}
-              className="w-8 h-8 rounded-xl"
-              style={{ border: `2px solid ${isDark ? '#334155' : '#E2E8F0'}` }}
+              className="w-10 h-10 rounded-xl"
+              style={{ border: '2px solid var(--border-main)' }}
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-main)' }}>{user?.name}</p>
