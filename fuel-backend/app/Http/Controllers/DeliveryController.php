@@ -72,6 +72,9 @@ class DeliveryController extends Controller
             'notes' => 'Pengiriman dibuat',
         ]);
 
+        // Broadcast real-time
+        event(new \App\Events\DeliveryCreated($delivery));
+
         return response()->json($delivery->load(['admin', 'driver']), 201);
     }
 
