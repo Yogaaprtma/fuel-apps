@@ -16,6 +16,7 @@ import DriverPage       from './pages/DriverPage';
 import CustomerTrackPage from './pages/CustomerTrackPage';
 import ProfilePage      from './pages/ProfilePage';
 import UsersPage        from './pages/UsersPage';
+import RealTimeListener from './components/RealTimeListener';
 
 function AuthGuard({ children }) {
   const token = useAuthStore(s => s.token);
@@ -25,6 +26,7 @@ function AuthGuard({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <RealTimeListener />
       <Toaster
         position="top-center"
         gutter={8}
