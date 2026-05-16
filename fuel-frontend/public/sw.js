@@ -1,60 +1,70 @@
-// Service Worker untuk FDS Push Notifications
-// File ini harus ada di: fuel-frontend/public/sw.js
+// Service Worker untuk PWA Offline & Push Notifications
+const CACHE_NAME = 'fuel-ds-v1';
+const ASSETS_TO_CACHE = [
+    '/',
+    '/index.html',
+    '/icon-192.png',
+    '/icon-512.png'
+];
 
-const CACHE_NAME = 'fds-cache-v1';
-
-// Handle push events dari server
-self.addEventListener('push', function(event) {
-  if (!event.data) return;
-
-  const data = event.data.json();
-
-  const options = {
-    body:    data.body  || 'Ada update pengiriman',
-    icon:    data.icon  || '/vite.svg',
-    badge:   data.badge || '/vite.svg',
-    vibrate: [200, 100, 200],
-    tag:     'fds-notification',
-    renotify: true,
-    data:    data.data  || {},
-    actions: [
-      { action: 'view', title: '👁 Lihat Detail' },
-      { action: 'close', title: '✕ Tutup' },
-    ],
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'Fuel Delivery System', options)
-  );
+// Install: Simpan file penting ke Cache
+self.addEventListener('install', (event) => {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            console.log('SW: Caching App Shell');
+            return cache.addAll(ASSETS_TO_CACHE);
+        })
+    );
+    self.skipWaiting();
 });
 
-// Handle klik notifikasi
-self.addEventListener('notificationclick', function(event) {
-  event.notification.close();
+// Activate: Bersihkan cache lama
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys().then((keyList) => {
+            return Promise.all(keyList.map((key) => {
+                if (key !== CACHE_NAME) {
+                    console.log('SW: Removing old cache', key);
+                    return caches.delete(key);
+                }
+            }));
+        })
+    );
+    return self.clients.claim();
+});
 
-  if (event.action === 'close') return;
+// Fetch: Ambil dari Cache jika Offline
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        caches.match(event.request).then((response) => {
+            // Jika ada di cache, kembalikan. Jika tidak, ambil dari network.
+            return response || fetch(event.request).catch(() => {
+                // Jika network gagal (Offline), dan ini permintaan halaman, beri fallback (opsional)
+                return caches.match('/');
+            });
+        })
+    );
+});
 
-  const deliveryId = event.notification.data?.delivery_id;
-  const url = deliveryId ? `/deliveries/${deliveryId}` : '/deliveries';
+// Handle Push Notifications
+self.addEventListener('push', (event) => {
+    let data = { title: 'Notifikasi FuelDS', body: 'Ada update baru!' };
+    try {
+        data = event.data.json();
+    } catch (e) {
+        console.log('Push data is not JSON');
+    }
 
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
-      // Cek apakah ada tab yang sudah buka app
-      for (const client of clientList) {
-        if (client.url.includes(self.location.origin) && 'focus' in client) {
-          client.navigate(url);
-          return client.focus();
+    const options = {
+        body: data.body,
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        data: {
+            url: data.url || '/'
         }
-      }
-      // Buka tab baru jika belum ada
-      if (clients.openWindow) {
-        return clients.openWindow(url);
-      }
-    })
-  );
-});
+    };
 
-// Background sync (opsional untuk future use)
-self.addEventListener('sync', function(event) {
-  console.log('[SW] Background sync:', event.tag);
+    event.waitUntil(
+        self.registration.showNotification(data.title, options)
+    );
 });
