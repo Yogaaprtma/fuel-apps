@@ -91,7 +91,7 @@ export default function ProfilePage() {
               src={user?.avatar_url}
               alt={user?.name}
               className="w-20 h-20 rounded-2xl"
-              style={{ border: '2px solid #E2E8F0' }}
+              style={{ border: '2px solid var(--border-main)' }}
             />
             <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center"
               style={{ border: '2px solid white' }}>
@@ -155,10 +155,10 @@ export default function ProfilePage() {
             <label className="label">Email</label>
             <div className="relative">
               <Mail size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input className="input pl-10 bg-slate-50 cursor-not-allowed" type="email"
+              <input className="input pl-10" type="email"
                 value={user?.email} disabled />
             </div>
-            <p className="text-xs mt-1 text-slate-400">Email tidak dapat diubah</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Email tidak dapat diubah</p>
           </div>
 
           <div>
@@ -216,15 +216,15 @@ export default function ProfilePage() {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{ background: subscribed ? (isDark ? '#1E3A8A' : '#EFF6FF') : (isDark ? '#1E293B' : '#F8FAFC'), border: `1.5px solid ${isDark ? '#334155' : '#E2E8F0'}` }}>
+              style={{ background: 'var(--bg-muted)', border: '1px solid var(--border-main)' }}>
               {subscribed
-                ? <Bell size={16} style={{ color: isDark ? '#60A5FA' : '#2563EB' }} />
-                : <BellOff size={16} style={{ color: isDark ? '#64748B' : '#94A3B8' }} />
+                ? <Bell size={16} style={{ color: 'var(--primary)' }} />
+                : <BellOff size={16} style={{ color: 'var(--text-dim)' }} />
               }
             </div>
             <div>
-              <p className="text-sm font-semibold" style={{ color: isDark ? '#F1F5F9' : '#334155' }}>Notifikasi Browser</p>
-              <p className="text-xs" style={{ color: isDark ? '#94A3B8' : '#94A3B8' }}>{subscribed ? 'Notifikasi aktif di perangkat ini' : 'Aktifkan untuk dapat update real-time'}</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-main)' }}>Notifikasi Browser</p>
+              <p className="text-xs" style={{ color: 'var(--text-dim)' }}>{subscribed ? 'Notifikasi aktif di perangkat ini' : 'Aktifkan untuk dapat update real-time'}</p>
             </div>
           </div>
           <button
