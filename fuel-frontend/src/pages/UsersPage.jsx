@@ -74,7 +74,7 @@ function ConfirmDialog({ open, title, message, userName, onConfirm, onCancel, lo
       onClick={e => e.target === e.currentTarget && onCancel()}
     >
       <div className="w-full max-w-sm animate-scale-in">
-        <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.18)' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--bg-card)', boxShadow: '0 20px 60px rgba(0,0,0,0.18)' }}>
           {/* Top strip merah */}
           <div className="h-1.5 w-full" style={{ background: 'linear-gradient(90deg, #EF4444, #F87171)' }} />
 
@@ -89,7 +89,7 @@ function ConfirmDialog({ open, title, message, userName, onConfirm, onCancel, lo
 
             {/* Text */}
             <div className="text-center mb-6">
-              <h3 className="text-lg font-bold mb-1" style={{ color: '#0F172A' }}>
+              <h3 className="text-lg font-bold mb-1" style={{ color: 'var(--text-main)' }}>
                 {title ?? 'Hapus User?'}
               </h3>
               {userName && (
@@ -97,7 +97,7 @@ function ConfirmDialog({ open, title, message, userName, onConfirm, onCancel, lo
                   &ldquo;{userName}&rdquo;
                 </p>
               )}
-              <p className="text-sm" style={{ color: '#64748B' }}>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 {message ?? 'Tindakan ini tidak dapat dibatalkan. Data user akan dihapus secara permanen.'}
               </p>
             </div>
@@ -118,12 +118,12 @@ function ConfirmDialog({ open, title, message, userName, onConfirm, onCancel, lo
                 disabled={loading}
                 className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200"
                 style={{
-                  background: '#F8FAFC',
-                  color: '#475569',
-                  border: '1.5px solid #E2E8F0',
+                  background: 'var(--bg-muted)',
+                  color: 'var(--text-muted)',
+                  border: '1.5px solid var(--border-main)',
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
-                onMouseLeave={e => e.currentTarget.style.background = '#F8FAFC'}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--border-light)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-muted)'}
               >
                 Batal
               </button>
@@ -347,7 +347,7 @@ export default function UsersPage() {
             <div className="card rounded-2xl" style={{ boxShadow: '0 25px 60px rgba(0,0,0,0.15)' }}>
               {/* Modal header */}
               <div className="flex items-center justify-between mb-5">
-                <h2 className="font-bold text-base" style={{ color: '#0F172A' }}>
+                <h2 className="font-bold text-base" style={{ color: 'var(--text-main)' }}>
                   {modal === 'create' ? 'Tambah User Baru' : 'Edit User'}
                 </h2>
                 <button onClick={() => setModal(null)} className="btn-ghost p-1.5" id="close-modal">
@@ -381,7 +381,7 @@ export default function UsersPage() {
                           id={`role-${r}`}
                           style={form.role === r
                             ? { background: cfg.bg, color: cfg.color, border: `1.5px solid ${cfg.border}` }
-                            : { background: '#F8FAFC', color: '#64748B', border: '1.5px solid #E2E8F0' }
+                            : { background: 'var(--bg-muted)', color: 'var(--text-dim)', border: '1.5px solid var(--border-main)' }
                           }>
                           {cfg.label}
                         </button>
