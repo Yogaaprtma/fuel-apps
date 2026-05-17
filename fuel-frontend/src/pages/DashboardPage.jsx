@@ -256,7 +256,7 @@ export default function DashboardPage() {
                 <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#EFF6FF' }}>
                   <Fuel size={15} style={{ color: '#2563EB' }} />
                 </div>
-                <h2 className="font-semibold text-sm" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>Jenis BBM</h2>
+                <h2 className="font-semibold text-sm" style={{ color: 'var(--text-main)' }}>Jenis BBM</h2>
               </div>
               <div className="space-y-2.5">
                 {fuelEntries.map(([fuel, count]) => (
@@ -267,7 +267,7 @@ export default function DashboardPage() {
                           {fuel.replace(/_/g, ' ')}
                         </span>
                       </div>
-                      <span className="text-xs font-bold font-mono" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>{count}</span>
+                      <span className="text-xs font-bold font-mono" style={{ color: 'var(--text-main)' }}>{count}</span>
                     </div>
                 ))}
               </div>
@@ -305,14 +305,14 @@ export default function DashboardPage() {
             <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#EFF6FF' }}>
               <TrendingUp size={15} style={{ color: '#2563EB' }} />
             </div>
-            <h2 className="font-semibold text-sm" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>Pengiriman 7 Hari Terakhir</h2>
+            <h2 className="font-semibold text-sm" style={{ color: 'var(--text-main)' }}>Pengiriman 7 Hari Terakhir</h2>
           </div>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={last7Days} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
               <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#94A3B8' }} axisLine={false} tickLine={false} allowDecimals={false} />
               <Tooltip
-                contentStyle={{ fontSize: 12, borderRadius: 8, border: `1px solid ${isDark ? '#334155' : '#E2E8F0'}`, background: isDark ? '#1E293B' : '#FFFFFF', color: isDark ? '#F1F5F9' : '#0F172A' }}
+                contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid var(--border-main)', background: 'var(--bg-card)', color: 'var(--text-main)' }}
                 formatter={(v) => [v, 'Pengiriman']}
               />
               <Bar dataKey="count" fill="#2563EB" radius={[4, 4, 0, 0]} maxBarSize={32} />
@@ -324,7 +324,7 @@ export default function DashboardPage() {
             <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#FFF7ED' }}>
               <Fuel size={15} style={{ color: '#F97316' }} />
             </div>
-            <h2 className="font-semibold text-sm" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>Distribusi Jenis BBM</h2>
+            <h2 className="font-semibold text-sm" style={{ color: 'var(--text-main)' }}>Distribusi Jenis BBM</h2>
           </div>
           {pieData.length > 0 ? (
             <ResponsiveContainer width="100%" height={160}>
@@ -333,7 +333,7 @@ export default function DashboardPage() {
                   {pieData.map((_, i) => (<Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ fontSize: 12, borderRadius: 8, border: `1px solid ${isDark ? '#334155' : '#E2E8F0'}`, background: isDark ? '#1E293B' : '#FFFFFF', color: isDark ? '#F1F5F9' : '#0F172A' }}
+                  contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid var(--border-main)', background: 'var(--bg-card)', color: 'var(--text-main)' }}
                   formatter={(v, n) => [v + ' delivery', n]}
                 />
                 <Legend iconType="circle" iconSize={8}
