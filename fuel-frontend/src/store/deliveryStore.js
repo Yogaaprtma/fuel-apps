@@ -46,9 +46,12 @@ const useDeliveryStore = create((set, get) => ({
 
     updateStatus: async (id, statusData) => {
         const { data } = await deliveryApi.updateStatus(id, statusData);
+        // data.delivery berisi objek pengiriman yang sudah diperbarui
+        const updatedDelivery = data.delivery || data; 
+        
         set(state => ({
-            deliveries: state.deliveries.map(d => d.id === id ? { ...d, status: data.delivery.status } : d),
-            current: state.current?.id === id ? data.delivery : state.current,
+            deliveries: state.deliveries.map(d => d.id === id ? { ...d, ...updatedDelivery } : d),
+            current: state.current?.id === id ? updatedDelivery : state.current,
         }));
         return data;
     },
