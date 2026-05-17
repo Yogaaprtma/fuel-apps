@@ -10,6 +10,7 @@ import StatusUpdatePanel from '../components/StatusUpdatePanel';
 import MultiDeliveryRoute from '../components/MultiDeliveryRoute';
 import useTheme from '../hooks/useTheme';
 import toast from 'react-hot-toast';
+import { isWithinTarget, calculateDistance } from '../utils/geo';
 
 const ACTIVE_STATUSES = ['PACKED', 'IN_TRANSIT', 'NEAR_DESTINATION', 'DELIVERED'];
 
@@ -63,6 +64,24 @@ export default function DriverPage() {
     setPosition(null);
     setGpsAccuracy(null);
   };
+
+  // Geofencing alert
+  useEffect(() => {
+    if (tracking && currentDelivery && position) {
+      const near = isWithinTarget(
+        position.lat, position.lng,
+        currentDelivery.destination_lat, currentDelivery.destination_lng,
+        500 // 500 meter radius
+      );
+      if (near && currentDelivery.status === 'IN_TRANSIT') {
+        toast('Sangat Dekat! Anda sudah berada dalam radius 500m dari tujuan.', {
+          icon: '📍',
+          duration: 10000,
+          id: 'geofence-alert'
+        });
+      }
+    }
+  }, [position, tracking, currentDelivery]);
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -156,14 +175,14 @@ export default function DriverPage() {
       {/* Active Deliveries */}
       {driverView === 'active' && <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-sm" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>Pengiriman Aktif</h2>
+          <h2 className="font-semibold text-sm" style={{ color: 'var(--text-main)' }}>Pengiriman Aktif</h2>
           <span className="badge badge-orange">{activeDeliveries.length} delivery</span>
         </div>
 
         {activeDeliveries.length === 0 ? (
           <div className="card py-14 text-center">
             <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center"
-              style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+              style={{ background: 'var(--bg-muted)', border: '1px solid var(--border-main)' }}>
               <Truck size={26} className="text-slate-300" />
             </div>
             <p className="font-medium text-sm text-slate-400">Tidak ada pengiriman aktif</p>
@@ -180,15 +199,15 @@ export default function DriverPage() {
               return (
                 <div key={d.id} className="card space-y-4"
                   style={isCurrentTracking
-                    ? { borderColor: '#A7F3D0', background: 'linear-gradient(135deg, #ECFDF5 0%, #FFFFFF 100%)' }
+                    ? { borderColor: 'var(--success)', background: 'var(--success-light)' }
                     : {}
                   }>
 
                   {/* Delivery header */}
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="font-mono font-bold" style={{ color: isDark ? '#F1F5F9' : '#0F172A' }}>{d.delivery_code}</p>
-                      <p className="text-sm mt-0.5" style={{ color: isDark ? '#94A3B8' : '#64748B' }}>{d.customer_name}</p>
+                      <p className="font-mono font-bold" style={{ color: 'var(--text-main)' }}>{d.delivery_code}</p>
+                      <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>{d.customer_name}</p>
                     </div>
                     <StatusBadge status={d.status} pulse />
                   </div>
@@ -197,18 +216,31 @@ export default function DriverPage() {
                   <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl"
                     style={{ background: isDark ? '#431407' : '#FFF7ED', border: `1px solid ${isDark ? '#7c2d12' : '#FED7AA'}` }}>
                     <MapPin size={13} className="mt-0.5 flex-shrink-0" style={{ color: '#F97316' }} />
-                    <span className="text-xs" style={{ color: isDark ? '#fed7aa' : '#EA580C' }}>{d.destination_address}</span>
+                    <div className="flex-1 flex flex-col gap-1">
+                      <span className="text-xs" style={{ color: isDark ? '#fed7aa' : '#EA580C' }}>{d.destination_address}</span>
+                      {isCurrentTracking && position && (
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <Navigation size={10} className="animate-pulse" style={{ color: '#F97316' }} />
+                          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#F97316' }}>
+                            {calculateDistance(position.lat, position.lng, d.destination_lat, d.destination_lng) > 1000
+                              ? `${(calculateDistance(position.lat, position.lng, d.destination_lat, d.destination_lng) / 1000).toFixed(1)} KM lagi`
+                              : `${Math.round(calculateDistance(position.lat, position.lng, d.destination_lat, d.destination_lng))} Meter lagi`
+                            }
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Fuel info */}
                   <div className="flex gap-6 text-xs">
                     <div>
                       <p className="text-slate-400 mb-0.5">BBM</p>
-                      <p className="font-semibold" style={{ color: isDark ? '#F1F5F9' : '#334155' }}>{d.fuel_type?.replace(/_/g, ' ')}</p>
+                      <p className="font-semibold" style={{ color: 'var(--text-main)' }}>{d.fuel_type?.replace(/_/g, ' ')}</p>
                     </div>
                     <div>
                       <p className="text-slate-400 mb-0.5">Volume</p>
-                      <p className="font-mono font-semibold" style={{ color: isDark ? '#F1F5F9' : '#334155' }}>{d.volume_liters}L</p>
+                      <p className="font-mono font-semibold" style={{ color: 'var(--text-main)' }}>{d.volume_liters}L</p>
                     </div>
                   </div>
 
@@ -222,7 +254,7 @@ export default function DriverPage() {
                       </button>
                     ) : isCurrentTracking ? (
                       <div className="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold"
-                        style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#059669' }}>
+                        style={{ background: 'var(--success-light)', border: '1px solid var(--success)', color: 'var(--success)' }}>
                         <div className="live-dot w-2 h-2" />
                         GPS Aktif & Tracking
                       </div>
@@ -238,7 +270,7 @@ export default function DriverPage() {
                   {/* Status update — kirim posisi GPS aktif agar tidak konflik */}
                   <StatusUpdatePanel
                     delivery={d}
-                    onUpdated={() => fetchDeliveries({})}
+                    onUpdated={() => {}} // Store sudah melakukan update lokal
                     currentPosition={isCurrentTracking ? position : null}
                   />
 
@@ -247,7 +279,7 @@ export default function DriverPage() {
                     <Link
                       to={`/deliveries/${d.id}`}
                       className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                      style={{ background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE' }}
+                      style={{ background: 'var(--bg-muted)', color: 'var(--primary)', border: '1px solid var(--border-main)' }}
                     >
                       <span>✍️</span> Isi Bukti Penerimaan (Tanda Tangan)
                     </Link>
