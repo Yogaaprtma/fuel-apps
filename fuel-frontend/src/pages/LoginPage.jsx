@@ -111,7 +111,7 @@ export default function LoginPage() {
 
       {/* ── Right Panel — Form ── */}
       <div className="flex-1 lg:max-w-lg flex flex-col items-center justify-center px-6 py-12 bg-white relative"
-        style={{ boxShadow: '-4px 0 20px rgba(0,0,0,0.04)' }}>
+        style={{ background: 'var(--bg-card)', boxShadow: '-4px 0 20px rgba(0,0,0,0.04)' }}>
 
         {/* Mobile logo */}
         <div className="lg:hidden mb-10 text-center">
@@ -119,17 +119,17 @@ export default function LoginPage() {
             style={{ background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', boxShadow: '0 8px 24px rgba(37,99,235,0.3)' }}>
             <Fuel size={28} className="text-white" />
           </div>
-          <h1 className="font-bold text-2xl" style={{ color: '#0F172A', letterSpacing: '-0.02em' }}>FuelDS</h1>
-          <p className="text-sm mt-1 text-slate-500">Fuel Delivery System</p>
+          <h1 className="font-bold text-2xl" style={{ color: 'var(--text-main)', letterSpacing: '-0.02em' }}>FuelDS</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Fuel Delivery System</p>
         </div>
 
         <div className="w-full max-w-sm animate-slide-up">
           {/* Heading */}
           <div className="mb-8">
-            <h2 className="font-bold text-2xl" style={{ color: '#0F172A', letterSpacing: '-0.02em' }}>
+            <h2 className="font-bold text-2xl" style={{ color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
               Masuk ke Sistem
             </h2>
-            <p className="text-sm mt-1 text-slate-500">
+            <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
               Gunakan akun yang telah diberikan oleh admin.
             </p>
           </div>
