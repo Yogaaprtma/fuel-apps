@@ -7,44 +7,31 @@ use Illuminate\Http\Request;
 
 class PushSubscriptionController extends Controller
 {
-    /** Simpan subscription dari browser */
+    /** Simpan subscription dari browser / mobile apps */
     public function store(Request $request)
     {
         $request->validate([
-            'endpoint'   => 'required|string',
-            'p256dh_key' => 'required|string',
-            'auth_key'   => 'required|string',
+            'fcm_token' => 'required|string',
         ]);
 
         PushSubscription::updateOrCreate(
-            ['endpoint' => $request->endpoint],
-            [
-                'user_id'    => $request->user()->id,
-                'p256dh_key' => $request->p256dh_key,
-                'auth_key'   => $request->auth_key,
-            ]
+            ['fcm_token' => $request->fcm_token],
+            ['user_id'   => $request->user()->id]
         );
 
-        return response()->json(['message' => 'Push subscription disimpan']);
+        return response()->json(['message' => 'FCM Token disimpan']);
     }
 
     /** Hapus subscription (saat user logout / disable notif) */
     public function destroy(Request $request)
     {
-        $request->validate(['endpoint' => 'required|string']);
+        $request->validate(['fcm_token' => 'required|string']);
 
-        PushSubscription::where('endpoint', $request->endpoint)
+        PushSubscription::where('fcm_token', $request->fcm_token)
             ->where('user_id', $request->user()->id)
             ->delete();
 
-        return response()->json(['message' => 'Push subscription dihapus']);
+        return response()->json(['message' => 'FCM Token dihapus']);
     }
-
-    /** Kembalikan VAPID public key ke frontend */
-    public function vapidKey()
-    {
-        return response()->json([
-            'public_key' => config('services.vapid.public_key', ''),
-        ]);
     }
 }
