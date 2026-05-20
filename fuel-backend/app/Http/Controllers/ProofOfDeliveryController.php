@@ -35,11 +35,11 @@ class ProofOfDeliveryController extends Controller
 
         $signaturePath = 'signatures/' . uniqid() . '.png';
         $signatureData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $request->signature));
-        \Storage::disk('public')->put($signaturePath, $signatureData);
+        \Storage::disk('s3')->put($signaturePath, $signatureData);
 
         $photoPath = null;
         if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('proof-photos', 'public');
+            $photoPath = $request->file('photo')->store('proof-photos', 's3');
         }
 
         $proof = $delivery->proof()->create([
