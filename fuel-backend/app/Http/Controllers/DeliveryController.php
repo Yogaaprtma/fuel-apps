@@ -211,4 +211,39 @@ class DeliveryController extends Controller
             'Content-Disposition' => "attachment; filename={$filename}",
         ]);
     }
+
+    public function optimizeRoute(Request $request, \App\Services\RouteOptimizationService $osrm)
+    {
+        $request->validate([
+            'delivery_ids' => 'required|array',
+            'delivery_ids.*' => 'exists:deliveries,id',
+            'start_lat' => 'required|numeric',
+            'start_lng' => 'required|numeric'
+        ]);
+
+        $deliveries = Delivery::whereIn('id', $request->delivery_ids)->get();
+
+        $locations = [
+            ['lat' => $request->start_lat, 'lng' => $request->start_lng] // Titik awal (Driver)
+        ];
+
+        foreach ($deliveries as $del) {
+            $locations[] = [
+                'id'  => $del->id,
+                'lat' => $del->destination_lat,
+                'lng' => $del->destination_lng
+            ];
+        }
+
+        $result = $osrm->optimizeRoute($locations);
+
+        if (!$result['success']) {
+            return response()->json($result, 400);
+        }
+
+        return response()->json([
+            'success'         => true,
+            'optimized_route' => $result
+        ]);
+    }
 }
