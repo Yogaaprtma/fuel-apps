@@ -23,7 +23,7 @@ class PhotoController extends Controller
             return response()->json(['message' => 'Forbidden: Anda bukan driver untuk delivery ini'], 403);
         }
 
-        $path = $request->file('photo')->store('delivery-photos', 'public');
+        $path = $request->file('photo')->store('delivery-photos', 's3');
 
         $photo = $delivery->photos()->create([
             'uploaded_by' => $user->id,
@@ -48,7 +48,7 @@ class PhotoController extends Controller
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        \Storage::disk('public')->delete($photo->photo_path);
+        \Storage::disk('s3')->delete($photo->photo_path);
         $photo->delete();
         return response()->json(['message' => 'Foto berhasil dihapus']);
     }
