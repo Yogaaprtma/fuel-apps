@@ -25,6 +25,14 @@ class AuthController extends Controller
             return response()->json(['message' => 'Akun Anda dinonaktifkan'], 403);
         }
 
+        if ($user->two_factor_enabled) {
+            return response()->json([
+                'message'      => '2FA Required',
+                '2fa_required' => true,
+                'user_id'      => $user->id
+            ], 200);
+        }
+
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
@@ -94,5 +102,76 @@ class AuthController extends Controller
             'message' => 'Profil berhasil diupdate', 
             'user' => $user
         ]);
+    }
+
+    public function verify2fa(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'otp'     => 'required|numeric',
+        ]);
+
+        $user = User::find($request->user_id);
+        $google2fa = app('pragmarx.google2fa');
+        
+        $valid = $google2fa->verifyKey($user->google2fa_secret, $request->otp);
+
+        if (!$valid) {
+            return response()->json(['message' => 'Kode OTP salah'], 401);
+        }
+
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => [
+                'id'         => $user->id,
+                'name'       => $user->name,
+                'email'      => $user->email,
+                'phone'      => $user->phone,
+                'avatar_url' => $user->avatar_url,
+                'roles'      => $user->getRoleNames(),
+                'is_active'  => $user->is_active,
+            ]
+        ]);
+    }
+
+    public function setup2fa(Request $request)
+    {
+        $user = $request->user();
+        $google2fa = app('pragmarx.google2fa');
+
+        $secret = $google2fa->generateSecretKey();
+        $user->google2fa_secret = $secret;
+        $user->save();
+
+        $qrCodeUrl = $google2fa->getQRCodeUrl(
+            config('app.name'),
+            $user->email,
+            $secret
+        );
+
+        return response()->json([
+            'secret'      => $secret,
+            'qr_code_url' => $qrCodeUrl
+        ]);
+    }
+
+    public function enable2fa(Request $request)
+    {
+        $user = $request->user();
+        $request->validate(['otp' => 'required|numeric']);
+
+        $google2fa = app('pragmarx.google2fa');
+        $valid = $google2fa->verifyKey($user->google2fa_secret, $request->otp);
+
+        if (!$valid) {
+            return response()->json(['message' => 'Kode OTP salah'], 400);
+        }
+
+        $user->two_factor_enabled = true;
+        $user->save();
+
+        return response()->json(['message' => '2FA berhasil diaktifkan']);
     }
 }
