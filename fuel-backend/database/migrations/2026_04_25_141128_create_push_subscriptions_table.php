@@ -11,12 +11,8 @@ return new class extends Migration
         Schema::create('push_subscriptions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->text('endpoint');
-            $table->text('p256dh_key');
-            $table->text('auth_key');
+            $table->string('fcm_token')->unique();
             $table->timestamps();
-
-            $table->unique('endpoint', 'push_endpoint_unique');
         });
     }
 
