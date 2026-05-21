@@ -55,9 +55,42 @@ services:
       - db
       - redis
 
+  # MinIO (Local S3 Storage)
+  minio:
+    image: minio/minio
+    container_name: fuel-fds-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: sail
+      MINIO_ROOT_PASSWORD: password
+    command: minio server /data --console-address ":9001"
+    networks:
+      - fuel-network
+
+  # MinIO MC (for creating bucket automatically)
+  minio-mc:
+    image: minio/mc
+    container_name: fuel-fds-minio-mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 sail password;
+      /usr/bin/mc mb myminio/local;
+      /usr/bin/mc policy set public myminio/local;
+      exit 0;
+      "
+    networks:
+      - fuel-network
+
 networks:
   fuel-network:
     driver: bridge
 
 volumes:
   dbdata:
+  minio_data:
